@@ -5,9 +5,14 @@
   <nav
     class="flex justify-between items-center px-6 py-4 shadow-md"
     style="background-color: var(--elements-color)">
-    <img src="/company_logo.png" alt="Company Logo" class="w-20 h-15" />
+    <img 
+      src="/company_logo.png" 
+      alt="Company Logo" 
+      class="w-20 h-15 cursor-pointer"
+      (click)="navigateToLanding()"
+    />
     <div class="flex items-center gap-4">
-      <img src="user.png" alt="Profile" class="h-6 w-6 cursor-pointer" />
+      <img src="/user.png" alt="User Profile" class="h-7 w-7 cursor-pointer rounded-full border-2 border-[var(--accent-color)] hover:shadow-md transition">
     </div>
   </nav>
 
@@ -57,8 +62,8 @@
           <!-- Floating Arrow Button (bottom-left) -->
           <button
             class="absolute bottom-4 left-10 w-[50px] h-[50px] cursor-pointer hover:bg-opacity-80"
-            type="submit"
-            [disabled]="clientForm.invalid">
+            type="button"
+            (click)="navigateToPreviousForm()">
             <img
               src="/back_button.png"
               alt="Back"
@@ -68,8 +73,8 @@
           <!-- Get Started Button (bottom-right) -->
           <button
             class="absolute bottom-4 right-10 bg-[var(--elements-color)] text-black px-6 py-2 rounded-full shadow-md font-bold cursor-pointer hover:bg-opacity-80"
-            type="submit"
-            [disabled]="clientForm.invalid">
+            type="button"
+            (click)="navigateToDashboard()">
             Get Started
           </button>
         </div>

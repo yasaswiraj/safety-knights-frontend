@@ -72,6 +72,16 @@ export class ClientDashboardComponent {
       }));
   }
 
+  navigateToClientForm3() {
+    this.router.navigate(['/client-form-3']);
+  }
+
+  // ✅ Navigate to Home (Landing Page) when Logo is clicked
+  navigateToLandingPage() {
+    this.router.navigate(['/']);
+  }
+
+
   handleAction(job: Job) {
     switch (job.status) {
       case 'Pending Bid':

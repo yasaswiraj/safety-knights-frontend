@@ -1,24 +1,34 @@
 import { Component } from '@angular/core';
-import {
-  FormGroup,
-  FormControl,
-  Validators,
-  ReactiveFormsModule,
-} from '@angular/forms';
-import { CommonModule } from '@angular/common';
+import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-client-form1',
-  standalone: true,
-  imports: [CommonModule, ReactiveFormsModule],
   templateUrl: './client-form1.component.html',
-  styleUrl: './client-form1.component.css',
+  styleUrls: ['./client-form1.component.css'],
+  standalone: true,
+  imports: [ReactiveFormsModule]
 })
 export class ClientForm1Component {
-  clientForm = new FormGroup({
-    email: new FormControl('', [Validators.required, Validators.email]),
-  });
+  clientForm: FormGroup;
 
+  constructor(private fb: FormBuilder, private router: Router) {
+    this.clientForm = this.fb.group({
+      email: ['', [Validators.required, Validators.email]]
+    });
+  }
+
+  navigateToNextForm() {
+    if (this.clientForm.valid) {
+      console.log('Navigating to Client-Form2');
+      this.router.navigate(['/client-form-2']);
+    }
+  }
+
+  navigateToLanding() {
+    this.router.navigate(['/']);
+  }
+  
   onSubmit() {
     if (this.clientForm.valid) {
       console.log('Form Submitted:', this.clientForm.value);
@@ -27,4 +37,9 @@ export class ClientForm1Component {
       alert('Please enter a valid email.');
     }
   }
+
+  
 }
+
+  
+

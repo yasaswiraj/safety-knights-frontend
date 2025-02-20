@@ -1,26 +1,40 @@
 import { Component } from '@angular/core';
-import {
-  FormGroup,
-  FormControl,
-  Validators,
-  ReactiveFormsModule,
-} from '@angular/forms';
-import { CommonModule } from '@angular/common';
+import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-client-form2',
-  standalone: true,
-  imports: [CommonModule, ReactiveFormsModule],
   templateUrl: './client-form2.component.html',
-  styleUrl: './client-form2.component.css',
+  styleUrls: ['./client-form2.component.css'],
+  standalone: true,
+  imports: [ReactiveFormsModule]
 })
 export class ClientForm2Component {
-  clientForm = new FormGroup({
-    name: new FormControl('', Validators.required),
-    jobTitle: new FormControl('', Validators.required),
-    companyName: new FormControl('', Validators.required),
-    companyAddress: new FormControl('', Validators.required),
-  });
+  clientForm: FormGroup;
+
+  constructor(private fb: FormBuilder, private router: Router) {
+    this.clientForm = this.fb.group({
+      name: ['', [Validators.required]],
+      jobTitle: ['', [Validators.required]],
+      companyName: ['', [Validators.required]],
+      companyAddress: ['', [Validators.required]]
+    });
+  }
+
+  // ✅ Navigate to Client-Form1
+  navigateToPreviousForm() {
+    this.router.navigate(['/client-form-1']);
+  }
+
+  // ✅ Navigate to Landing Page
+  navigateToLanding() {
+    this.router.navigate(['/']);
+  }
+
+  // ✅ Navigate to Client-Dashboard
+  navigateToDashboard() {
+    this.router.navigate(['/client-dashboard']);
+  }
 
   onSubmit() {
     if (this.clientForm.valid) {
