@@ -1,0 +1,50 @@
+<div class="form-container">
+    <h2>EHS Consulting Network - Service Provider Sign-Up</h2>
+    <form [formGroup]="signupForm" (ngSubmit)="onSubmit()">
+      <div class="form-group">
+        <label for="name">Name</label>
+        <input id="name" formControlName="name" type="text" placeholder="Enter your name" />
+        <div *ngIf="signupForm.get('name')?.invalid && signupForm.get('name')?.touched">
+          Name is required.
+        </div>
+      </div>
+  
+      <div class="form-group">
+        <label for="jobTitle">Job Title</label>
+        <input id="jobTitle" formControlName="jobTitle" type="text" placeholder="Enter your job title" />
+        <div *ngIf="signupForm.get('jobTitle')?.invalid && signupForm.get('jobTitle')?.touched">
+          Job title is required.
+        </div>
+      </div>
+  
+      <div class="form-group">
+        <label for="companyName">Company Name</label>
+        <input id="companyName" formControlName="companyName" type="text" placeholder="Enter your company name" />
+        <div *ngIf="signupForm.get('companyName')?.invalid && signupForm.get('companyName')?.touched">
+          Company name is required.
+        </div>
+      </div>
+  
+      <div class="form-group">
+        <label for="companyAddress">Company Address</label>
+        <input id="companyAddress" formControlName="companyAddress" type="text" placeholder="Enter your company address" />
+        <div *ngIf="signupForm.get('companyAddress')?.invalid && signupForm.get('companyAddress')?.touched">
+          Company address is required.
+        </div>
+      </div>
+  
+      <div class="form-group">
+        <label for="phoneNumber">Phone Number</label>
+        <input id="phoneNumber" formControlName="phoneNumber" type="text" placeholder="Enter your phone number" />
+        <div *ngIf="
+          signupForm.get('phoneNumber')?.invalid &&
+          signupForm.get('phoneNumber')?.touched
+        ">
+          Phone number is required and must be numeric.
+        </div>
+      </div>
+  
+      <button type="submit" [disabled]="!signupForm.valid">Submit</button>
+    </form>
+  </div>
+  

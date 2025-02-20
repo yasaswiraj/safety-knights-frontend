@@ -1,0 +1,60 @@
+<div class="page-container">
+    <!-- Navigation Bar -->
+    <nav class="nav-bar">
+      <img src="/company_logo.png" alt="Company Logo" class="logo" />
+      <div class="nav-right">
+        <img src="user.png" alt="Profile" class="profile-icon" />
+      </div>
+    </nav>
+  
+    <!-- Main Content -->
+    <div class="main-content">
+      <div class="card">
+        <h1>EHS Consulting Network - Service Provider Sign-Up</h1>
+        <p>
+          Welcome to the EHS Consulting Network - Service Provider Sign-Up Form.
+          Thank you for your interest in becoming a service provider with our EHS Consulting network.
+          This form is designed to gather your basic information and areas of expertise.
+        </p>
+        <p>
+          Please note, we are seeking consultants for individual services, so the expertise listed should be specific to you.
+          If you want to include other individuals, each person must fill out their own form separately.
+        </p>
+        <p>
+          Safety services will cover areas listed in the provided checklist. If there are additional skills or services not covered,
+          please use the 'other' field to include any missed details. We look forward to working with you!
+        </p>
+  
+        <form [formGroup]="clientForm" (ngSubmit)="onSubmit()">
+          <mat-form-field appearance="outline" class="full-width">
+            <mat-label>Email</mat-label>
+            <input matInput type="email" placeholder="Enter your email" formControlName="email" />
+            <mat-error *ngIf="clientForm.get('email')?.invalid && clientForm.get('email')?.touched">
+              Please enter a valid email address.
+            </mat-error>
+          </mat-form-field>
+  
+          <mat-form-field appearance="outline" class="full-width">
+            <mat-label>Password</mat-label>
+            <input matInput type="password" placeholder="Enter your password" formControlName="password" />
+            <mat-error *ngIf="clientForm.get('password')?.invalid && clientForm.get('password')?.touched">
+              Password must be at least 6 characters long.
+            </mat-error>
+          </mat-form-field>
+  
+          <mat-form-field appearance="outline" class="full-width">
+            <mat-label>Confirm Password</mat-label>
+            <input matInput type="password" placeholder="Confirm your password" formControlName="confirmPassword" />
+            <mat-error *ngIf="clientForm.get('confirmPassword')?.invalid && clientForm.get('confirmPassword')?.touched">
+              Please confirm your password.
+            </mat-error>
+          </mat-form-field>
+  
+          <button mat-raised-button color="primary" class="submit-button" type="submit" [disabled]="clientForm.invalid">
+            Sign Up
+          </button>
+        </form>
+      </div>
+    </div>
+  </div>
+  
