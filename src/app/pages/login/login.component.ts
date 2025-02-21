@@ -31,4 +31,8 @@ export class LoginComponent {
   navigateToSignUp() {
     this.router.navigate(['/sign-up']); // Redirect to sign-up
   }
+
+  navigateToForgotPassword() {
+    console.log('Forgot password clicked');
+  } 
 }

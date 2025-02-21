@@ -1,6 +1,9 @@
-<div class="md:bg-(--background-color) h-screen flex justify-center items-center">
-    <div class="hidden md:inline bg-(--accent-color)/10 -rotate-45 bottom-1/2 -left-1/2 h-screen w-screen fixed"></div>
-    <div class="hidden md:inline bg-(--text-color)/10 rotate-45 top-1/2 -left-1/2 h-screen w-screen fixed"></div>
+<div
+  class="md:bg-(--background-color) h-screen flex justify-center items-center">
+  <div
+    class="hidden md:inline bg-(--accent-color)/10 -rotate-45 bottom-1/2 -left-1/2 h-screen w-screen fixed"></div>
+  <div
+    class="hidden md:inline bg-(--text-color)/10 rotate-45 top-1/2 -left-1/2 h-screen w-screen fixed"></div>
   <div class="flex items-center">
     <div
       class="hidden md:flex text-3xl font-bold border-r-4 px-15 h-60 justify-center items-center text-(--accent-color)">
@@ -30,7 +33,18 @@
           LOGIN
         </button>
         <div class="text-xs flex justify-between w-75">
-          <a class="cursor-pointer" (click)="navigateToSignUp()">Sign Up</a><a>forgot passowrd?</a>
+          <button
+            class="cursor-pointer"
+            (click)="navigateToSignUp()"
+            (keydown.enter)="navigateToSignUp()">
+            Sign Up
+          </button>
+          <button
+            class="cursor-pointer"
+            (click)="navigateToForgotPassword()"
+            (keydown.enter)="navigateToForgotPassword()">
+            Forgot password?
+          </button>
         </div>
       </form>
     </div>
