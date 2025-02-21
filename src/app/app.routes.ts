@@ -8,6 +8,14 @@ import { LandingPageComponent } from './pages/landing-page/landing-page.componen
 import { ClientForm3Component } from './pages/clientForms/client-form3/client-form3.component';
 import { ClientForm4Component } from './pages/clientForms/client-form4/client-form4.component';
 import { ClientForm5Component } from './pages/clientForms/client-form5/client-form5.component';
+import { AdminDashboardComponent } from './adminPages/dashboard/dashboard.component';
+import { UsersListComponent } from './adminPages/users-list/users-list.component';
+import { MatchesListComponent } from './adminPages/matches-list/matches-list.component';
+import { BidsListComponent } from './adminPages/bids-list/bids-list.component';
+import { ChatComponent } from './adminPages/chat/chat.component';
+import { VettingComponent } from './adminPages/vetting/vetting.component';
+import { SiteSettingsComponent } from './adminPages/site-settings/site-settings.component';
+import { AdminLayoutComponent } from './adminPages/admin-layout/admin-layout.component';
 
 export const routes: Routes = [
   { path: '', component: LandingPageComponent },
@@ -19,4 +27,17 @@ export const routes: Routes = [
   { path: 'client-form-3', component: ClientForm3Component },
   { path: 'client-form-4', component: ClientForm4Component },
   { path: 'client-form-5', component: ClientForm5Component },
+  {
+    path: 'admin',
+    component: AdminLayoutComponent, 
+    children: [
+      { path: 'dashboard', component: AdminDashboardComponent },
+      { path: 'users-list', component: UsersListComponent },
+      { path: 'matches-list', component: MatchesListComponent },
+      { path: 'bids-list', component: BidsListComponent },
+      { path: 'chat', component: ChatComponent },
+      { path: 'vetting', component: VettingComponent },
+      { path: 'site-settings', component: SiteSettingsComponent },
+    ],
+  },
 ];
