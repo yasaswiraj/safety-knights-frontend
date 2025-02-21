@@ -1,0 +1,70 @@
+<div
+  class="h-screen flex flex-col"
+  style="background-color: var(--background-color)">
+  <!-- Navigation Bar -->
+  <nav
+    class="flex justify-between items-center px-6 py-4 shadow-md"
+    style="background-color: var(--elements-color)">
+    <img 
+      src="/company_logo.png" 
+      alt="Company Logo" 
+      class="w-20 h-15 cursor-pointer"
+      (click)="navigateToLanding()"
+    />
+    <div class="flex items-center gap-4">
+      <img src="/user.png" alt="User Profile" class="h-7 w-7 cursor-pointer rounded-full border-2 border-[var(--accent-color)] hover:shadow-md transition">
+    </div>
+  </nav>
+
+  <!-- Main Content -->
+  <div class="flex-grow flex justify-center items-center p-6">
+    <div class="bg-white p-18 rounded-2xl shadow-lg w-full max-w-4xl relative">
+      <h2
+        class="text-[var(--accent-color)] text-4xl font-bold mb-4 text-center">
+        EHS Consulting Network - Client Information Form
+      </h2>
+      <p class="text-(--text-color) text-sm mb-5" style="text-align: justify">
+        Please complete this form to provide us with the details necessary for
+        your environmental, health, and safety (EHS) consulting needs. Your
+        responses will help us tailor our services to meet your specific
+        requirements and connect you with the most suitable consultants.
+      </p>
+      <p class="text-(--text-color) text-sm mb-5" style="text-align: justify">
+        The information gathered will include your contact details, the scope of
+        the project, timelines, insurance requirements, payment terms, and any
+        preferences regarding contractors. Please provide as much detail as
+        possible to ensure an accurate and timely proposal.
+      </p>
+      <p class="text-(--text-color) text-sm mb-10" style="text-align: justify">
+        If you have any questions while completing this form, feel free to reach
+        out to us for assistance.
+      </p>
+
+      <!-- Form -->
+      <form [formGroup]="clientForm" (ngSubmit)="onSubmit()" class="pb-16">
+        <!-- Added padding-bottom -->
+        <input
+          class="bg-gray-200 rounded-full w-full py-3 px-5 mb-5 text-gray-700 focus:outline-none"
+          type="email"
+          formControlName="email"
+          placeholder="email" />
+      </form>
+
+      <!-- Submit Button -->
+      <button
+        class="absolute bottom-4 right-10 w-[50px] h-[50px] cursor-pointer hover:bg-opacity-80"
+        type="button"
+        (click)="navigateToNextForm()"
+        [disabled]="clientForm.invalid">
+        <img
+          src="/next_button.png"
+          alt="Next"
+          class="w-full h-full object-contain" />
+      </button>
+      <button
+        class="fixed bottom-6 right-6 w-14 h-14 text-white rounded-full flex items-center justify-center shadow-lg cursor-pointer">
+        <img src="/chat.png" alt="Chat" class="w-8 h-8" />
+      </button>
+    </div>
+  </div>
+</div>

@@ -1,30 +1,33 @@
 import { Component } from '@angular/core';
-import {
-  ReactiveFormsModule,
-  FormGroup,
-  FormControl,
-  Validators,
-} from '@angular/forms';
+import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms'; // ✅ Import ReactiveFormsModule
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-sign-up',
-  imports: [ReactiveFormsModule],
   templateUrl: './sign-up.component.html',
-  styleUrl: './sign-up.component.css',
+  styleUrls: ['./sign-up.component.css'],
+  standalone: true,
+  imports: [ReactiveFormsModule] // ✅ Fix: Add ReactiveFormsModule
 })
 export class SignUpComponent {
-  signUpForm = new FormGroup({
-      email: new FormControl('', [Validators.required, Validators.email]),
-      password: new FormControl('', [
-        Validators.required,
-        Validators.minLength(2),
-      ]),
-      confirmPassword: new FormControl('', [
-        Validators.required,
-        Validators.minLength(2),
-      ]),
+  signupForm: FormGroup;
+
+  constructor(private fb: FormBuilder, private router: Router) {
+    this.signupForm = this.fb.group({
+      email: ['', [Validators.required, Validators.email]],
+      password: ['', [Validators.required, Validators.minLength(6)]],
+      confirmPassword: ['', [Validators.required]]
     });
-    onLogin() {
-      console.log(this.signUpForm);
+  }
+
+  onSignup() {
+    if (this.signupForm.valid) {
+      console.log('Sign-Up Successful', this.signupForm.value);
+      this.router.navigate(['/client-form-1']);
     }
+  }
+
+  navigateToLogin() {
+    this.router.navigate(['/login']);
+  }
 }

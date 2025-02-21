@@ -1,0 +1,5 @@
+.mat-card {
+  background-color: var(--elements-color) !important; /* Change this to your desired color */
+  border-radius: 12px; /* Keep rounded corners */
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Keeps the shadow effect */
+}

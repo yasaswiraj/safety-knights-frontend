@@ -1,0 +1,53 @@
+/* Apply Global Styles */
+.landing-container {
+    background-color: var(--background-color);
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+    justify-content: center;
+    align-items: center;
+  }
+  
+  /* Hero Section */
+  .hero {
+    flex-grow: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    padding: 40px;
+  }
+  
+  .hero h1 {
+    font-size: 28px;
+    font-weight: bold;
+    color: var(--accent-color);
+    margin-bottom: 15px;
+  }
+  
+  .hero p {
+    font-size: 16px;
+    color: var(--text-color);
+    max-width: 500px;
+    margin-bottom: 20px;
+  }
+  
+  /* Call-to-Action Buttons */
+  .buttons {
+    display: flex;
+    gap: 20px;
+    justify-content: center;
+  }
+  
+  /* Footer */
+  .footer {
+    width: 100%;
+    background: #3d3935;
+    padding: 20px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    color: white;
+  }
+  
