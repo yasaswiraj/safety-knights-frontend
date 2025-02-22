@@ -1,0 +1,36 @@
+<div class="bg-white flex-col h-full rounded-[1em] p-4">
+  <div
+    class="flex items-center px-3 py-1 text-sm border-(--text-color)/10 border rounded-full">
+    <i class="fas fa-search text-(--text-color)/30 pr-1"></i>
+    <input
+      type="text"
+      placeholder="Search"
+      class="w-full p-1 rounded-full outline-none placeholder-(--text-color)/30" />
+  </div>
+  <div class="flex flex-1">
+    <ul class="flex flex-col flex-1 mt-2">
+      @for (chat of chats; track chat.id) {
+        <li
+          class="flex items-center p-3 flex-1 justify-between hover:bg-gray-100 rounded-lg cursor-pointer transition">
+          <img
+            src="{{ chat.user.avatar }}"
+            alt="avatar"
+            class="w-12 h-12 rounded-full" />
+          <div class="flex flex-1 flex-col pl-3">
+            <div class="flex justify-between items-center">
+              <div class="text-sm font-bold">{{ chat.user.name }}</div>
+              <div class="text-sm">{{ chat.time }}</div>
+            </div>
+            <div class="text-sm text-(--text-color)/50">
+              {{
+                chat.lastMessage.trim().length > 25
+                  ? chat.lastMessage.trim().substring(0, 25) + '...'
+                  : chat.lastMessage
+              }}
+            </div>
+          </div>
+        </li>
+      }
+    </ul>
+  </div>
+</div>

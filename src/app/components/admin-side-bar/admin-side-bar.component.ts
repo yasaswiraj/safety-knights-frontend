@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, Input } from '@angular/core';
 
 @Component({
   selector: 'app-admin-side-bar',
@@ -13,13 +13,9 @@ export class AdminSideBarComponent {
     { label: 'Matches', route: '/admin/matches-list', icon: 'fas fa-check' },
     { label: 'Bids', route: '/admin/bids-list', icon: 'fas fa-gavel' },
     { label: 'Inbox', route: '/admin/chat', icon: 'fas fa-envelope' },
-    { label: 'Vetting', route: '/admin/vetting', icon: 'fas fa-heart' },
+    { label: 'Vetting', route: '/admin/vetting', icon: 'fas fa-circle-check' },
     { label: 'Site Settings', route: '/admin/site-settings', icon: 'fas fa-cog' },
   ];
 
-  isSidebarOpen = true;
-
-  toggleSidebar() {
-    this.isSidebarOpen = !this.isSidebarOpen;
-  }
+  @Input() isSidebarOpen = true;
 }

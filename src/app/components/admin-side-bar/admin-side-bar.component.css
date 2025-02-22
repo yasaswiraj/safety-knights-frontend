@@ -1,0 +1,13 @@
+.sidebar {
+  max-width: 16rem;
+  opacity: 1;
+  transition:
+    max-width 0.3s ease,
+    opacity 0.3s ease;
+}
+
+.sidebar.closed {
+  max-width: 0;
+  opacity: 0;
+  padding: 0;
+}

@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, EventEmitter, Output } from '@angular/core';
 
 @Component({
   selector: 'app-admin-nav-bar',
@@ -7,7 +7,9 @@ import { Component } from '@angular/core';
   styleUrl: './admin-nav-bar.component.css'
 })
 export class AdminNavBarComponent {
-  toggleSidebar() {
-    console.log('Sidebar toggle button clicked');
+  @Output() toggleSidebar = new EventEmitter<void>();
+
+  onToggleSidebar() {
+    this.toggleSidebar.emit(); 
   }
 }

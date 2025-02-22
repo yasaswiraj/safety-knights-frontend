@@ -10,5 +10,9 @@ import { RouterOutlet } from '@angular/router';
   styleUrl: './admin-layout.component.css'
 })
 export class AdminLayoutComponent {
+  isSidebarOpen = true;
 
+  toggleSidebar() {
+    this.isSidebarOpen = !this.isSidebarOpen;
+  }
 }
