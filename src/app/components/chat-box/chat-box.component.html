@@ -1,1 +1,56 @@
-<div class="bg-white flex flex-1 h-full rounded-[1em] p-4">chat box</div>
+<div class="bg-white flex flex-1 flex-col h-full rounded-[1em]">
+  <!-- Chat Header -->
+  <div
+    class="flex items-center h-18 justify-between w-full border-b border-gray-200 px-3">
+    <div class="flex items-center">
+      <img
+        src="{{ chatUser.avatar }}"
+        alt="avatar"
+        class="w-12 h-12 rounded-full mr-3" />
+      <div class="text-2xl font-bold">{{ chatUser.name }}</div>
+    </div>
+    <div class="flex items-center">
+      <i
+        class="fas fa-ban text-red-600 text-xl cursor-pointer hover:text-red-800"></i>
+    </div>
+  </div>
+
+  <!-- Scrollable Chat Messages -->
+  <div
+    class="overflow-y-auto p-3 flex flex-col-reverse space-y-2 h-[calc(100vh-19rem)]">
+    @for (message of messages; track message.id) {
+      <div
+        class="p-3 max-w-[70%] text-sm rounded-t-xl"
+        [ngClass]="{
+          'bg-(--accent-color) text-white self-end rounded-bl-xl rounded-br-0':
+            message.isMe,
+          'bg-gray-100 self-start text-black rounded-bl-0 rounded-br-xl':
+            !message.isMe,
+        }">
+        @if (!message.isMe) {
+          <span class="block font-semibold text-xs text-gray-600">
+            {{ message.sender }}
+          </span>
+        }
+        {{ message.message }}
+        <span
+          class="block text-right text-xs text-gray-500 mt-1"
+          [ngClass]="{ 'text-white': message.isMe }">
+          {{ message.time }}
+        </span>
+      </div>
+    }
+  </div>
+
+  <div class="p-3 flex items-center">
+    <div class="flex flex-1 border border-gray-200 rounded-full">
+      <input
+        type="text"
+        placeholder="Write a message..."
+        class="flex-1 p-2 px-4 outline-none" />
+      <button class="ml-2 w-10 bg-(--accent-color) text-white rounded-full">
+        <i class="fas fa-paper-plane"></i>
+      </button>
+    </div>
+  </div>
+</div>
