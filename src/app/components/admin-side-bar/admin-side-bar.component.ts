@@ -8,7 +8,7 @@ import { Component, Input } from '@angular/core';
 })
 export class AdminSideBarComponent {
   menuItems = [
-    { label: 'Dashboard', route: '/admin/dashboard', icon: 'fas fa-home' },
+    { label: 'Dashboard', route: '/admin', icon: 'fas fa-home' },
     { label: 'All Users', route: '/admin/users-list', icon: 'fas fa-users' },
     { label: 'Matches', route: '/admin/matches-list', icon: 'fas fa-check' },
     { label: 'Bids', route: '/admin/bids-list', icon: 'fas fa-gavel' },

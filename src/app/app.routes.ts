@@ -31,7 +31,7 @@ export const routes: Routes = [
     path: 'admin',
     component: AdminLayoutComponent, 
     children: [
-      { path: 'dashboard', component: AdminDashboardComponent },
+      { path: '', component: AdminDashboardComponent },
       { path: 'users-list', component: UsersListComponent },
       { path: 'matches-list', component: MatchesListComponent },
       { path: 'bids-list', component: BidsListComponent },
