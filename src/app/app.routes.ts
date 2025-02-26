@@ -16,6 +16,7 @@ import { ChatComponent } from './adminPages/chat/chat.component';
 import { VettingComponent } from './adminPages/vetting/vetting.component';
 import { SiteSettingsComponent } from './adminPages/site-settings/site-settings.component';
 import { AdminLayoutComponent } from './adminPages/admin-layout/admin-layout.component';
+import { PageNotFoundComponent } from './page-not-found/page-not-found.component';
 
 export const routes: Routes = [
   { path: '', component: LandingPageComponent },
@@ -38,6 +39,8 @@ export const routes: Routes = [
       { path: 'chat', component: ChatComponent },
       { path: 'vetting', component: VettingComponent },
       { path: 'site-settings', component: SiteSettingsComponent },
+      {path: '**', redirectTo: '', pathMatch: 'full'},
     ],
   },
+  {path: '**', component: PageNotFoundComponent},
 ];

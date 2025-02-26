@@ -8,7 +8,7 @@
       class="w-full p-1 rounded-full outline-none placeholder-(--text-color)/30" />
   </div>
   <div class="flex flex-1">
-    <ul class="flex flex-col flex-1 mt-2">
+    <ul class="flex flex-col flex-1 mt-2 h-[calc(100vh-15rem)] overflow-auto">
       @for (chat of chats; track chat.id) {
         <li
           class="flex items-center p-3 flex-1 justify-between hover:bg-gray-100 rounded-lg cursor-pointer transition">
