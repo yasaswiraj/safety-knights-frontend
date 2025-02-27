@@ -1,14 +1,22 @@
-import { Component } from '@angular/core';
+import { Component, EventEmitter, Output } from '@angular/core';
+import { CommonModule } from '@angular/common';
 import { time } from 'console';
 import { identity, last } from 'rxjs';
 
 @Component({
+  standalone: true,
   selector: 'app-messages-list',
-  imports: [],
+  imports: [CommonModule],
   templateUrl: './messages-list.component.html',
   styleUrl: './messages-list.component.css',
 })
 export class MessagesListComponent {
+  @Output() chatSelected = new EventEmitter<any>();
+
+  ngOnInit() {
+    this.onChatSelect(this.chats[0]);
+  }
+  activeChat?: number;
   chats = [
     {
       id: 1,
@@ -119,4 +127,8 @@ export class MessagesListComponent {
       time: '14:20',
     },
   ];
+  onChatSelect(chat: any) {
+    this.activeChat = chat.id;
+    this.chatSelected.emit(chat);
+  }
 }

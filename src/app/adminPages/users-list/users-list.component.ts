@@ -7,6 +7,8 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatSortModule, MatSort } from '@angular/material/sort';
 import { FormsModule } from '@angular/forms';
+import { MatDialog, MatDialogModule } from '@angular/material/dialog';
+import { BanUserComponent } from '../../ban-user/ban-user.component';
 
 @Component({
   selector: 'app-users-list',
@@ -22,6 +24,7 @@ import { FormsModule } from '@angular/forms';
     MatFormFieldModule,
     MatSortModule,
     FormsModule,
+    MatDialogModule,
   ],
 })
 export class UsersListComponent implements AfterViewInit {
@@ -188,7 +191,7 @@ export class UsersListComponent implements AfterViewInit {
     },
   ];
 
-  constructor() {
+  constructor(private dialog: MatDialog) {
     this.dataSource = new MatTableDataSource(this.users);
   }
 
@@ -199,5 +202,20 @@ export class UsersListComponent implements AfterViewInit {
   onSearch(event: Event) {
     const filterValue = (event.target as HTMLInputElement).value;
     this.dataSource.filter = filterValue.trim().toLowerCase();
+  }
+
+  openBanDialog(user: any): void {
+    const dialogRef = this.dialog.open(BanUserComponent, {
+      width: '400px',
+      data: { userName: user.name },
+    });
+
+    dialogRef.afterClosed().subscribe(result => {
+      if (result?.confirmed) {
+        console.log(`Banning user ${user.name} for reason: ${result.reason}`);
+        // Add your API call here to ban the user
+        // You might want to refresh the users list after successful ban
+      }
+    });
   }
 }
