@@ -1,0 +1,30 @@
+/* ✅ Push content below the fixed navbar */
+.pt-28 {
+  padding-top: 7rem; /* Adjust height so content isn't hidden behind navbar */
+}
+
+/* ✅ Ensure proper centering */
+.flex-grow {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+/* ✅ Ensure the form container is centered and responsive */
+.w-full {
+  width: 100%;
+}
+
+.max-w-3xl {
+  max-width: 700px; /* Adjusted for better form balance */
+}
+
+/* ✅ Fix button positioning */
+.absolute.bottom-4.right-4 {
+  bottom: 1rem;
+  right: 1rem;
+}
+
+
+
