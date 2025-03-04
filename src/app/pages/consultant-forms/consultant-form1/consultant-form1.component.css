@@ -78,3 +78,15 @@
     width: 100%;
   }
   
+  .submit-button {
+    width: 100%;
+    padding: 10px;
+    background-color: #8b5e3c;
+    color: white;
+    border: none;
+    border-radius: 5px;
+  }
+  
+  .submit-button:hover {
+    background-color: #6e482e;
+  }

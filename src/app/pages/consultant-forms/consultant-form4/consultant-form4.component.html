@@ -1,0 +1,92 @@
+<div class="h-screen flex flex-col bg-[var(--background-color)]">
+    <!-- ✅ Main Content -->
+     <div class="flex-grow flex items-center justify-center px-6 pt-28">
+         <div class="w-full max-w-2xl bg-white p-10 rounded-2xl shadow-lg relative border border-[var(--elements-color)]">
+             <!-- Form Title -->
+             <h2 class="text-2xl font-bold text-[var(--accent-color)] text-center mb-6">
+                 EHS Consulting Network - Client Information Form
+             </h2>
+ 
+                         <!-- Progress Bar -->
+             <div class="w-full bg-gray-300 rounded-full h-2.5 mt-4">
+                 <div class="bg-[var(--accent-color)] h-2.5 rounded-full transition-all duration-300"
+                     [style.width.%]="progressPercentage">
+                 </div>
+             </div>
+             <p class="text-center text-sm mt-1 text-gray-700">{{ currentStep }} / {{ totalSteps }}</p>
+ <!-- Wrap everything inside the [formGroup] -->
+ <form [formGroup]="signUpForm1">
+     
+     <!-- ✅ Multi-select Dropdown -->
+     <div>
+         <mat-form-field class="w-full">
+             <mat-label>Hazardous Building Materials Surveys:</mat-label>
+             <mat-select formControlName="scopeOfService" multiple>
+                 <mat-option *ngFor="let service of services" [value]="service">
+                     {{ service }}
+                 </mat-option>
+             </mat-select>
+         </mat-form-field>
+     </div>
+ 
+   
+ 
+    <!-- Dependent Services Dropdown -->
+ <div class="mb-6">
+     <h3 class="font-bold text-lg text-[var(--text-color)] mb-2">Specialized Services</h3>
+     <mat-form-field class="w-full custom-dropdown">
+       <mat-label>Select Specialized Service</mat-label>
+       <mat-select formControlName="dependentService" [disabled]="!dependentServices.length">
+         <mat-option *ngFor="let service of dependentServices" [value]="service">
+           {{ service }}
+         </mat-option>
+       </mat-select>
+       <mat-hint *ngIf="!dependentServices.length" class="text-orange-600">
+         Select primary services first
+       </mat-hint>
+     </mat-form-field>
+   </div>
+ 
+     <!-- ✅ Job Description -->
+     <div class="mb-6">
+         <label class="block font-semibold mb-2">Other</label>
+         <textarea formControlName="jobDescription"
+                   class="w-full border rounded-lg p-3 focus:ring-2 outline-none transition"
+                   placeholder="Describe the work in detail"></textarea>
+     </div>
+ 
+        <!-- ✅ Beautified File Upload Section -->
+        <div class="mb-2">
+         <label class="block font-semibold text-[var(--text-color)] mb-3">Upload Job Description</label>
+         <div class="relative w-full flex items-center">
+             <input type="file" id="fileInput" class="hidden" (change)="onFileSelected($event)" accept=".pdf,.doc,.docx">
+             <label for="fileInput" class="cursor-pointer bg-[var(--elements-color)] text-black px-5 py-3 rounded-full shadow-md font-bold flex items-center gap-3 hover:bg-opacity-80 hover:shadow-lg transition">
+                 <mat-icon class="text-[var(--accent-color)]">attach_file</mat-icon> Choose File
+             </label>
+             <span class="ml-4 text-sm text-gray-600 truncate" *ngIf="uploadedFile">
+                 {{ uploadedFile.name }}
+             </span>
+         </div>
+     </div>
+ 
+     
+      <!-- ✅ Back & Next Buttons -->
+      <button
+      class="absolute bottom-4 left-10 w-[50px] h-[50px] cursor-pointer hover:bg-opacity-80"
+      type="button"
+      (click)="navigateToPreviousForm()">
+      <img src="/back_button.png" alt="Back" class="w-full h-full object-contain" />
+  </button>
+ 
+  <button
+      class="absolute bottom-4 right-10 w-[50px] h-[50px] cursor-pointer hover:bg-opacity-80"
+      type="button"
+      (click)="navigateToNextForm()"
+     >
+      <img src="/next_button.png" alt="Next" class="w-full h-full object-contain" />
+  </button>
+ 
+ </form>
+ </div>
+ </div>
+ </div>

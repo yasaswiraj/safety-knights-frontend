@@ -1,0 +1,51 @@
+<!-- Font Awesome CDN -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+
+<div
+  class="h-screen flex flex-col"
+  style="background-color: var(--background-color)">
+  <!-- Navigation Bar -->
+  <nav
+    class="flex justify-between items-center px-6 py-4 shadow-md"
+    style="background-color: var(--elements-color)">
+    <img 
+      src="/company_logo.png" 
+      alt="Company Logo" 
+      class="w-20 h-15 cursor-pointer"
+      (click)="navigateToLanding()"
+    />
+    <div class="flex items-center gap-4">
+      <img src="/user.png" alt="User Profile" class="h-7 w-7 cursor-pointer rounded-full border-2 border-[var(--accent-color)] hover:shadow-md transition">
+    </div>
+  </nav>
+
+  <!-- Main Content -->
+  <div class="container">
+    <div class="card">
+      <p class="message-title">Thank you for signing up!</p>
+      <p class="message-text">
+        You will receive an email confirmation once your application is approved.
+      </p>
+      <button class="get-started" (click)="onGetStarted()">Get Started</button>
+    </div>
+  
+    <div class="social-icons">
+      <p>Follow us</p>
+      <div class="icons">
+        <i class="fab fa-facebook"></i>
+        <i class="fab fa-linkedin"></i>
+        <i class="fab fa-instagram"></i>
+      </div>
+    </div>
+  </div>
+  
+ 
+
+
+
+
+
+
+
+
+</div>

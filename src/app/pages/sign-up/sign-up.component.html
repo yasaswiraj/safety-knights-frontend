@@ -7,8 +7,8 @@
       <div class="font-bold text-2xl text-(--accent-color) mb-8">Sign Up</div>
       <form
         class="flex flex-col justify-center items-center"
-        [formGroup]="signUpForm"
-        (ngSubmit)="onLogin()">
+        [formGroup]="signupForm"
+        (ngSubmit)="onSignup()">
         <input
           class="bg-(--elements-color)/20 rounded-full w-75 py-3 px-5 mb-5 text-(--text-color)"
           type="text"
@@ -27,11 +27,11 @@
         <button
           class="w-75 py-3 rounded-full font-bold bg-(--elements-color) hover:bg-(--elements-color)/50 text-(--text-color) cursor-pointer mb-3 disabled:bg-(--elements-color)/40 disabled:cursor-not-allowed"
           type="submit"
-          [disabled]="signUpForm.invalid">
+          [disabled]="signupForm.invalid">
           REGISTER
         </button>
         <div class="text-xs flex justify-center w-75">
-          <div>Already have an account? <a class="text-(--accent-color)">click here.</a></div>
+          <div>Already have an account? <a class="text-(--accent-color)" (click)="navigateToLogin()">click here.</a></div>
         </div>
       </form>
     </div>

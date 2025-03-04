@@ -1,50 +1,127 @@
+<!-- <div class="page-container">
+ 
+  
+ <nav class="nav-bar">
+    <img src="/company_logo.png" alt="Company Logo" class="logo" />
+    <div class="nav-right">
+      <img src="user.png" alt="Profile" class="profile-icon" />
+    </div>
+  </nav>
+
 <div class="form-container">
     <h2>EHS Consulting Network - Service Provider Sign-Up</h2>
-    <form [formGroup]="signupForm" (ngSubmit)="onSubmit()">
+    <form [formGroup]="signUpForm" (ngSubmit)="onSubmit()">
       <div class="form-group">
         <label for="name">Name</label>
         <input id="name" formControlName="name" type="text" placeholder="Enter your name" />
-        <div *ngIf="signupForm.get('name')?.invalid && signupForm.get('name')?.touched">
-          Name is required.
-        </div>
       </div>
-  
       <div class="form-group">
         <label for="jobTitle">Job Title</label>
         <input id="jobTitle" formControlName="jobTitle" type="text" placeholder="Enter your job title" />
-        <div *ngIf="signupForm.get('jobTitle')?.invalid && signupForm.get('jobTitle')?.touched">
-          Job title is required.
-        </div>
       </div>
-  
       <div class="form-group">
         <label for="companyName">Company Name</label>
-        <input id="companyName" formControlName="companyName" type="text" placeholder="Enter your company name" />
-        <div *ngIf="signupForm.get('companyName')?.invalid && signupForm.get('companyName')?.touched">
-          Company name is required.
-        </div>
+        <input id="companyName" formControlName="companyName" type="text" placeholder="Enter company name" />
       </div>
-  
       <div class="form-group">
         <label for="companyAddress">Company Address</label>
-        <input id="companyAddress" formControlName="companyAddress" type="text" placeholder="Enter your company address" />
-        <div *ngIf="signupForm.get('companyAddress')?.invalid && signupForm.get('companyAddress')?.touched">
-          Company address is required.
-        </div>
+        <input id="companyAddress" formControlName="companyAddress" type="text" placeholder="Enter company address" />
       </div>
-  
       <div class="form-group">
         <label for="phoneNumber">Phone Number</label>
-        <input id="phoneNumber" formControlName="phoneNumber" type="text" placeholder="Enter your phone number" />
-        <div *ngIf="
-          signupForm.get('phoneNumber')?.invalid &&
-          signupForm.get('phoneNumber')?.touched
-        ">
-          Phone number is required and must be numeric.
-        </div>
+        <input id="phoneNumber" formControlName="phoneNumber" type="text" placeholder="Enter phone number" />
       </div>
-  
-      <button type="submit" [disabled]="!signupForm.valid">Submit</button>
+      <button type="submit">Submit</button>
     </form>
   </div>
-  
+</div> -->
+
+<div
+  class="h-screen flex flex-col"
+  style="background-color: var(--background-color)">
+  <!-- Navigation Bar -->
+  <nav
+    class="flex justify-between items-center px-6 py-4 shadow-md"
+    style="background-color: var(--elements-color)">
+    <img 
+      src="/company_logo.png" 
+      alt="Company Logo" 
+      class="w-20 h-15 cursor-pointer"
+      (click)="navigateToLanding()"
+    />
+    <div class="flex items-center gap-4">
+      <img src="/user.png" alt="User Profile" class="h-7 w-7 cursor-pointer rounded-full border-2 border-[var(--accent-color)] hover:shadow-md transition">
+    </div>
+  </nav>
+
+  <!-- Main Content -->
+  <div class="flex-grow flex justify-center items-center p-6">
+    <div class="bg-white p-10 rounded-2xl shadow-lg w-full max-w-4xl relative">
+      <h2
+        class="text-[var(--accent-color)] text-4xl font-bold mb-4 text-center">
+        EHS Consulting Network - Consultant Information Form
+      </h2>
+      <h3 class="text-(--text-color) text-sm mb-5" style="text-align: justify">
+        Contact Information
+      </h3>
+
+      <!-- Form -->
+      <form [formGroup]="signUpForm" (ngSubmit)="onSubmit()" class="space-y-5">
+        <div>
+          <input
+            class="bg-gray-200 rounded-full w-full py-3 px-5 text-gray-700 focus:outline-none"
+            type="text"
+            formControlName="name"
+            placeholder="name" />
+        </div>
+        <div>
+          <input
+            class="bg-gray-200 rounded-full w-full py-3 px-5 text-gray-700 focus:outline-none"
+            type="text"
+            formControlName="jobTitle"
+            placeholder="job title" />
+        </div>
+        <div>
+          <input
+            class="bg-gray-200 rounded-full w-full py-3 px-5 text-gray-700 focus:outline-none"
+            type="text"
+            formControlName="companyName"
+            placeholder="company name" />
+        </div>
+        <div>
+          <input
+            class="bg-gray-200 rounded-full w-full py-3 px-5 mb-10 text-gray-700 focus:outline-none"
+            type="text"
+            formControlName="companyAddress"
+            placeholder="company address" />
+        </div>
+
+        <div class="flex justify-between items-center">
+            <!-- ✅ Back & Next Buttons -->
+     <button
+     class="absolute bottom-4 left-10 w-[50px] h-[50px] cursor-pointer hover:bg-opacity-80"
+     type="button"
+     (click)="navigateToPreviousForm()">
+     <img src="/back_button.png" alt="Back" class="w-full h-full object-contain" />
+ </button>
+
+ <button
+     class="absolute bottom-4 right-10 w-[50px] h-[50px] cursor-pointer hover:bg-opacity-80"
+     type="button"
+     (click)="navigateToNextForm()"
+    >
+     <img src="/next_button.png" alt="Next" class="w-full h-full object-contain" />
+ </button>
+
+          
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Chat Button (fixed, bottom-right) -->
+  <button
+    class="fixed bottom-6 right-6 w-14 h-14 text-white rounded-full flex items-center justify-center shadow-lg cursor-pointer">
+    <img src="/chat.png" alt="Chat" class="w-8 h-8" />
+  </button>
+</div>

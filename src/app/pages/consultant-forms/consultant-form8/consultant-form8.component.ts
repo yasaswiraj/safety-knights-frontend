@@ -25,12 +25,12 @@ import { Router } from '@angular/router';
     RouterModule
     
   ],
-  templateUrl: './consultant-form1.component.html',
-  styleUrls: ['./consultant-form1.component.css'],
+  templateUrl: './consultant-form8.component.html',
+  styleUrls: ['./consultant-form8.component.css'],
 })
-export class ConsultantForm1Component {
+export class ConsultantForm8Component {
   consultantForm = new FormGroup({
-    email: new FormControl('', [Validators.required, Validators.email]),
+    // email: new FormControl('', [Validators.required, Validators.email]),
     // password: new FormControl('', [Validators.required, Validators.minLength(6)]),
     // confirmPassword: new FormControl('', [Validators.required]),
   });
@@ -38,10 +38,10 @@ export class ConsultantForm1Component {
   constructor(private router: Router) {}
 
   navigateToNextForm() {
-    if (this.consultantForm.valid) {
+    
       console.log('Navigating to Client-Form2');
-      this.router.navigate(['/consultant-form-contact']);
-    }
+      this.router.navigate(['/consultant-forms-submission']);
+    
   }
   
   navigateToLanding() {
@@ -49,23 +49,9 @@ export class ConsultantForm1Component {
   }
 
   onSubmit() {
-    if (this.consultantForm.valid) {
-      this.router.navigate(['/consultant-form-contact']);
-      const { email} = this.consultantForm.value;
-
-      // // Check if passwords match
-      // if (password !== confirmPassword) {
-      //   alert('Passwords do not match!');
-      //   return;
-      // }
-
-      // console.log('Form Submitted:', this.consultantForm.value);
-      // alert('Form submitted successfully!');
-
-      // Navigate to the next form
+    
+      this.router.navigate(['/consultant-forms-submission']);
       
-    } else {
-      alert('Please fill in all required fields correctly.');
-    }
+
   }
 }

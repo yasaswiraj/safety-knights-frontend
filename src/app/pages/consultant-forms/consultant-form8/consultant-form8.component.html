@@ -21,33 +21,27 @@
     <div class="bg-white p-18 rounded-2xl shadow-lg w-full max-w-4xl relative">
       <h2
         class="text-[var(--accent-color)] text-4xl font-bold mb-4 text-center">
-        EHS Consulting Network - Consultant Information Form
+        EHS Consulting Network - Client Information Form
       </h2>
       <p class="text-(--text-color) text-sm mb-5" style="text-align: justify">
-        Please complete this form to provide us with the details necessary for
-        your environmental, health, and safety (EHS) consulting needs. Your
-        responses will help us tailor our services to meet your specific
-        requirements and connect you with the most suitable consultants.
+        Availability & Additional Comments
       </p>
-      <p class="text-(--text-color) text-sm mb-5" style="text-align: justify">
-        The information gathered will include your contact details, the scope of
-        the project, timelines, insurance requirements, payment terms, and any
-        preferences regarding contractors. Please provide as much detail as
-        possible to ensure an accurate and timely proposal.
-      </p>
-      <p class="text-(--text-color) text-sm mb-10" style="text-align: justify">
-        If you have any questions while completing this form, feel free to reach
-        out to us for assistance.
-      </p>
+      
 
       <!-- Form -->
       <form [formGroup]="consultantForm" (ngSubmit)="onSubmit()" class="pb-16">
         <!-- Added padding-bottom -->
         <input
           class="bg-gray-200 rounded-full w-full py-3 px-5 mb-5 text-gray-700 focus:outline-none"
+          type="text"
+          formControlName="specifics"
+          placeholder="Please state any specifics about availability that you may have:" />
+
+          <input
+          class="bg-gray-200 rounded-full w-full py-3 px-5 mb-5 text-gray-700 focus:outline-none"
           type="email"
-          formControlName="email"
-          placeholder="email" />
+          formControlName="comments"
+          placeholder="Additional Information, Comments or Clarifications:" />
 
           
       </form>

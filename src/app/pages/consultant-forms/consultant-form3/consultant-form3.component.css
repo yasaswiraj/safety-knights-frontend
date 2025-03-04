@@ -1,0 +1,59 @@
+::ng-deep .solid-dropdown {
+    background-color: white !important;
+    color: black !important;
+    border: 1px solid #ddd !important;
+    padding: 10px !important;
+    border-radius: 5px !important;
+}
+
+/* 
+button{
+    padding-top: 10px;
+} */
+
+:root {
+    --background-color: #faf7f0;
+    --accent-color: #b17457;
+    --elements-color: #d8d2c2;
+    --text-color: #4a4947;
+}
+
+/* ✅ Override Angular Material dropdown styles */
+::ng-deep .mat-select-panel {
+    background-color: var(--elements-color) !important;  /* Solid background */
+    color: var(--text-color) !important;
+    border-radius: 8px;
+    box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+/* ✅ Ensure each option inside the dropdown has the correct background */
+::ng-deep .mat-option {
+    background-color: var(--elements-color) !important;
+    color: var(--text-color) !important;
+    font-weight: 500;
+}
+
+/* ✅ Improve hover effect for better visibility */
+::ng-deep .mat-option:hover {
+    background-color: var(--accent-color) !important; /* Darker hover background */
+    color: white !important; /* White text on hover */
+    font-weight: bold;
+}
+
+/* ✅ Ensure dropdown has a proper border */
+::ng-deep .mat-select-trigger {
+    background-color: var(--elements-color) !important;
+    color: var(--text-color) !important;
+    border-radius: 6px;
+    padding: 8px;
+}
+
+/* Custom Background for Mat-Select */
+.custom-dropdown .mat-select-trigger {
+    background-color: black; /* Use your custom variable */
+    border-radius: 8px; 
+    padding: 8px;
+}
+
+
+
