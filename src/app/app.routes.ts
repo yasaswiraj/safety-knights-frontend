@@ -30,7 +30,7 @@ export const routes: Routes = [
   { path: 'client-form-5', component: ClientForm5Component },
   {
     path: 'admin',
-    component: AdminLayoutComponent, 
+    component: AdminLayoutComponent,
     children: [
       { path: '', component: AdminDashboardComponent },
       { path: 'users-list', component: UsersListComponent },
@@ -39,8 +39,8 @@ export const routes: Routes = [
       { path: 'chat', component: ChatComponent },
       { path: 'vetting', component: VettingComponent },
       { path: 'site-settings', component: SiteSettingsComponent },
-      {path: '**', redirectTo: '', pathMatch: 'full'},
+      { path: '**', redirectTo: '', pathMatch: 'full' },
     ],
   },
-  {path: '**', component: PageNotFoundComponent},
+  { path: '**', component: PageNotFoundComponent },
 ];

@@ -1,12 +1,10 @@
 <div class="flex h-screen">
-  <!-- Sidebar -->
-  <app-admin-side-bar [isSidebarOpen]="isSidebarOpen"></app-admin-side-bar>
+  <app-side-bar [isSidebarOpen]="isSidebarOpen" [menuItems]="menuItems">
+  </app-side-bar>
 
   <div class="flex flex-col flex-1">
-    <!-- Navbar -->
-    <app-admin-nav-bar (toggleSidebar)="toggleSidebar()"></app-admin-nav-bar>
+    <app-nav-bar (toggleSidebar)="toggleSidebar()"> </app-nav-bar>
 
-    <!-- Page Content -->
     <div class="flex-1 p-6 bg-(--background-color)">
       <router-outlet></router-outlet>
     </div>
