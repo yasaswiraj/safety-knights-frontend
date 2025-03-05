@@ -1,4 +1,4 @@
-/* You can add global styles to this file, and also import other style files */
+/* You can add global styles to this file, also import other style files */
 @import 'tailwindcss';
 
 :root {
@@ -6,6 +6,21 @@
   --accent-color: #b17457;
   --elements-color: #d8d2c2;
   --text-color: #4a4947;
+  --mat-select-panel-background-color: #ffffff;
+}
+
+html,
+body {
+  height: 100%;
+}
+body {
+  margin: 0;
+  font-family: Roboto, 'Helvetica Neue', sans-serif;
+}
+
+/* Ensure the background color is applied */
+body {
+  @apply bg-[var(--background-color)] text-[var(--text-color)];
 }
 
 html, body { height: 100%; }

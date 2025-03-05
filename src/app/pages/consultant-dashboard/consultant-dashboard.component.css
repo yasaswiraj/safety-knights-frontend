@@ -3,3 +3,29 @@
     border-radius: 12px; /* Keep rounded corners */
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Keeps the shadow effect */
   }
+
+  .mat-tab-group {
+    .mat-tab-header {
+      margin-bottom: 1rem;
+      
+      .mat-tab-label-active {
+        background-color: rgba(var(--elements-color), 0.1);
+        color: var(--primary-color);
+        opacity: 1 !important;
+        border-bottom: 3px solid var(--primary-color);
+      }
+  
+      .mat-tab-label {
+        min-width: 120px;
+        padding: 0 24px;
+        height: 48px;
+        font-weight: 500;
+        transition: all 0.3s ease;
+  
+        &:hover {
+          background-color: rgba(var(--elements-color), 0.05);
+        }
+      }
+    }
+  }
+  

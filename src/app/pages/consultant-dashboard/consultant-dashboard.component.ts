@@ -1,93 +1,33 @@
 import { Component } from '@angular/core';
-import { MAT_FORM_FIELD_DEFAULT_OPTIONS, MatFormFieldModule } from '@angular/material/form-field';
-import { MatInputModule } from '@angular/material/input';
-import { MatIconModule } from '@angular/material/icon';
-import { MatCardModule } from '@angular/material/card';
-import { MatTableModule } from '@angular/material/table';
-import { FormsModule } from '@angular/forms';
-import { Router } from '@angular/router';
-
-interface Job {
-  jobId: string;
-  jobName: string;
-  status: string;
-  action: string;
-}
+import { SideBarComponent } from '../../components/side-bar/side-bar.component';
+import { NavBarComponent } from '../../components/nav-bar/nav-bar.component';
+import { RouterOutlet } from '@angular/router';
 
 @Component({
   selector: 'app-consultant-dashboard',
-  templateUrl: './consultant-dashboard.component.html',
-  styleUrls: ['./consultant-dashboard.component.css'],
   standalone: true,
-  imports: [
-    MatFormFieldModule,
-    MatInputModule,
-    MatIconModule,
-    MatCardModule,
-    MatTableModule,
-    FormsModule,
-  ],
+  imports: [SideBarComponent, NavBarComponent, RouterOutlet],
+  templateUrl: './consultant-dashboard.component.html',
+  styleUrl: './consultant-dashboard.component.css',
 })
 export class ConsultantDashboardComponent {
-  searchTerm = '';
-
-  jobs: Job[] = [
-    { jobId: '101', jobName: 'Auditing', status: 'Pending Bid', action: '' },
-    { jobId: '102', jobName: 'Safety Test', status: 'Bidding In Process', action: '' },
-    { jobId: '103', jobName: 'Development', status: 'Job In Progress', action: '' },
-    { jobId: '104', jobName: 'Inspection', status: 'Completed', action: '' }
+  menuItems = [
+    
+    { label: 'Current Matches', route: '/consultant', icon: 'fas fa-users' },
+    { label: 'Active Jobs', route: '/consultant-dashboard/consultant-matches', icon: 'fas fa-check' },
+    { label: 'Bidded Jobs', route: '/admin/bids-list', icon: 'fas fa-gavel' },
+    { label: 'Completed', route: '/admin/chat', icon: 'fas fa-envelope' },
+    { label: 'Vetting', route: '/admin/vetting', icon: 'fas fa-circle-check' },
+    {
+      label: 'Site Settings',
+      route: '/admin/site-settings',
+      icon: 'fas fa-cog',
+    },
   ];
 
-  filteredJobs: Job[] = [];
+  isSidebarOpen = true;
 
-  displayedColumns: string[] = ['jobId', 'jobName', 'status', 'actions'];
-
-  constructor(private router: Router) {
-    this.filteredJobs = this.jobs.map(job => ({
-      ...job,
-      action: this.getActionLabel(job.status)  // Assign action dynamically
-    }));
-  }
-
-  getActionLabel(status: string): string {
-    switch (status) {
-      case 'Pending Bid': return 'Edit';
-      case 'Bidding In Process': return 'View';
-      case 'Job In Progress': return 'Track';
-      case 'Completed': return 'Share Feedback';
-      default: return 'Action';
-    }
-  }
-
-  applyFilter() {
-    const term = this.searchTerm.trim().toLowerCase();
-    this.filteredJobs = this.jobs
-      .filter(job => 
-        job.jobId.toLowerCase().includes(term) || 
-        job.jobName.toLowerCase().includes(term)
-      )
-      .map(job => ({
-        ...job,
-        action: this.getActionLabel(job.status)
-      }));
-  }
-
-  handleAction(job: Job) {
-    switch (job.status) {
-      case 'Pending Bid':
-        this.router.navigate(['/edit-job', job.jobId]);
-        break;
-      case 'Bidding In Process':
-        this.router.navigate(['/view-job', job.jobId]);
-        break;
-      case 'Job In Progress':
-        this.router.navigate(['/track-job', job.jobId]);
-        break;
-      case 'Completed':
-        this.router.navigate(['/feedback', job.jobId]);
-        break;
-      default:
-        console.log(`Unknown action for ${job.jobName}`);
-    }
+  toggleSidebar() {
+    this.isSidebarOpen = !this.isSidebarOpen;
   }
 }

@@ -1,0 +1,10 @@
+.mat-mdc-header-row {
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  background: white;
+}
+
+.mat-mdc-row:nth-child(odd) {
+  background-color: #f9fafb;
+}
