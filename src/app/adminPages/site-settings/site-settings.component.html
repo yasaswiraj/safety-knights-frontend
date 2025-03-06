@@ -16,7 +16,8 @@
         *matTreeNodeDef="let node; when: hasChild"
         matTreeNodePadding
         matTreeNodeToggle
-        [cdkTreeNodeTypeaheadLabel]="node.name">
+        [cdkTreeNodeTypeaheadLabel]="node.name"
+        class="flex items-center">
         <button
           mat-icon-button
           matTreeNodeToggle
@@ -26,6 +27,12 @@
           </mat-icon>
         </button>
         {{ node.name }}
+        <button
+          (click)="addChild(node)"
+          class="ml-4 flex items-center justify-center">
+          <i
+            class="fas fa-circle-plus cursor-pointer text-(--text-color)/80 hover:text-(--text-color)/50"></i>
+        </button>
       </mat-tree-node>
     </mat-tree>
   </div>

@@ -123,5 +123,14 @@ export class SiteSettingsComponent {
     this.dataSource.data = environmentalServicesOptions;
   }
 
+  addChild(node: any) {
+    const newNode = { name: 'New Child', selected: false };
+    if (!node.children) {
+      node.children = [];
+    }
+    node.children.push(newNode);
+    this.dataSource.data = [...this.dataSource.data];
+  }
+
   hasChild = (_: number, node: any) => node.expandable;
 }
