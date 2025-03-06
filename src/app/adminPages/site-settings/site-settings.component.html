@@ -1,13 +1,16 @@
 <div class="p-6 rounded-lg">
-  <h1 class="text-3xl font-bold mb-4">Site Settings</h1>
+  <h1 class="text-3xl text-(--text-color) font-bold mb-4">Site Settings</h1>
   <div>
+    <h2 class="text-xl text-(--text-color) mb-3">Environmental Services</h2>
     <mat-tree [dataSource]="dataSource" [treeControl]="treeControl">
       <!-- This is the tree node template for leaf nodes -->
       <mat-tree-node *matTreeNodeDef="let node" matTreeNodePadding>
-        <!-- use a disabled button to provide padding for tree leaf -->
         <button mat-icon-button disabled></button>
-        {{ node.name }}
+        <mat-checkbox [(ngModel)]="node.selected" color="primary">{{
+          node.name
+        }}</mat-checkbox>
       </mat-tree-node>
+
       <!-- This is the tree node template for expandable nodes -->
       <mat-tree-node
         *matTreeNodeDef="let node; when: hasChild"

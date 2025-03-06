@@ -101,6 +101,7 @@ export class SiteSettingsComponent {
       expandable: !!node.children && node.children.length > 0,
       name: node.name,
       level: level,
+      selected: node.selected,
     };
   };
 
