@@ -1,4 +1,4 @@
-<div class="p-6 rounded-lg">
+<div>
   <h1 class="text-3xl text-(--text-color) font-bold mb-4">Site Settings</h1>
   <div>
     <h2 class="text-xl text-(--text-color) mb-3">Environmental Services</h2>
@@ -28,7 +28,7 @@
         </button>
         {{ node.name }}
         <button
-          (click)="addChild(node)"
+          (click)="openAddChildDialog(node)"
           class="ml-4 flex items-center justify-center">
           <i
             class="fas fa-circle-plus cursor-pointer text-(--text-color)/80 hover:text-(--text-color)/50"></i>

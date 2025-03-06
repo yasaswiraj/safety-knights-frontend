@@ -11,6 +11,9 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
 import { MatCheckboxModule } from '@angular/material/checkbox';
 import { FormsModule } from '@angular/forms';
+import { MatDialog, MatDialogRef } from '@angular/material/dialog';
+import { ChangeDetectorRef } from '@angular/core';
+import { AddChildDialog } from '../../components/add-child-dialog/add-child-dialog.component';
 
 const environmentalServicesOptions = [
   {
@@ -119,17 +122,31 @@ export class SiteSettingsComponent {
 
   dataSource = new MatTreeFlatDataSource(this.treeControl, this.treeFlattener);
 
-  constructor() {
+  constructor(
+    private dialog: MatDialog,
+    private cdr: ChangeDetectorRef
+  ) {
     this.dataSource.data = environmentalServicesOptions;
   }
 
-  addChild(node: any) {
-    const newNode = { name: 'New Child', selected: false };
+  openAddChildDialog(node: any): void {
+    const dialogRef = this.dialog.open(AddChildDialog);
+
+    dialogRef.afterClosed().subscribe(result => {
+      if (result) {
+        this.addChild(node, result);
+      }
+    });
+  }
+
+  addChild(node: any, childName: string) {
+    const newNode = { name: childName, selected: false };
     if (!node.children) {
       node.children = [];
     }
     node.children.push(newNode);
     this.dataSource.data = [...this.dataSource.data];
+    this.cdr.detectChanges();
   }
 
   hasChild = (_: number, node: any) => node.expandable;
