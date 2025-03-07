@@ -1,0 +1,75 @@
+    <!-- ✅ Main Content -->
+    <div class="flex-grow flex justify-center items-center px-6 pt-28">
+        <div class="w-full max-w-2xl bg-white p-10 rounded-2xl shadow-lg relative border border-[var(--elements-color)]">
+            <!-- Form Title -->
+            <h2 class="text-2xl font-bold text-[var(--accent-color)] text-center mb-6">
+                EHS Consulting Network - Client Information Form
+            </h2>
+            <!-- Progress Bar -->
+            <div class="w-full bg-gray-300 rounded-full h-2.5 mt-4">
+                <div class="bg-[var(--accent-color)] h-2.5 rounded-full transition-all duration-300"
+                    [style.width.%]="progressPercentage">
+                </div>
+            </div>
+            <p class="text-center text-sm mt-1 text-gray-700">{{ currentStep }} / {{ totalSteps }}</p>
+
+
+            <!-- ✅ FORM WITH [formGroup] -->
+            <form [formGroup]="clientForm">
+                <!-- ✅ Project Start Date -->
+                <div class="mb-2">
+                    <h3 class="font-bold text-lg text-[var(--text-color)] mb-2">Project Start Date</h3>
+                    <mat-form-field class="w-full">
+                        <mat-label>When do you need the work conducted?</mat-label>
+                        <input matInput type="date" formControlName="projectStartDate">
+                    </mat-form-field>
+                </div>
+
+                <!-- ✅ Budget Input -->
+                <div class="mb-2">
+                    <mat-form-field class="w-full">
+                        <mat-label>Budget for Service</mat-label>
+                        <input matInput placeholder="Enter estimated budget" formControlName="budget">
+                    </mat-form-field>
+                </div>
+
+                <!-- ✅ Insurance Requirements (Dropdown) -->
+                <div class="mb-6">
+                    <h3 class="font-bold text-lg text-[var(--text-color)] mb-2">Project Requirements</h3>
+                    <mat-form-field class="w-full">
+                        <mat-label>Insurance Requirements for the Contractor</mat-label>
+                        <mat-select formControlName="selectedInsurances" multiple (selectionChange)="onInsuranceChange()" panelClass="solid-dropdown">
+                            <mat-option *ngFor="let option of insuranceOptions" [value]="option">
+                                {{ option.label }}
+                            </mat-option>
+                        </mat-select>
+                    </mat-form-field>
+
+                    <!-- ✅ Show Minimum Coverage Inputs for Selected Insurance Types -->
+                    <div *ngFor="let selectedInsurance of selectedInsuranceTypes">
+                        <mat-form-field class="w-full mt-3">
+                            <mat-label>Minimum Coverage for {{ selectedInsurance.label }}</mat-label>
+                            <input matInput placeholder="Enter coverage amount (e.g., $1M policy)" formControlName="{{selectedInsurance.coverageControlName}}">
+                        </mat-form-field>
+                    </div>
+                </div>
+            </form>
+
+            <!-- ✅ Back & Next Buttons -->
+            <button
+                class="absolute bottom-4 left-10 w-[50px] h-[50px] cursor-pointer hover:bg-opacity-80"
+                type="button"
+                (click)="navigateToPreviousForm()">
+                <img src="/back_button.png" alt="Back" class="w-full h-full object-contain" />
+            </button>
+
+            <button
+                class="absolute bottom-4 right-10 w-[50px] h-[50px] cursor-pointer hover:bg-opacity-80"
+                type="button"
+                (click)="navigateToNextForm()"
+                [disabled]="clientForm.invalid">
+                <img src="/next_button.png" alt="Next" class="w-full h-full object-contain" />
+            </button>
+        </div>
+    </div>
+
