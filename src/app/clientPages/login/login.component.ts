@@ -1,38 +1,46 @@
 import { Component } from '@angular/core';
-import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms'; // ✅ Import ReactiveFormsModule
+import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
+import { ApiService } from '../../services/api.service'; // ✅ Import API Service
+import { CommonModule } from '@angular/common';
 
 @Component({
   selector: 'app-login',
   templateUrl: './login.component.html',
   styleUrls: ['./login.component.css'],
   standalone: true,
-  imports: [ReactiveFormsModule]
+  imports: [ReactiveFormsModule, CommonModule]
 })
 export class LoginComponent {
   loginForm: FormGroup;
 
-  constructor(private fb: FormBuilder, private router: Router) { // Inject Router
+  constructor(private fb: FormBuilder, private router: Router, private apiService: ApiService) {
     this.loginForm = this.fb.group({
       email: ['', [Validators.required, Validators.email]],
       password: ['', [Validators.required, Validators.minLength(6)]]
     });
   }
 
-  // Navigate to Client Dashboard on Successful Login
+  // ✅ Handle Login API Request
   onLogin() {
     if (this.loginForm.valid) {
-      console.log('Login Successful', this.loginForm.value);
-      this.router.navigate(['/client/dashboard']); // Redirect to client-dashboard
+      this.apiService.loginUser(this.loginForm.value).subscribe({
+        next: (response) => {
+          console.log('Login Successful:', response);
+          this.router.navigate(['/client/dashboard']); // Redirect on success
+        },
+        error: (error) => {
+          console.error('Login Failed:', error);
+        }
+      });
     }
   }
 
-  // Navigate to Sign-Up Page
   navigateToSignUp() {
-    this.router.navigate(['/sign-up']); // Redirect to sign-up
+    this.router.navigate(['/sign-up']);
   }
 
   navigateToForgotPassword() {
     console.log('Forgot password clicked');
-  } 
+  }
 }

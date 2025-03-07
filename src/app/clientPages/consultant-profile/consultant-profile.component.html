@@ -1,0 +1,60 @@
+<div class="modal-container">
+    <!-- Close Button (X) -->
+    <button class="close-btn" (click)="closeDialog()">✖</button>
+  
+    <!-- Consultant Profile Header -->
+    <div class="header">
+      <img src="/user.png" alt="Consultant Image" class="profile-img">
+      <h2>{{ data.name }}</h2>
+      <p class="rating">
+        <span *ngFor="let star of [0, 1, 2, 3, 4]; let i = index">
+          <span [class.filled]="i < data.rating">★</span>
+        </span>
+        <span class="reviews">({{ data.reviews }} reviews)</span>
+      </p>
+    </div>
+  
+    <!-- Consultant Details (Full Width) -->
+    <div class="profile-content">
+      <div class="profile-details">
+        <div class="section">
+          <h3>Age</h3>
+          <p>{{ data.age }} years</p>
+        </div>
+  
+        <div class="section">
+          <h3>Expertise</h3>
+          <ul>
+            <li *ngFor="let item of data.expertise">{{ item }}</li>
+          </ul>
+        </div>
+  
+        <div class="section">
+          <h3>Work Experience</h3>
+          <ul>
+            <li *ngFor="let item of data.workExperience">{{ item }}</li>
+          </ul>
+        </div>
+  
+        <div class="section">
+          <h3>Certifications & Licenses</h3>
+          <ul>
+            <li *ngFor="let item of data.certifications">{{ item }}</li>
+          </ul>
+        </div>
+  
+        <div class="section">
+          <h3>Tools & Technology Familiarity</h3>
+          <ul>
+            <li *ngFor="let item of data.tools">{{ item }}</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  
+    <!-- View Certificates Button -->
+    <div class="profile-actions">
+      <button class="view-cert-btn" (click)="viewCertificates()">📜 View Certificates</button>
+    </div>
+  </div>
+  

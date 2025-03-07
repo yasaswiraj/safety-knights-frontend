@@ -1,8 +1,8 @@
-import { Component } from '@angular/core';
+import { Component, ViewChild, AfterViewInit } from '@angular/core';
 import { MatInputModule } from '@angular/material/input';
 import { MatIconModule } from '@angular/material/icon';
-import { MatCardModule } from '@angular/material/card';
-import { MatTableModule } from '@angular/material/table';
+import { MatTableModule, MatTableDataSource } from '@angular/material/table';
+import { MatSortModule, MatSort } from '@angular/material/sort';
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
 
@@ -21,12 +21,13 @@ interface Job {
   imports: [
     MatInputModule,
     MatIconModule,
-    MatCardModule,
     MatTableModule,
+    MatSortModule, // ✅ Sorting Module Added
     FormsModule,
   ],
 })
-export class ClientDashboardComponent {
+export class ClientDashboardComponent implements AfterViewInit {
+  @ViewChild(MatSort) sort!: MatSort;
   searchTerm = '';
 
   jobs: Job[] = [
@@ -36,21 +37,27 @@ export class ClientDashboardComponent {
     { jobId: '104', jobName: 'Inspection', status: 'Completed', action: '' }
   ];
 
-  filteredJobs: Job[] = [];
+  dataSource: MatTableDataSource<Job>;
 
   displayedColumns: string[] = ['jobId', 'jobName', 'status', 'actions'];
 
   constructor(private router: Router) {
-    this.filteredJobs = this.jobs.map(job => ({
-      ...job,
-      action: this.getActionLabel(job.status)  // Assign action dynamically
-    }));
+    this.dataSource = new MatTableDataSource(
+      this.jobs.map(job => ({
+        ...job,
+        action: this.getActionLabel(job.status),
+      }))
+    );
+  }
+
+  ngAfterViewInit() {
+    this.dataSource.sort = this.sort;
   }
 
   getActionLabel(status: string): string {
     switch (status) {
       case 'Pending Bid': return 'Edit';
-      case 'Bidding In Process': return 'View';  // ✅ Clicking "View" navigates to received bids
+      case 'Bidding In Process': return 'View';
       case 'Job In Progress': return 'Track';
       case 'Completed': return 'Share Feedback';
       default: return 'Action';
@@ -59,33 +66,15 @@ export class ClientDashboardComponent {
 
   applyFilter() {
     const term = this.searchTerm.trim().toLowerCase();
-    this.filteredJobs = this.jobs
-      .filter(job => 
-        job.jobId.toLowerCase().includes(term) || 
-        job.jobName.toLowerCase().includes(term)
-      )
-      .map(job => ({
-        ...job,
-        action: this.getActionLabel(job.status)
-      }));
+    this.dataSource.filter = term;
   }
 
-  navigateToClientForm3() {
-    this.router.navigate(['/client/form-3']);
-  }
-
-  // ✅ Navigate to Home (Landing Page) when Logo is clicked
-  navigateToLandingPage() {
-    this.router.navigate(['/']);
-  }
-
-  // ✅ Updated: "View" navigates to `/client/received-bids`
   handleAction(job: Job) {
     switch (job.status) {
       case 'Pending Bid':
         this.router.navigate(['/edit-job', job.jobId]);
         break;
-      case 'Bidding In Process':  // ✅ Navigate to received bids
+      case 'Bidding In Process':
         this.router.navigate(['/client/received-bids'], { queryParams: { jobId: job.jobId } });
         break;
       case 'Job In Progress':

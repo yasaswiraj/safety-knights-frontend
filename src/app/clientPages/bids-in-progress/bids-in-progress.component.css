@@ -1,0 +1,19 @@
+/* Style the table header row */
+table thead tr {
+    background-color: #d4cfc9 !important; /* Light beige or any preferred color */
+    font-weight: bold;
+}
+
+/* Alternate row colors in tbody (excluding the header) */
+table tbody tr:nth-child(odd) {
+    background-color: #ffffff !important; /* White rows */
+}
+
+table tbody tr:nth-child(even) {
+    background-color: #f9f9f9 !important; /* Light gray for even rows */
+}
+
+/* Ensure hover effect remains */
+table tbody tr:hover {
+    background-color: #e6f7ff !important; /* Light blue on hover */
+}

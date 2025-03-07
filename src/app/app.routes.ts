@@ -20,6 +20,10 @@ import { AdminLayoutComponent } from './adminPages/admin-layout/admin-layout.com
 import { ClientLayoutComponent } from './clientPages/client-layout/client-layout.component';
 import { PageNotFoundComponent } from './page-not-found/page-not-found.component';
 import { ClientAgreementComponent } from './clientPages/client-agreement/client-agreement.component';
+import { BidsInProgressComponent } from './clientPages/bids-in-progress/bids-in-progress.component';
+import { PendingBidsComponent } from './clientPages/pending-bids/pending-bids.component';
+import { JobInProgressComponent } from './clientPages/job-in-progress/job-in-progress.component';
+import { CompletedJobsComponent } from './clientPages/completed-jobs/completed-jobs.component';
 
 export const routes: Routes = [
   { path: '', component: LandingPageComponent },
@@ -39,6 +43,12 @@ export const routes: Routes = [
       { path: 'form-4', component: ClientForm4Component },
       { path: 'form-5', component: ClientForm5Component },
       { path: 'agreement', component: ClientAgreementComponent },
+      { path: 'bids-in-progress', component: BidsInProgressComponent },
+      { path: 'pending-bids', component: PendingBidsComponent },
+      { path: 'job-in-progress', component: JobInProgressComponent },
+      { path: 'completed-jobs', component: CompletedJobsComponent }
+
+
     ],
   },
 
@@ -54,8 +64,8 @@ export const routes: Routes = [
       { path: 'chat', component: ChatComponent },
       { path: 'vetting', component: VettingComponent },
       { path: 'site-settings', component: SiteSettingsComponent },
-      {path: '**', redirectTo: '', pathMatch: 'full'},
+      { path: '**', redirectTo: '', pathMatch: 'full' },
     ],
   },
-  {path: '**', component: PageNotFoundComponent},
+  { path: '**', component: PageNotFoundComponent },
 ];

@@ -1,18 +1,18 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { AdminSideBarComponent } from './admin-side-bar.component';
+import { JobInProgressComponent } from './job-in-progress.component';
 
-describe('AdminSideBarComponent', () => {
-  let component: AdminSideBarComponent;
-  let fixture: ComponentFixture<AdminSideBarComponent>;
+describe('JobInProgressComponent', () => {
+  let component: JobInProgressComponent;
+  let fixture: ComponentFixture<JobInProgressComponent>;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [AdminSideBarComponent]
+      imports: [JobInProgressComponent]
     })
     .compileComponents();
 
-    fixture = TestBed.createComponent(AdminSideBarComponent);
+    fixture = TestBed.createComponent(JobInProgressComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });

@@ -45,7 +45,7 @@ export class ClientForm2Component {
   navigateToDashboard() {
     if (this.clientForm.valid) {
       console.log('Form Submitted:', this.clientForm.value);
-      this.router.navigate(['/client/dashboard']);
+      this.router.navigate(['/client/pending-bids']);
     } else {
       alert('Please fill in all required fields.');
     }
