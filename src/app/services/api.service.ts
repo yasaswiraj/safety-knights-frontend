@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Observable } from 'rxjs';
 
 @Injectable({
@@ -9,19 +9,24 @@ export class ApiService {
   private apiUrl = 'http://localhost:8000'; // FastAPI backend URL
 
   constructor(private http: HttpClient) {}
+  loginUser(loginData: any): Observable<any> {
+    const formData = new URLSearchParams();
+    formData.set('username', loginData.username);
+    formData.set('password', loginData.password);
 
-  // ✅ Example: Fetch All Jobs
-  getAllJobs(): Observable<any> {
-    return this.http.get(`${this.apiUrl}/client/jobs`);
+    return this.http.post(`${this.apiUrl}/login`, formData.toString(), {
+      headers: new HttpHeaders({ 'Content-Type': 'application/x-www-form-urlencoded' }),
+      withCredentials: true  // ✅ Ensures cookies are sent & stored
+    });
   }
 
-  // ✅ Example: User Login
-  loginUser(credentials: any): Observable<any> {
-    return this.http.post(`${this.apiUrl}/login`, credentials);
+  // ✅ Logout API Call (Clears session)
+  logoutUser(): Observable<any> {
+    return this.http.post(`${this.apiUrl}/logout`, {}, { withCredentials: true });
   }
 
-  // ✅ Example: User Signup
-  registerUser(userData: any): Observable<any> {
-    return this.http.post(`${this.apiUrl}/client/signup`, userData);
+  // ✅ Test authentication by trying to fetch pending bids (Relies on cookies)
+  checkAuth(): Observable<any> {
+    return this.http.get(`${this.apiUrl}/client/jobs`, { withCredentials: true });
   }
 }

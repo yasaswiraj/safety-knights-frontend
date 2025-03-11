@@ -13,28 +13,40 @@ import { CommonModule } from '@angular/common';
 })
 export class LoginComponent {
   loginForm: FormGroup;
+  errorMessage: string = '';
 
   constructor(private fb: FormBuilder, private router: Router, private apiService: ApiService) {
     this.loginForm = this.fb.group({
-      email: ['', [Validators.required, Validators.email]],
+      username: ['', [Validators.required]],  // ✅ Correct field name
       password: ['', [Validators.required, Validators.minLength(6)]]
     });
+    
+    
   }
 
-  // ✅ Handle Login API Request
+  // ✅ Handle Login API Request and Store Token
   onLogin() {
+    console.log('Login clicked');
     if (this.loginForm.valid) {
       this.apiService.loginUser(this.loginForm.value).subscribe({
         next: (response) => {
-          console.log('Login Successful:', response);
-          this.router.navigate(['/client/dashboard']); // Redirect on success
+          console.log('✅ Login Successful:', response);
+  
+          // ✅ Store Access Token in Local Storage
+          localStorage.setItem('access_token', response.access_token);
+  
+          // ✅ Redirect to Dashboard
+          this.router.navigate(['/client/bids-in-progress']);
         },
         error: (error) => {
-          console.error('Login Failed:', error);
+          console.error('❌ Login Failed:', error);
+          this.errorMessage = error.error?.detail || 'Invalid credentials. Please try again.';
         }
       });
     }
   }
+  
+  
 
   navigateToSignUp() {
     this.router.navigate(['/sign-up']);
