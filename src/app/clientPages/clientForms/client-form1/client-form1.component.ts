@@ -16,33 +16,37 @@ import { MatIconModule } from '@angular/material/icon';
     ReactiveFormsModule,
     MatFormFieldModule,  // ✅ Required for <mat-form-field>
     MatInputModule,      // ✅ Required for <input matInput>
-    MatIconModule       // ✅ Required for <mat-error>
+    MatIconModule       // ✅ Required for icons
   ]
 })
 export class ClientForm1Component {
   clientForm: FormGroup;
+  showPassword: boolean = false;
+  showConfirmPassword: boolean = false;
 
   constructor(private fb: FormBuilder, private router: Router) {
     this.clientForm = this.fb.group({
-      email: ['', [Validators.required, Validators.email]]
+      email: ['', [Validators.required, Validators.email]],
+      password: ['', [Validators.required, Validators.minLength(6)]],
+      confirm_password: ['', [Validators.required]]
     });
   }
 
   navigateToNextForm() {
     if (this.clientForm.valid) {
+      if (this.clientForm.value.password !== this.clientForm.value.confirm_password) {
+        alert("Passwords do not match!");  // ✅ Basic validation
+        return;
+      }
       this.router.navigate(['/client/form-2']);
     }
   }
 
-  navigateToLanding() {
-    this.router.navigate(['/']);
-  }
-
-  onSubmit() {
-    if (this.clientForm.valid) {
-      alert('Form submitted successfully!');
-    } else {
-      alert('Please enter a valid email.');
+  togglePasswordVisibility(field: string) {
+    if (field === 'password') {
+      this.showPassword = !this.showPassword;
+    } else if (field === 'confirm_password') {
+      this.showConfirmPassword = !this.showConfirmPassword;
     }
   }
 }

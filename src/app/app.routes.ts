@@ -24,11 +24,14 @@ import { BidsInProgressComponent } from './clientPages/bids-in-progress/bids-in-
 import { PendingBidsComponent } from './clientPages/pending-bids/pending-bids.component';
 import { JobInProgressComponent } from './clientPages/job-in-progress/job-in-progress.component';
 import { CompletedJobsComponent } from './clientPages/completed-jobs/completed-jobs.component';
+import { OnboardingComponent } from './clientPages/clientForms/onboarding/onboarding.component';
 
 export const routes: Routes = [
   { path: '', component: LandingPageComponent },
   { path: 'login', component: LoginComponent },
   { path: 'sign-up', component: SignUpComponent },
+  { path: 'onboarding', component: OnboardingComponent }, // New combined form route
+
 
   // ✅ Client Routes with a Layout Component
   {
@@ -37,8 +40,6 @@ export const routes: Routes = [
     children: [
       { path: 'dashboard', component: ClientDashboardComponent },
       { path: 'received-bids', component: ClientReceivedBidsComponent },
-      { path: 'form-1', component: ClientForm1Component },
-      { path: 'form-2', component: ClientForm2Component },
       { path: 'form-3', component: ClientForm3Component },
       { path: 'form-4', component: ClientForm4Component },
       { path: 'form-5', component: ClientForm5Component },
