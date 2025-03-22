@@ -1,71 +1,63 @@
-
 import { Component } from '@angular/core';
-import {
-  FormGroup,
-  FormControl,
-  Validators,
-  ReactiveFormsModule,
-} from '@angular/forms';
+import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
+import { Router } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
-import { MatButtonModule } from '@angular/material/button';
-import { RouterModule } from '@angular/router';
-import { Router } from '@angular/router';
+import { MatIconModule } from '@angular/material/icon';
+import { NavBarComponent } from '../../../components/nav-bar/nav-bar.component';
+import { FormDataService } from '../../../services/form-data-service'; // Import the FormDataService
 
 @Component({
   selector: 'app-consultant-form1',
+  templateUrl: './consultant-form1.component.html',
+  styleUrls: ['./consultant-form1.component.css'],
   standalone: true,
   imports: [
     CommonModule,
     ReactiveFormsModule,
-    MatFormFieldModule,
-    MatInputModule,
-    MatButtonModule,
-    RouterModule
-    
-  ],
-  templateUrl: './consultant-form1.component.html',
-  styleUrls: ['./consultant-form1.component.css'],
+    MatFormFieldModule, // ✅ Required for <mat-form-field>
+    MatInputModule, // ✅ Required for <input matInput>
+    MatIconModule,
+    NavBarComponent // ✅ Required for <mat-error>
+]
 })
 export class ConsultantForm1Component {
-  consultantForm = new FormGroup({
-    email: new FormControl('', [Validators.required, Validators.email]),
-    // password: new FormControl('', [Validators.required, Validators.minLength(6)]),
-    // confirmPassword: new FormControl('', [Validators.required]),
-  });
+  clientForm: FormGroup;
 
-  constructor(private router: Router) {}
+  constructor(private fb: FormBuilder, private router: Router, private formDataService: FormDataService) {
+    this.clientForm = this.fb.group({
+      email: ['', [Validators.required, Validators.email]],
+      password: ['', [Validators.required, Validators.minLength(6)]],
+      confirmPassword: ['', [Validators.required]]
+    }, { validator: this.passwordMatchValidator 
+    }); 
+  }
+
+    // ✅ Custom Validator to Check if Password & Confirm Password Match
+    passwordMatchValidator(form: FormGroup) {
+      const password = form.get('password')?.value;
+      const confirmPassword = form.get('confirmPassword')?.value;
+      return password === confirmPassword ? null : { mismatch: true };
+    }
 
   navigateToNextForm() {
-    if (this.consultantForm.valid) {
-      console.log('Navigating to Client-Form2');
+    if (this.clientForm.valid) {
+      this.formDataService.setFormData(2, this.clientForm.value);
       this.router.navigate(['/consultant-form-contact']);
     }
   }
-  
+
   navigateToLanding() {
     this.router.navigate(['/']);
   }
 
+  
   onSubmit() {
-    if (this.consultantForm.valid) {
-      this.router.navigate(['/consultant-form-contact']);
-      const { email} = this.consultantForm.value;
-
-      // // Check if passwords match
-      // if (password !== confirmPassword) {
-      //   alert('Passwords do not match!');
-      //   return;
-      // }
-
-      // console.log('Form Submitted:', this.consultantForm.value);
-      // alert('Form submitted successfully!');
-
-      // Navigate to the next form
-      
+    if (this.clientForm.valid) {
+      alert('Form submitted successfully!');
     } else {
-      alert('Please fill in all required fields correctly.');
+      alert('Please enter a valid email.');
     }
   }
 }

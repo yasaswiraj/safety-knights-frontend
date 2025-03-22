@@ -8,6 +8,8 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { ViewEncapsulation } from '@angular/core';
 import { RouterModule, Router } from '@angular/router';
+import { NavBarComponent } from '../../../components/nav-bar/nav-bar.component';
+import { FormDataService } from '../../../services/form-data-service'; // Import the FormDataService
 
 @Component({
   selector: 'app-consultant-form4',
@@ -23,7 +25,8 @@ import { RouterModule, Router } from '@angular/router';
     MatButtonModule,
     MatIconModule,
     RouterModule,
-    ReactiveFormsModule
+    ReactiveFormsModule,
+    NavBarComponent
   ]
 })
 export class ConsultantForm4Component implements OnInit {
@@ -42,7 +45,7 @@ export class ConsultantForm4Component implements OnInit {
   currentStep = 2; // Update this for each form
 
 
-  constructor(private fb: FormBuilder, private router: Router) {
+  constructor(private fb: FormBuilder, private router: Router, private formDataService: FormDataService) {
   this.signUpForm1 = this.fb.group({
     scopeOfService: [{ value: [], disabled: false }, Validators.required],
     dependentService: [{ value: '', disabled: false }, Validators.required],
@@ -77,7 +80,7 @@ export class ConsultantForm4Component implements OnInit {
   }
 
   navigateToNextForm() {
-    
+    this.formDataService.setFormData(4, this.signUpForm1.value);
       this.router.navigate(['/consultant-form8']);
     
   }

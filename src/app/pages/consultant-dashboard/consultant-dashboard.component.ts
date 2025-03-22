@@ -14,15 +14,10 @@ export class ConsultantDashboardComponent {
   menuItems = [
     
     { label: 'Current Matches', route: '/consultant', icon: 'fas fa-users' },
-    { label: 'Active Jobs', route: '/consultant-dashboard/consultant-matches', icon: 'fas fa-check' },
-    { label: 'Bidded Jobs', route: '/admin/bids-list', icon: 'fas fa-gavel' },
-    { label: 'Completed', route: '/admin/chat', icon: 'fas fa-envelope' },
-    { label: 'Vetting', route: '/admin/vetting', icon: 'fas fa-circle-check' },
-    {
-      label: 'Site Settings',
-      route: '/admin/site-settings',
-      icon: 'fas fa-cog',
-    },
+    { label: 'Bidded Jobs', route: '/consultant/consultant-bidded', icon: 'fas fa-gavel' },
+    { label: 'Active Jobs', route: '/consultant/consultant-active', icon: 'fas fa-check' },
+    
+    { label: 'Completed', route: '/consultant/consultant-completed', icon: 'fas fa-envelope' }
   ];
 
   isSidebarOpen = true;

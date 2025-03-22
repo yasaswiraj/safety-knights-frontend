@@ -9,7 +9,7 @@ import { MatSortModule, MatSort } from '@angular/material/sort';
 import { FormsModule } from '@angular/forms';
 
 @Component({
-  selector: 'app-matches-list',
+  selector: 'app-consultant-matches',
   standalone: true,
   templateUrl: './consultant-matches.component.html',
   styleUrls: ['./consultant-matches.component.css'],
@@ -30,159 +30,61 @@ export class ConsultantMatchesComponent implements AfterViewInit {
   dataSource: MatTableDataSource<any>;
 
   displayedColumns: string[] = [
-    'id',
-    'clientName',
-    'consultantName',
-    'bid',
-    'status',
-    'actions',
+    'jobid',
+    'jobname',
+    'company',
+    'postedDate',
+    'deadline',
+    'actions'
   ];
 
-  matches = [
+  jobs = [
     {
-      id: 34232,
-      clientName: 'Yasaswi Raj',
-      consultantName: 'Steve Rogers',
-      bid: '5000',
-      status: 'In Progress',
+      jobid: 'J34232',
+      jobname: 'Software Engineer',
+      company: 'Google',
+      postedDate: '2025-02-20',
+      deadline: '2025-03-15',
     },
     {
-      id: 64362,
-      clientName: 'Steve Rogers',
-      consultantName: 'Chris Hemsworth',
-      bid: '7500',
-      status: 'Completed',
+      jobid: 'J64362',
+      jobname: 'Data Scientist',
+      company: 'Facebook',
+      postedDate: '2025-02-18',
+      deadline: '2025-03-10',
     },
     {
-      id: 43212,
-      clientName: 'Chris Hemsworth',
-      consultantName: 'John Doe',
-      bid: '6200',
-      status: 'In Progress',
+      jobid: 'J43212',
+      jobname: 'ML Engineer',
+      company: 'Amazon',
+      postedDate: '2025-02-22',
+      deadline: '2025-03-18',
     },
     {
-      id: 93242,
-      clientName: 'John Doe',
-      consultantName: 'Peter Stark',
-      bid: '4800',
-      status: 'In Progress',
+      jobid: 'J93242',
+      jobname: 'Cloud Architect',
+      company: 'Microsoft',
+      postedDate: '2025-02-25',
+      deadline: '2025-03-20',
     },
     {
-      id: 53221,
-      clientName: 'Peter Stark',
-      consultantName: 'Mark Ruffalo',
-      bid: '5300',
-      status: 'Completed',
+      jobid: 'J53221',
+      jobname: 'Backend Developer',
+      company: 'Netflix',
+      postedDate: '2025-02-15',
+      deadline: '2025-03-12',
     },
     {
-      id: 56432,
-      clientName: 'Mark Ruffalo',
-      consultantName: 'Natasha Romanoff',
-      bid: '5900',
-      status: 'Completed',
-    },
-    {
-      id: 75339,
-      clientName: 'Natasha Romanoff',
-      consultantName: 'Clark Kent',
-      bid: '6700',
-      status: 'Completed',
-    },
-    {
-      id: 39285,
-      clientName: 'Clark Kent',
-      consultantName: 'Bruce Wayne',
-      bid: '7200',
-      status: 'Completed',
-    },
-    {
-      id: 32853,
-      clientName: 'Bruce Wayne',
-      consultantName: 'Barry Allen',
-      bid: '8100',
-      status: 'In Progress',
-    },
-    {
-      id: 37538,
-      clientName: 'Barry Allen',
-      consultantName: 'Ana de Armas',
-      bid: '9400',
-      status: 'Completed',
-    },
-    {
-      id: 45678,
-      clientName: 'Sherlock Holmes',
-      consultantName: 'Doctor Strange',
-      bid: '10500',
-      status: 'Pending',
-    },
-    {
-      id: 89012,
-      clientName: 'James Bond',
-      consultantName: 'Jason Bourne',
-      bid: '11500',
-      status: 'Matched',
-    },
-    {
-      id: 34567,
-      clientName: 'Walter White',
-      consultantName: 'Jesse Pinkman',
-      bid: '12500',
-      status: 'Completed',
-    },
-    {
-      id: 78901,
-      clientName: 'Jon Snow',
-      consultantName: 'Daenerys Targaryen',
-      bid: '13500',
-      status: 'Pending',
-    },
-    {
-      id: 23456,
-      clientName: 'Rick Sanchez',
-      consultantName: 'Morty Smith',
-      bid: '14500',
-      status: 'Matched',
-    },
-    {
-      id: 67890,
-      clientName: 'Wednesday Addams',
-      consultantName: 'Enid Sinclair',
-      bid: '15500',
-      status: 'Completed',
-    },
-    {
-      id: 12345,
-      clientName: 'Michael Scott',
-      consultantName: 'Dwight Schrute',
-      bid: '16500',
-      status: 'Pending',
-    },
-    {
-      id: 90123,
-      clientName: 'Luke Skywalker',
-      consultantName: 'Obi-Wan Kenobi',
-      bid: '17500',
-      status: 'Matched',
-    },
-    {
-      id: 56789,
-      clientName: 'Harry Potter',
-      consultantName: 'Albus Dumbledore',
-      bid: '18500',
-      status: 'Completed',
-    },
-    {
-      id: 45123,
-      clientName: 'Indiana Jones',
-      consultantName: 'Lara Croft',
-      bid: '19500',
-      status: 'Pending',
+      jobid: 'J75339',
+      jobname: 'DevOps Engineer',
+      company: 'Spotify',
+      postedDate: '2025-02-27',
+      deadline: '2025-03-25',
     },
   ];
 
   constructor() {
-    this.dataSource = new MatTableDataSource(this.matches);
+    this.dataSource = new MatTableDataSource(this.jobs);
   }
 
   ngAfterViewInit() {
@@ -193,4 +95,16 @@ export class ConsultantMatchesComponent implements AfterViewInit {
     const filterValue = (event.target as HTMLInputElement).value;
     this.dataSource.filter = filterValue.trim().toLowerCase();
   }
+
+  viewDetail(job: any) {
+    console.log('Viewing details for:', job);
+    // Navigate to job details page or show a modal with more info
+  }
+
+  // JavaScript: Define the updateJob function
+updateJob(job: any) {
+  console.log('Updating job:', job);
+  // Implement the logic to navigate to an update form or open a modal
+}
+
 }

@@ -12,6 +12,8 @@ import { MatInputModule } from '@angular/material/input';
 import { MatButtonModule } from '@angular/material/button';
 import { RouterModule } from '@angular/router';
 import { Router } from '@angular/router';
+import { NavBarComponent } from '../../../components/nav-bar/nav-bar.component';
+import { FormDataService } from '../../../services/form-data-service'; // Import the FormDataService
 
 @Component({
   selector: 'app-consultant-form1',
@@ -22,7 +24,8 @@ import { Router } from '@angular/router';
     MatFormFieldModule,
     MatInputModule,
     MatButtonModule,
-    RouterModule
+    RouterModule,
+    NavBarComponent
     
   ],
   templateUrl: './consultant-form8.component.html',
@@ -35,11 +38,14 @@ export class ConsultantForm8Component {
     // confirmPassword: new FormControl('', [Validators.required]),
   });
 
-  constructor(private router: Router) {}
+  constructor(private router: Router, private formDataService: FormDataService) {}
 
   navigateToNextForm() {
     
       console.log('Navigating to Client-Form2');
+      // Save form data to the service
+      this.formDataService.setFormData(5, this.consultantForm.value);
+
       this.router.navigate(['/consultant-forms-submission']);
     
   }
@@ -48,6 +54,10 @@ export class ConsultantForm8Component {
     this.router.navigate(['/']);
   }
 
+  
+  navigateToPreviousForm() {
+    this.router.navigate(['/consultant-form4']);
+  }
   onSubmit() {
     
       this.router.navigate(['/consultant-forms-submission']);

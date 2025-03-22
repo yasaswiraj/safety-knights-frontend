@@ -1,55 +1,71 @@
 import { Component } from '@angular/core';
-import { FormBuilder, FormGroup, Validators,ReactiveFormsModule } from '@angular/forms';
+import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
-import { RouterModule } from '@angular/router';
+import { CommonModule } from '@angular/common';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatInputModule } from '@angular/material/input';
+import { MatIconModule } from '@angular/material/icon';
+import { NavBarComponent } from '../../../components/nav-bar/nav-bar.component';
+import { FormDataService } from '../../../services/form-data-service'; // Import the FormDataService
 
 @Component({
-  selector: 'app-consultant-form-contact',
-  imports: [ ReactiveFormsModule,RouterModule], 
+  selector: 'app-client-form2',
   templateUrl: './consultant-form-contact.component.html',
-  styleUrls: ['./consultant-form-contact.component.css']
+  styleUrls: ['./consultant-form-contact.component.css'],
+  standalone: true,
+  imports: [
+    CommonModule,
+    ReactiveFormsModule,
+    MatFormFieldModule,  // ✅ Required for <mat-form-field>
+    MatInputModule,      // ✅ Required for <input matInput>
+    MatIconModule,
+    NavBarComponent
+  ]
 })
 export class ConsultantFormContactComponent {
-  
-  signUpForm: FormGroup;
+  clientForm: FormGroup;
 
-  constructor(private fb: FormBuilder,private router: Router) {
-    this.signUpForm = this.fb.group({
-      name: ['', Validators.required],
-      jobTitle: ['', Validators.required],
-      companyName: ['', Validators.required],
-      companyAddress: ['', Validators.required],
-      phoneNumber: ['', [Validators.required, Validators.pattern('^[0-9]*$')]]
+  constructor(private fb: FormBuilder, private router: Router,private formDataService: FormDataService, ) {
+    this.clientForm = this.fb.group({
+      name: ['', [Validators.required]],
+      jobTitle: ['', [Validators.required]],
+      companyName: ['', [Validators.required]],
+      companyAddress: ['', [Validators.required]]
     });
   }
 
-// ✅ Navigate to Client-Form1
-navigateToPreviousForm() {
-  this.router.navigate(['/consultant-form1']);
-}
-navigateToNextForm() {
-    
-  this.router.navigate(['/consultant-form3']);
+  // ✅ Navigate to Client-Form1
+  navigateToPreviousForm() {
+    this.router.navigate(['/consultant-form1']);
+  }
 
-}
-// ✅ Navigate to Landing Page
-navigateToLanding() {
-  this.router.navigate(['/']);
-}
+  // ✅ Navigate to Landing Page
+  navigateToLanding() {
+    this.router.navigate(['/']);
+  }
 
-// ✅ Navigate to Client-Dashboard
-navigateToDashboard() {
-  this.router.navigate(['/consultant-form2']);
-}
-
-
-  onSubmit() {
-    if (this.signUpForm.valid) {
-      console.log('Form Submitted', this.signUpForm.value);
-      // Navigate to the next form
-      this.router.navigate(['/consultant-form2']);
-    } else {
-      console.log('Form is invalid');
+  //  Navigate to Next Form
+  navigateToNextForm() {
+    console.log("Button Clicked!");
+    this.formDataService.setFormData(1, this.clientForm.value);
+    this.router.navigate(['/consultant-form3']);
+    if (this.clientForm.valid) {
+      console.log('Form is valid, navigating to consultant-form3');
+      
+    }else {
+      console.log('Form is invalid, check fields:', this.clientForm.value);
+      // alert('Please fill in all required fields.');
     }
   }
+
+  // ✅ Navigate to Client-Dashboard
+  navigateToDashboard() {
+    if (this.clientForm.valid) {
+      console.log('Form Submitted:', this.clientForm.value);
+      this.router.navigate(['/client/dashboard']);
+    } else {
+      alert('Please fill in all required fields.');
+    }
+  }
+  
 }

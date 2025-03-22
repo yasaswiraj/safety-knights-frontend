@@ -13,15 +13,22 @@ import { CommonModule } from '@angular/common';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatButtonModule } from '@angular/material/button';
+import { NavBarComponent } from "../../../components/nav-bar/nav-bar.component";
+import { FormDataService } from '../../../services/form-data-service'; // Import the FormDataService
+import { HttpClient, HttpClientModule } from '@angular/common/http';
 @Component({
   selector: 'app-consultant-forms-submission',
-  imports: [RouterModule],
+  standalone: true,
+  imports: [RouterModule, NavBarComponent,NavBarComponent,HttpClientModule],
   templateUrl: './consultant-forms-submission.component.html',
   styleUrl: './consultant-forms-submission.component.css'
 })
 
 export class ConsultantFormsSubmissionComponent {
-  constructor(private router: Router) {}
+  finalPayload: any = {};
+  constructor(private router: Router, private formDataService: FormDataService, private http: HttpClient) {
+    this.finalPayload = this.formDataService.getFormData();
+  }
  
   navigateToLanding() {
     this.router.navigate(['/']);
@@ -31,7 +38,17 @@ export class ConsultantFormsSubmissionComponent {
   onGetStarted() {
     console.log("Button Clicked!");
     // Navigate to another page if needed
-     this.router.navigate(['/consultant-dashboard']);
+    
+    console.log('Final JSON Payload:', this.finalPayload);
+
+    this.http.post('http://127.0.0.1:8000/consultant/signup', this.finalPayload)
+      .subscribe(response => {
+        console.log('Form submitted successfully', response);
+        this.formDataService.resetFormData(); // Clear after submission
+      }, error => {
+        console.error('Error submitting form', error);
+      });
+     this.router.navigate(['/consultant']);
   }
 
 }

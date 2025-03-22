@@ -1,0 +1,22 @@
+:host {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    background-color: var(--background-color);
+}
+
+mat-card {
+    padding: 2rem;
+    border-radius: 16px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+}
+
+mat-form-field {
+    width: 100%;
+}
+
+mat-radio-button {
+    display: block;
+    margin-top: 0.5rem;
+}
