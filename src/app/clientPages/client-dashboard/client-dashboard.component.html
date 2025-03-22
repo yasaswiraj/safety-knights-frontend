@@ -1,56 +1,57 @@
-<div class="flex-grow flex flex-col items-center p-6 space-y-6 mt-20"> <!-- ✅ Added mt-20 -->
-    <div class="flex items-center w-full max-w-4xl space-x-4">
-        <mat-form-field class="w-full max-w-lg search-bar" appearance="fill">
-            <mat-label>Search for a job</mat-label>
-            <input matInput [(ngModel)]="searchTerm" (input)="applyFilter()" placeholder="Search...">
-            <button mat-icon-button matSuffix (click)="applyFilter()">
-                <mat-icon>search</mat-icon>
-            </button>
-        </mat-form-field>
-        
-        <button
-            mat-raised-button
-            class="bg-[var(--elements-color)] text-black px-6 py-2 rounded-full shadow-md font-bold cursor-pointer hover:bg-opacity-80"
-            type="button"
-            (click)="navigateToClientForm3()">
-            Create Job Request
-        </button>
+<div class="rounded-lg px-8">
+    <h1 class="text-3xl font-bold mb-4">Client Jobs</h1>
+  
+    <!-- Search Bar (Matches List Style) -->
+    <div class="bg-white flex items-center px-3 py-1 text-sm border border-gray-300 rounded-full">
+      <i class="fas fa-search text-gray-400 pr-1"></i>
+      <input
+        matInput
+        [(ngModel)]="searchTerm"
+        (input)="applyFilter()"
+        placeholder="Search for a job"
+        class="w-full p-1 rounded-full outline-none placeholder-gray-400 bg-transparent"
+      />
     </div>
-
-    <!-- Job Table -->
-    <mat-card class="w-full max-w-4xl rounded-2xl shadow-lg">
-        <table mat-table [dataSource]="filteredJobs" class="w-full" matSort>
-            <ng-container matColumnDef="jobId">
-                <th mat-header-cell *matHeaderCellDef mat-sort-header>Job ID</th>
-                <td mat-cell *matCellDef="let job">{{ job.jobId }}</td>
-            </ng-container>
-            <ng-container matColumnDef="jobName">
-                <th mat-header-cell *matHeaderCellDef mat-sort-header>Job Name</th>
-                <td mat-cell *matCellDef="let job">{{ job.jobName }}</td>
-            </ng-container>
-            <ng-container matColumnDef="status">
-                <th mat-header-cell *matHeaderCellDef mat-sort-header>Status</th>
-                <td mat-cell *matCellDef="let job">{{ job.status }}</td>
-            </ng-container>
-            <ng-container matColumnDef="actions">
-                <th mat-header-cell *matHeaderCellDef>Actions</th>
-                <td mat-cell *matCellDef="let job">
-                    <button
-                        mat-raised-button
-                        color="primary"
-                        class="bg-[var(--elements-color)] text-black px-6 py-2 rounded-full shadow-md cursor-pointer hover:bg-opacity-80"
-                        (click)="handleAction(job)">
-                        {{ job.action }}
-                    </button>
-                </td>
-            </ng-container>
-            <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
-            <tr mat-row *matRowDef="let row; columns: displayedColumns"></tr>
-        </table>
-    </mat-card>
-</div>
-
-<!-- Chat Button -->
-<button class="fixed bottom-6 right-6 w-14 h-14 rounded-full flex items-center justify-center shadow-lg">
-    <img src="/chat.png" alt="Chat" class="w-8 h-8" />
-</button>
+  
+    <!-- Table Wrapper with White Background & Scrolling -->
+    <div class="bg-white h-[calc(100vh-17rem)] overflow-auto mt-4 rounded-3xl border border-gray-300">
+      <table mat-table [dataSource]="dataSource" matSort class="mat-elevation-z8 w-full">
+        
+        <!-- Job ID Column -->
+        <ng-container matColumnDef="jobId">
+          <th mat-header-cell *matHeaderCellDef mat-sort-header class="p-3 text-left">Job ID</th>
+          <td mat-cell *matCellDef="let job" class="p-3">{{ job.jobId }}</td>
+        </ng-container>
+  
+        <!-- Job Name Column -->
+        <ng-container matColumnDef="jobName">
+          <th mat-header-cell *matHeaderCellDef mat-sort-header class="p-3 text-left">Job Name</th>
+          <td mat-cell *matCellDef="let job" class="p-3">{{ job.jobName }}</td>
+        </ng-container>
+  
+        <!-- Status Column -->
+        <ng-container matColumnDef="status">
+          <th mat-header-cell *matHeaderCellDef mat-sort-header class="p-3 text-left">Status</th>
+          <td mat-cell *matCellDef="let job" class="p-3">{{ job.status }}</td>
+        </ng-container>
+  
+        <!-- Actions Column -->
+        <ng-container matColumnDef="actions">
+          <th mat-header-cell *matHeaderCellDef class="p-3 text-left">Actions</th>
+          <td mat-cell *matCellDef="let job" class="p-3 flex space-x-3">
+            <button mat-icon-button color="primary" (click)="handleAction(job)">
+              <i class="fa-solid fa-paper-plane"></i>
+            </button>
+            <button mat-icon-button color="warn">
+              <i class="fa-solid fa-ban text-red-600 cursor-pointer hover:text-red-800"></i>
+            </button>
+          </td>
+        </ng-container>
+  
+        <!-- Table Header & Rows -->
+        <tr mat-header-row *matHeaderRowDef="displayedColumns" sticky></tr>
+        <tr mat-row *matRowDef="let row; columns: displayedColumns"></tr>
+      </table>
+    </div>
+  </div>
+  

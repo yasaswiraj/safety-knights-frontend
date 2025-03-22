@@ -1,38 +1,62 @@
 import { Component } from '@angular/core';
-import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms'; // ✅ Import ReactiveFormsModule
+import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
+import { ApiService } from '../../services/api.service'; // ✅ Import API Service
+import { CommonModule } from '@angular/common';
 
 @Component({
   selector: 'app-login',
   templateUrl: './login.component.html',
   styleUrls: ['./login.component.css'],
   standalone: true,
-  imports: [ReactiveFormsModule]
+  imports: [ReactiveFormsModule, CommonModule]
 })
 export class LoginComponent {
   loginForm: FormGroup;
+  errorMessage: string = '';
 
-  constructor(private fb: FormBuilder, private router: Router) { // Inject Router
+  constructor(private fb: FormBuilder, private router: Router, private apiService: ApiService) {
     this.loginForm = this.fb.group({
-      email: ['', [Validators.required, Validators.email]],
+      username: ['', [Validators.required]],  // ✅ Correct field name
       password: ['', [Validators.required, Validators.minLength(6)]]
     });
+    
+    
   }
 
-  // Navigate to Client Dashboard on Successful Login
+  // ✅ Handle Login API Request and Store Token
   onLogin() {
+    console.log('Login clicked');
     if (this.loginForm.valid) {
-      console.log('Login Successful', this.loginForm.value);
-      this.router.navigate(['/consultant']); // Redirect to client-dashboard
+      this.apiService.loginUser(this.loginForm.value).subscribe({
+        next: (response) => {
+          console.log('✅ Login Successful:', response);
+  
+          // ✅ Store Access Token in Local Storage
+          localStorage.setItem('access_token', response.access_token);
+  
+          // ✅ Redirect to Dashboard
+          this.router.navigate(['/client/bids-in-progress']);
+        },
+        error: (error) => {
+          console.error('❌ Login Failed:', error);
+          this.errorMessage = error.error?.detail || 'Invalid credentials. Please try again.';
+        }
+      });
     }
   }
+  
+  
 
-  // Navigate to Sign-Up Page
   navigateToSignUp() {
+<<<<<<< HEAD
     this.router.navigate(['/consultant-form1']); // Redirect to sign-up
+=======
+    this.router.navigate(['/sign-up']);
+>>>>>>> c2b4ee3f7b925a64e3be11d5e73b0da6af89c4a8
   }
 
   navigateToForgotPassword() {
     console.log('Forgot password clicked');
-  } 
+  }
 }

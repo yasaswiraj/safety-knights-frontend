@@ -84,7 +84,7 @@ export class ClientForm5Component {
   submitForm() {
     if (this.clientForm.valid) {
       console.log('Job Created:', this.clientForm.value);
-      this.router.navigate(['/client/dashboard']);
+      this.router.navigate(['/client/pending-bids']);
     }
   }
 }
