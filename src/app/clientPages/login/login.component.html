@@ -12,6 +12,9 @@
     <div
       class="md:bg-white w-50 md:w-100 h-100 rounded-[2em] flex flex-col justify-center items-center md:ml-15">
       <div class="font-bold text-2xl text-(--accent-color) mb-8">Login</div>
+      <div *ngIf="errorMessage" class="text-red-600 text-sm mb-4 text-center">
+        {{ errorMessage }}
+      </div>
       <form
         class="flex flex-col justify-center items-center"
         [formGroup]="loginForm"

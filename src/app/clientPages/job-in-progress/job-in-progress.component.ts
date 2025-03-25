@@ -1,4 +1,4 @@
-import { Component, ViewChild, AfterViewInit } from '@angular/core';
+import { Component, ViewChild, AfterViewInit, OnInit } from '@angular/core';
 import { MatTableModule, MatTableDataSource } from '@angular/material/table';
 import { MatSort, MatSortModule } from '@angular/material/sort';
 import { MatInputModule } from '@angular/material/input';
@@ -6,15 +6,8 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
-import { CommonModule } from '@angular/common';  // ✅ Required for pipes & Angular utilities
-
-interface JobInProgress {
-  jobId: string;
-  jobName: string;
-  consultant: string;
-  daysRemaining: number;
-  action: string;
-}
+import { CommonModule } from '@angular/common';
+import { ClientJobsService } from '../../services/client-jobs.service';
 
 @Component({
   selector: 'app-job-in-progress',
@@ -22,7 +15,7 @@ interface JobInProgress {
   templateUrl: './job-in-progress.component.html',
   styleUrls: ['./job-in-progress.component.css'],
   imports: [
-    CommonModule,  // ✅ Enables pipes like currency, number, etc.
+    CommonModule,
     MatTableModule,
     MatSortModule,
     MatInputModule,
@@ -31,21 +24,31 @@ interface JobInProgress {
     FormsModule,
   ],
 })
-export class JobInProgressComponent implements AfterViewInit {
+export class JobInProgressComponent implements OnInit, AfterViewInit {
   @ViewChild(MatSort) sort!: MatSort;
   searchTerm = '';
+  dataSource: MatTableDataSource<any> = new MatTableDataSource<any>();
+  displayedColumns: string[] = ['jobId', 'jobName', 'daysRemaining', 'actions'];
 
-  jobsInProgress: JobInProgress[] = [
-    { jobId: '401', jobName: 'Cybersecurity Audit', consultant: 'John Doe', daysRemaining: 10, action: 'Track' },
-    { jobId: '402', jobName: 'Infrastructure Testing', consultant: 'Jane Smith', daysRemaining: 15, action: 'Track' },
-    { jobId: '403', jobName: 'Compliance Review', consultant: 'Alice Johnson', daysRemaining: 5, action: 'Track' },
-  ];
+  constructor(private router: Router, private clientJobsService: ClientJobsService) {}
 
-  dataSource: MatTableDataSource<JobInProgress>;
-  displayedColumns: string[] = ['jobId', 'jobName', 'consultant', 'daysRemaining', 'actions'];
-
-  constructor(private router: Router) {
-    this.dataSource = new MatTableDataSource(this.jobsInProgress);
+  ngOnInit() {
+    console.log('Fetching jobs in progress...');
+    this.clientJobsService.getJobsInProgress().subscribe({
+      next: (response) => {
+        console.log('Jobs in progress:', response.jobs);
+        const jobs = response.jobs.map((job) => ({
+          jobId: job.client_job_id,
+          jobName: job.scope_of_service,
+          expectedStartDate: job.expected_start_date,
+          daysRemaining: this.calculateDaysRemaining(job.expected_start_date)
+        }));
+        this.dataSource.data = jobs;
+      },
+      error: (err) => {
+        console.error('Error fetching jobs in progress:', err);
+      }
+    });
   }
 
   ngAfterViewInit() {
@@ -57,7 +60,14 @@ export class JobInProgressComponent implements AfterViewInit {
     this.dataSource.filter = term;
   }
 
-  handleAction(job: JobInProgress) {
+  handleAction(job: any) {
     this.router.navigate(['/client/job-progress-details'], { queryParams: { jobId: job.jobId } });
+  }
+
+  private calculateDaysRemaining(dateString: string): number {
+    const today = new Date();
+    const targetDate = new Date(dateString);
+    const diffTime = targetDate.getTime() - today.getTime();
+    return Math.max(Math.ceil(diffTime / (1000 * 60 * 60 * 24)), 0);
   }
 }
