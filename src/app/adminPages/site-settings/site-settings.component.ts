@@ -1,23 +1,24 @@
 import { Component } from '@angular/core';
 import {
   MatTreeModule,
-  MatTreeNestedDataSource,
   MatTreeFlatDataSource,
   MatTreeFlattener,
 } from '@angular/material/tree';
 import { CommonModule } from '@angular/common';
-import { NestedTreeControl, FlatTreeControl } from '@angular/cdk/tree';
+import { FlatTreeControl } from '@angular/cdk/tree';
 import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
 import { MatCheckboxModule } from '@angular/material/checkbox';
 import { FormsModule } from '@angular/forms';
-import { MatDialog, MatDialogRef } from '@angular/material/dialog';
+import { MatDialog } from '@angular/material/dialog';
 import { ChangeDetectorRef } from '@angular/core';
 import { AddChildDialog } from '../../components/add-child-dialog/add-child-dialog.component';
+import { OptionsTreeComponent } from "../../components/options-tree/options-tree.component";
 
-const environmentalServicesOptions = [
+const clientEnvironmentalServicesOptions = [
   {
     name: 'Environmental Facility Compliance',
+    selected: false,
     children: [
       { name: 'Environmental Compliance Programs', selected: false },
       { name: 'Environmental Compliance Audits', selected: false },
@@ -46,6 +47,7 @@ const environmentalServicesOptions = [
   },
   {
     name: 'Property Transactions',
+    selected: false,
     children: [
       { name: 'Strategic Transaction Support', selected: false },
       { name: 'Phase I / II Site Assessment (ASTM, AAI)', selected: false },
@@ -65,6 +67,7 @@ const environmentalServicesOptions = [
   },
   {
     name: 'Field Activities / Construction',
+    selected: false,
     children: [
       { name: 'Soil and Groundwater Sampling', selected: false },
       { name: 'Contamination Delineation', selected: false },
@@ -74,12 +77,57 @@ const environmentalServicesOptions = [
   },
   {
     name: 'Hazardous Building Materials Surveys',
+    selected: false,
     children: [
       { name: 'Asbestos', selected: false },
       { name: 'Lead', selected: false },
       { name: 'Mold', selected: false },
     ],
   },
+];
+
+const clientHealthServicesOptions = [
+  {
+    "name": "Safety Facility Compliance",
+    "selected": false,
+    "children": [
+      { "name": "Infectious Disease Preparedness and Response Plans", "selected": false },
+      { "name": "Water Management Plans - Lead, Legionella", "selected": false },
+      { "name": "OSHA Compliance Programs", "selected": false },
+      { "name": "Job Hazard / Safety Analyses (JHAs/JSAs)", "selected": false },
+      { "name": "OSHA / Risk Audits and Assessments", "selected": false },
+      { "name": "Personal Protective Equipment", "selected": false },
+      { "name": "Confined Space", "selected": false },
+      { "name": "Machine Guarding", "selected": false },
+      { "name": "Electrical Safety and Lockout/Tagout (LOTO)", "selected": false },
+      { "name": "Radiation Safety", "selected": false },
+      { "name": "Life and Fire Safety", "selected": false },
+      { "name": "Ergonomics", "selected": false },
+      { "name": "OSHA / Health & Safety Training", "selected": false },
+      { "name": "Health & Safety Program Outsourcing", "selected": false },
+      { "name": "Agency Interface / Negotiation", "selected": false },
+      { "name": "Cal-OSHA Expertise", "selected": false }
+    ]
+  },
+  {
+    "name": "Industrial Hygiene",
+    "selected": false,
+    "children": [
+      { "name": "Industrial Hygiene Assessments", "selected": false },
+      { "name": "Ventilation Assessments / Controls", "selected": false },
+      { "name": "Indoor Air Quality", "selected": false },
+      { "name": "Noise Assessments / Controls", "selected": false },
+      { "name": "Asbestos, Lead & Mold Assessments, Management and Abatement", "selected": false }
+    ]
+  },
+  {
+    "name": "Construction Safety",
+    "selected": false,
+    "children": [
+      { "name": "Company / Site-Specific Health & Safety Plans", "selected": false },
+      { "name": "On-Site Quality Control and Safety", "selected": false }
+    ]
+  }
 ];
 
 const healthAndSafetyOptions = [];
@@ -94,11 +142,14 @@ const healthAndSafetyOptions = [];
     MatButtonModule,
     MatCheckboxModule,
     FormsModule,
+    OptionsTreeComponent
   ],
   templateUrl: './site-settings.component.html',
   styleUrl: './site-settings.component.css',
 })
 export class SiteSettingsComponent {
+  activeTab: string = 'client'; // Default to client tab
+
   private _transformer = (node: any, level: number) => {
     return {
       expandable: !!node.children && node.children.length > 0,
@@ -114,19 +165,28 @@ export class SiteSettingsComponent {
   );
 
   treeFlattener = new MatTreeFlattener(
-    this._transformer,
+    (node: any, level: number) => ({
+      expandable: !!node.children && node.children.length > 0,
+      name: node.name,
+      level: level,
+      selected: node.selected,
+    }),
     node => node.level,
     node => node.expandable,
     node => node.children
   );
 
-  dataSource = new MatTreeFlatDataSource(this.treeControl, this.treeFlattener);
+  // Create separate data sources for environmental and health options
+  dataSourceEnvironmental = new MatTreeFlatDataSource(this.treeControl, this.treeFlattener);
+  dataSourceHealth = new MatTreeFlatDataSource(this.treeControl, this.treeFlattener);
 
-  constructor(
+  constructor(  
     private dialog: MatDialog,
     private cdr: ChangeDetectorRef
   ) {
-    this.dataSource.data = environmentalServicesOptions;
+    // Set environmental and health service options separately
+    this.dataSourceEnvironmental.data = clientEnvironmentalServicesOptions;
+    this.dataSourceHealth.data = clientHealthServicesOptions;
   }
 
   openAddChildDialog(node: any): void {
@@ -139,13 +199,21 @@ export class SiteSettingsComponent {
     });
   }
 
+  switchTab(tab: string) {
+    this.activeTab = tab;
+    this.cdr.detectChanges();
+  }
+  
+
   addChild(node: any, childName: string) {
     const newNode = { name: childName, selected: false };
     if (!node.children) {
       node.children = [];
+      node.expandable = true;
     }
     node.children.push(newNode);
-    this.dataSource.data = [...this.dataSource.data];
+    this.dataSourceEnvironmental.data = [...this.dataSourceEnvironmental.data];
+    this.dataSourceHealth.data = [...this.dataSourceHealth.data];
     this.cdr.detectChanges();
   }
 

@@ -8,7 +8,7 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatSortModule, MatSort } from '@angular/material/sort';
 import { FormsModule } from '@angular/forms';
 import { MatDialog, MatDialogModule } from '@angular/material/dialog';
-import { BanUserComponent } from '../../ban-user/ban-user.component';
+import { BanUserComponent } from '../../components/ban-user/ban-user.component';
 
 @Component({
   selector: 'app-users-list',
