@@ -1,6 +1,6 @@
 import { Component } from '@angular/core';
 import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
-import { Router } from '@angular/router';
+import { Router, RouterModule } from '@angular/router';
 import { ClientOnboardingService } from '../../../services/client-onboarding.service';
 import { CommonModule } from '@angular/common';
 import { MatFormFieldModule } from '@angular/material/form-field';
@@ -23,7 +23,8 @@ import { MatCardModule } from '@angular/material/card';
     MatIconModule,
     MatTabsModule,
     MatButtonModule,
-    MatCardModule
+    MatCardModule,
+    RouterModule
   ]
 })
 export class OnboardingComponent {
@@ -44,7 +45,7 @@ export class OnboardingComponent {
       job_title: ['', [Validators.required]],
       company_name: ['', [Validators.required]],
       company_address: ['', [Validators.required]],
-      contact: ['', [Validators.required, Validators.pattern('[0-9]{10}')]]
+      phone_number: ['', [Validators.required, Validators.pattern('[0-9]{10}')]]
     });
   }
 
@@ -65,11 +66,11 @@ export class OnboardingComponent {
             name: this.clientForm.value.name,
             email: this.clientForm.value.email,
             password: this.clientForm.value.password,
-            confirm_password: this.clientForm.value.confirm_password, // ✅ Ensure this is included
+            confirm_password: this.clientForm.value.confirm_password, 
             job_title: this.clientForm.value.job_title,
             company_name: this.clientForm.value.company_name,
             company_address: this.clientForm.value.company_address,
-            contact: this.clientForm.value.contact,
+            phone_number: this.clientForm.value.phone_number,
             user_type: 'CLIENT',
             user_status: 'active'
         };

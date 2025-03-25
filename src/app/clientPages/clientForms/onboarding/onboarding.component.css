@@ -3,7 +3,7 @@
     justify-content: center;
     align-items: center;
     min-height: 100vh;
-    background-color:var(--background-colour);/* Light grey background */
+    background-color:var(--background-colour);
     padding: 20px;
 }
 
@@ -42,11 +42,19 @@
 
 .button-container {
     display: flex;
-    justify-content: flex-end; /* ✅ Aligns buttons to the right */
+    justify-content: space-between; /* ✅ This ensures left + right alignment */
     align-items: center;
     width: 100%;
-    padding: 10px;
-}
+    padding: 10px 0;
+  }
+  
+.login-link {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    color: #333;
+  }
+  
 
 .button-container button {
     margin-left: 10px; /* ✅ Adds spacing between buttons */
@@ -79,3 +87,5 @@
     text-align: center;
     margin-top: 10px;
 }
+
+  

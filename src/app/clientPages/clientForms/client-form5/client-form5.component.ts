@@ -9,6 +9,8 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MatRadioModule } from '@angular/material/radio';
 import { ViewEncapsulation } from '@angular/core';
+import { FormDataService } from '../../../services/form-data.service';
+import { ClientJobsService } from '../../../services/client-jobs.service';
 
 @Component({
   selector: 'app-client-form5',
@@ -19,7 +21,7 @@ import { ViewEncapsulation } from '@angular/core';
   imports: [
     CommonModule,
     FormsModule,
-    ReactiveFormsModule, 
+    ReactiveFormsModule,
     MatSelectModule,
     MatFormFieldModule,
     MatInputModule,
@@ -33,17 +35,17 @@ export class ClientForm5Component {
   showOtherPaymentTerm = false;
   showOtherPaymentMethod = false;
 
-  totalSteps = 3; // ✅ Total steps in form sequence
-  currentStep = 3; // ✅ This is the last step
+  totalSteps = 3; 
+  currentStep = 3; 
 
-  // ✅ List of Payment Options
+  form4Values: any = {}; 
+
   paymentOptions = [
     { label: '30 Days', value: '30_days' },
     { label: '45 Days', value: '45_days' },
     { label: '60 Days', value: '60_days' }
   ];
 
-  // ✅ List of Payment Methods
   paymentMethods = [
     { label: 'ACH (Automated Clearing House)', value: 'ach' },
     { label: 'Credit Card', value: 'credit_card' },
@@ -51,7 +53,7 @@ export class ClientForm5Component {
     { label: 'Purchase Order', value: 'purchase_order' }
   ];
 
-  constructor(private fb: FormBuilder, private router: Router) {
+  constructor(private fb: FormBuilder, private router: Router, private formDataService: FormDataService, private clientJobsService: ClientJobsService) {
     this.clientForm = this.fb.group({
       paymentTerms: ['', Validators.required],
       otherPaymentTerm: [''], // Optional for custom input
@@ -60,31 +62,58 @@ export class ClientForm5Component {
     });
   }
 
-  // ✅ Compute progress dynamically
+
+
+  ngOnInit() {
+    this.form4Values = this.formDataService.getFormData();
+    // You can prefill form or use values as needed
+  }
+
+
   get progressPercentage(): number {
     return (this.currentStep / this.totalSteps) * 100;
   }
 
-  // ✅ Show/Hide Custom Payment Term Input
   toggleOtherPaymentTerm() {
     this.showOtherPaymentTerm = !this.showOtherPaymentTerm;
   }
 
-  // ✅ Show/Hide Custom Payment Method Input
   toggleOtherPaymentMethod() {
     this.showOtherPaymentMethod = !this.showOtherPaymentMethod;
   }
 
-  // ✅ Navigate to Previous Form
   navigateToPreviousForm() {
     this.router.navigate(['/client/form-4']);
   }
 
-  // ✅ Submit Form & Navigate to Dashboard
   submitForm() {
     if (this.clientForm.valid) {
-      console.log('Job Created:', this.clientForm.value);
-      this.router.navigate(['/client/pending-bids']);
+      const form5Data = this.clientForm.value;
+      const form3and4 = this.form4Values;
+  
+      const combinedPayload = {
+        scope_of_service: form3and4.scopeOfService.join(', '),
+        work_in_detail: form3and4.jobDescription,
+        project_location: form3and4.location,
+        proposal_deadline: form3and4.deadline,
+        expected_start_date: form3and4.projectStartDate,
+        budget: parseInt(form3and4.budget, 10),  
+        insurance_requirements: (form3and4.selectedInsurances as { label: string }[]).map((i) => i.label).join(', '),
+        payment_terms: form5Data.paymentTerms,
+        payment_method: form5Data.paymentMethod,
+        contractor_preferences: '',
+        commitment_to_proceed: ''
+      };
+  
+      this.clientJobsService.createJob(combinedPayload).subscribe({
+        next: (response) => {
+          console.log('Job created:', response);
+          this.router.navigate(['/client/pending-bids']);
+        },
+        error: (err) => {
+          console.error('Job creation failed:', err);
+        }
+      });
     }
   }
 }

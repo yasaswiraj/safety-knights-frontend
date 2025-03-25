@@ -3,11 +3,12 @@ import { MatDialog } from '@angular/material/dialog';
 import { Router } from '@angular/router';
 import { CommonModule, NgFor } from '@angular/common';
 import { ConsultantProfileComponent } from '../consultant-profile/consultant-profile.component';
+import { ConsultantReviewComponent } from '../consultant-review/consultant-review.component';
 
 @Component({
   selector: 'app-client-received-bids',
   standalone: true,
-  imports: [CommonModule, NgFor], // ✅ Remove MatDialog from imports
+  imports: [CommonModule, NgFor],
   templateUrl: './client-received-bids.component.html',
   styleUrls: ['./client-received-bids.component.css']
 })
@@ -36,6 +37,20 @@ export class ClientReceivedBidsComponent {
         'EHS Software Experience (e.g., Enablon, Cority, Intelex)',
         'Incident Reporting & Data Analysis Skills',
         'Use of Digital Compliance & Safety Tracking Tools'
+      ],
+      reviewsList: [
+        {
+          reviewer: "Sarah W",
+          rating: 4,
+          title: "Exceptional Service and Expertise",
+          text: "I had a fantastic experience using this platform!..."
+        },
+        {
+          reviewer: "James R",
+          rating: 5,
+          title: "Highly Professional and Efficient",
+          text: "The consultant I worked with was incredibly knowledgeable..."
+        }
       ]
     },
     { id: 2, name: 'Consultant 2', rating: 4, reviews: 290, jobId: 44352, jobTitle: 'Safety Audits', bidRate: 1399 },
@@ -52,17 +67,12 @@ export class ClientReceivedBidsComponent {
     this.router.navigate(['/client/agreement'], { queryParams: { bidId } });
   }
 
-  rejectBid(bidId: number) {
-    console.log(`Bid ${bidId} rejected`);
-    this.bids = this.bids.filter(bid => bid.id !== bidId);
-  }
-
   openConsultantProfile(bid: any) {
     this.dialog.open(ConsultantProfileComponent, {
-      width: '50vw', // ✅ More compact width
-      maxWidth: '700px', // ✅ Prevent it from growing too much
-      height: 'auto', // ✅ Expand height based on content
-      maxHeight: '90vh', // ✅ Prevent overflowing the viewport
+      width: '50vw',
+      maxWidth: '700px',
+      height: 'auto',
+      maxHeight: '90vh',
       panelClass: 'full-screen-dialog',
       data: {
         name: bid.name,
@@ -76,6 +86,20 @@ export class ClientReceivedBidsComponent {
       }
     });
   }
-  
 
- }
+  openConsultantReviews(bid: any) {
+    this.dialog.open(ConsultantReviewComponent, {
+      width: '50vw',
+      maxWidth: '700px',
+      height: 'auto',
+      maxHeight: '90vh',
+      panelClass: 'full-screen-dialog',
+      data: {
+        name: bid.name,
+        rating: bid.rating,
+        reviews: bid.reviews,
+        reviewsList: bid.reviewsList || []
+      }
+    });
+  }
+}

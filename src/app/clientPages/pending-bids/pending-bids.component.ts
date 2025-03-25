@@ -6,7 +6,7 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
-import { CommonModule } from '@angular/common';  
+import { CommonModule } from '@angular/common';
 import { ClientJobsService, PendingBid } from '../../services/client-jobs.service';
 
 @Component({
@@ -15,7 +15,7 @@ import { ClientJobsService, PendingBid } from '../../services/client-jobs.servic
   templateUrl: './pending-bids.component.html',
   styleUrls: ['./pending-bids.component.css'],
   imports: [
-    CommonModule,  
+    CommonModule,
     MatTableModule,
     MatSortModule,
     MatInputModule,
@@ -28,10 +28,10 @@ export class PendingBidsComponent implements AfterViewInit, OnInit {
   @ViewChild(MatSort) sort!: MatSort;
   searchTerm = '';
 
-  dataSource: MatTableDataSource<PendingBid> = new MatTableDataSource<PendingBid>([]);  // ✅ Explicit Type Fix
+  dataSource: MatTableDataSource<PendingBid> = new MatTableDataSource<PendingBid>([]);  
   displayedColumns: string[] = ['jobId', 'jobName', 'deadline', 'budget', 'actions'];
 
-  constructor(private router: Router, private clientJobsService: ClientJobsService) {}
+  constructor(private router: Router, private clientJobsService: ClientJobsService) { }
 
   ngOnInit() {
     this.fetchPendingBids();
@@ -42,16 +42,32 @@ export class PendingBidsComponent implements AfterViewInit, OnInit {
   }
 
   fetchPendingBids() {
-    console.log('Fetching pending bids...');
+    console.log('Calling API...');
+    // const userId = localStorage.getItem('user_id');
+    // console.log('User ID:', userId);
     this.clientJobsService.getPendingBids().subscribe({
-      next: (bids: PendingBid[]) => {
-        this.dataSource.data = bids;
+      next: (response) => {
+        console.log('Response:', response);
+        if (!response || response.jobs.length === 0) {
+          console.warn('No jobs returned. Possible missing cookie/session?');
+        }
+        const transformedJobs = response.jobs.map(job => ({
+          ...job,
+          jobId: job.client_job_id,
+          jobName: job.scope_of_service,
+          deadline: job.proposal_deadline,
+          budget: job.budget,
+        }));
+  
+        this.dataSource.data = transformedJobs;
       },
       error: (err) => {
-        console.error('Error fetching pending bids:', err);
+        console.error('Error from API:', err);
       }
     });
   }
+
+
 
   applyFilter() {
     const term = this.searchTerm.trim().toLowerCase();
@@ -59,6 +75,6 @@ export class PendingBidsComponent implements AfterViewInit, OnInit {
   }
 
   handleAction(bid: PendingBid) {
-    this.router.navigate(['/client/pending-bid-details'], { queryParams: { jobId: bid.jobId } });
+    this.router.navigate(['/client/pending-bid'], { queryParams: { jobId: bid.client_job_id } });
   }
 }

@@ -7,6 +7,7 @@ import { MatButtonModule } from '@angular/material/button';
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
 import { CommonModule } from '@angular/common';  // ✅ Required for Angular pipes
+import { ClientJobsService } from '../../services/client-jobs.service';
 
 interface CompletedJob {
   jobId: string;
@@ -33,18 +34,36 @@ export class CompletedJobsComponent implements AfterViewInit {
   @ViewChild(MatSort) sort!: MatSort;
   searchTerm = '';
 
-  completedJobs: CompletedJob[] = [
-    { jobId: '501', jobName: 'Network Security Audit', consultant: 'Michael Brown' },
-    { jobId: '502', jobName: 'Software Compliance Review', consultant: 'Sarah Johnson' },
-    { jobId: '503', jobName: 'Cloud Infrastructure Analysis', consultant: 'David Lee' },
-  ];
+  // completedJobs: CompletedJob[] = [
+  //   { jobId: '501', jobName: 'Network Security Audit', consultant: 'Michael Brown' },
+  //   { jobId: '502', jobName: 'Software Compliance Review', consultant: 'Sarah Johnson' },
+  //   { jobId: '503', jobName: 'Cloud Infrastructure Analysis', consultant: 'David Lee' },
+  // ];
 
-  dataSource: MatTableDataSource<CompletedJob>;
+  dataSource: MatTableDataSource<any> = new MatTableDataSource<any>();
   displayedColumns: string[] = ['jobId', 'jobName', 'consultant', 'feedback'];
 
-  constructor(private router: Router) {
-    this.dataSource = new MatTableDataSource(this.completedJobs);
+  constructor(private router: Router, private clientJobsService: ClientJobsService) {}
+
+  ngOnInit() {
+    console.log('Fetching completed jobs...');
+    this.clientJobsService.getCompletedJobs().subscribe({
+      next: (response) => {
+        console.log('Completed Jobs:', response.jobs);
+        const jobs = response.jobs.map((job, index) => ({
+          jobId: job.client_job_id,
+          jobName: job.scope_of_service,
+          consultant: `Consultant ${index + 1}`  // 🔁 Mocked
+        }));
+        
+        this.dataSource.data = jobs;
+      },
+      error: (err) => {
+        console.error('Error fetching jobs in progress:', err);
+      }
+    });
   }
+
 
   ngAfterViewInit() {
     this.dataSource.sort = this.sort;
