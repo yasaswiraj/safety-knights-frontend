@@ -1,0 +1,26 @@
+<!-- Page Content -->
+<div class="flex justify-center px-6 w-full mt-24">
+    <div class="track-jobs-grid w-full max-w-6xl grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 mt-6">
+      <div class="job-card p-6 rounded-xl shadow-lg bg-white border border-gray-200 hover:shadow-xl transition transform hover:-translate-y-2 relative"
+           *ngFor="let job of ongoingJobs">
+  
+          <!-- Consultant Info -->
+          <div class="flex items-center gap-2">
+              <img src="/user.png" alt="Consultant Image" class="w-10 h-10 rounded-full">
+              <h2 class="consultant-name">
+                  {{ job.consultantName }}
+              </h2>
+          </div>
+
+          <!-- Job Title -->
+          <p class="job-title">{{ job.jobTitle }}</p>
+          <p class="text-gray-600 mt-2 text-sm">Days Left: <strong>{{ job.daysLeft }}</strong></p>
+          <p class="text-gray-900 font-bold text-lg">Budget: ${{ job.budget }}</p>
+          <p class="text-gray-700 text-sm mt-2">Start Date: <strong>{{ job.startDate }}</strong></p>
+
+          <button class="message-icon absolute bottom-2 right-2" (click)="messageConsultant(job.consultantId)">
+            <i class="fa-solid fa-message"></i> 
+          </button>
+      </div>
+    </div>
+</div>

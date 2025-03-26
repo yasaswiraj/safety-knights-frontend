@@ -57,10 +57,10 @@ export class ClientAgreementComponent implements OnInit {
 
     console.log("Form Submitted:", this.agreementForm.value);
 
-    // Add submission logic here (API call, navigation, etc.)
+    this.router.navigate(['client/pending-bids']);
   }
 
   navigateBack() {
-    this.router.navigate(['/previous-page']); // Adjust route as needed
+    this.router.navigate(['client/received-bids']); 
   }
 }

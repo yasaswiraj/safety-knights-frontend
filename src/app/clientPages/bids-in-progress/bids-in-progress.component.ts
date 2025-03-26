@@ -1,49 +1,56 @@
-import { Component, ViewChild, AfterViewInit } from '@angular/core';
-import { MatTableModule, MatTableDataSource } from '@angular/material/table';
+import { Component, ViewChild, AfterViewInit, OnInit } from '@angular/core';
 import { MatSort, MatSortModule } from '@angular/material/sort';
-import { MatInputModule } from '@angular/material/input';
-import { MatIconModule } from '@angular/material/icon';
-import { MatButtonModule } from '@angular/material/button';
-import { FormsModule } from '@angular/forms';
+import { MatTableDataSource, MatTableModule } from '@angular/material/table';
 import { Router } from '@angular/router';
-
-interface Bid {
-  jobId: string;
-  jobName: string;
-  deadline: string;
-  numBids: number;
-  action: string;
-}
+import { Bid, ClientService } from '../../services/client.service';
+import { MatInputModule } from '@angular/material/input';
+import { MatButtonModule } from '@angular/material/button';
+import { MatIconModule } from '@angular/material/icon';
+import { CommonModule } from '@angular/common';
+import { FormsModule } from '@angular/forms';
+import { ClientJobsService, BidInProgress } from '../../services/client-jobs.service';
 
 @Component({
   selector: 'app-bids-in-progress',
-  standalone: true,
   templateUrl: './bids-in-progress.component.html',
   styleUrls: ['./bids-in-progress.component.css'],
-  imports: [
-    MatTableModule,
+  standalone: true,
+  imports: [ MatTableModule,
     MatSortModule,
     MatInputModule,
     MatIconModule,
     MatButtonModule,
     FormsModule,
-  ],
+    CommonModule ]
 })
-export class BidsInProgressComponent implements AfterViewInit {
+
+export class BidsInProgressComponent implements OnInit, AfterViewInit {
   @ViewChild(MatSort) sort!: MatSort;
   searchTerm = '';
-
-  bids: Bid[] = [
-    { jobId: '201', jobName: 'Audit', deadline: '2025-03-10', numBids: 5, action: 'View' },
-    { jobId: '202', jobName: 'Safety Test', deadline: '2025-03-12', numBids: 3, action: 'View' },
-    { jobId: '203', jobName: 'Environment Safety', deadline: '2025-03-15', numBids: 7, action: 'View' },
-  ];
-
-  dataSource: MatTableDataSource<Bid>;
+  dataSource: MatTableDataSource<Bid> = new MatTableDataSource<Bid>([]);
   displayedColumns: string[] = ['jobId', 'jobName', 'deadline', 'numBids', 'actions'];
 
-  constructor(private router: Router) {
-    this.dataSource = new MatTableDataSource(this.bids);
+  constructor(
+    private router: Router,
+    private clientJobsService: ClientJobsService
+  ) {}
+
+  ngOnInit() {
+    this.clientJobsService.getBidsInProgress().subscribe({
+      next: (response) => {
+        const jobs = response.jobs.map((job: BidInProgress) => ({
+          jobId: job.client_job_id,
+          jobName: job.scope_of_service,
+          deadline: job.proposal_deadline,
+          numBids: job.bid_count
+        }));
+        this.dataSource.data = jobs;
+        console.log('🔍 Jobs in progress:', jobs);
+      },
+      error: (err) => {
+        console.error('❌ Error fetching bids in progress:', err);
+      }
+    });
   }
 
   ngAfterViewInit() {
@@ -56,6 +63,9 @@ export class BidsInProgressComponent implements AfterViewInit {
   }
 
   handleAction(bid: Bid) {
-    this.router.navigate(['/client/received-bids'], { queryParams: { jobId: bid.jobId } });
+    this.router.navigate(['/client/received-bids'], {
+      queryParams: { jobId: bid.jobId }
+    });
   }
 }
+

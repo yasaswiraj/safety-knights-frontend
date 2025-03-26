@@ -1,7 +1,7 @@
 import { Component } from '@angular/core';
 import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
-import { ApiService } from '../../services/api.service'; // ✅ Import API Service
+import { ApiService } from '../../services/api.service'; // Import API Service
 import { CommonModule } from '@angular/common';
 
 @Component({
@@ -17,29 +17,29 @@ export class LoginComponent {
 
   constructor(private fb: FormBuilder, private router: Router, private apiService: ApiService) {
     this.loginForm = this.fb.group({
-      username: ['', [Validators.required]],  // ✅ Correct field name
+      username: ['', [Validators.required]],  // Correct field name
       password: ['', [Validators.required, Validators.minLength(6)]]
     });
     
     
   }
 
-  // ✅ Handle Login API Request and Store Token
+  // Handle Login API Request and Store Token
   onLogin() {
     console.log('Login clicked');
     if (this.loginForm.valid) {
       this.apiService.loginUser(this.loginForm.value).subscribe({
         next: (response) => {
-          console.log('✅ Login Successful:', response);
+          console.log('Login Successful:', response);
   
-          // ✅ Store Access Token in Local Storage
-          localStorage.setItem('access_token', response.access_token);
+          // localStorage.setItem('access_token', response.access_token);
+          // localStorage.setItem('user_id', response.user_id);
   
-          // ✅ Redirect to Dashboard
+          // Redirect to Dashboard
           this.router.navigate(['/client/bids-in-progress']);
         },
         error: (error) => {
-          console.error('❌ Login Failed:', error);
+          console.error('Login Failed:', error);
           this.errorMessage = error.error?.detail || 'Invalid credentials. Please try again.';
         }
       });
@@ -49,11 +49,7 @@ export class LoginComponent {
   
 
   navigateToSignUp() {
-<<<<<<< HEAD
-    this.router.navigate(['/consultant-form1']); // Redirect to sign-up
-=======
-    this.router.navigate(['/sign-up']);
->>>>>>> c2b4ee3f7b925a64e3be11d5e73b0da6af89c4a8
+    this.router.navigate(['/onboarding']);
   }
 
   navigateToForgotPassword() {

@@ -38,6 +38,8 @@ import { PendingBidsComponent } from './clientPages/pending-bids/pending-bids.co
 import { JobInProgressComponent } from './clientPages/job-in-progress/job-in-progress.component';
 import { CompletedJobsComponent } from './clientPages/completed-jobs/completed-jobs.component';
 import { OnboardingComponent } from './clientPages/clientForms/onboarding/onboarding.component';
+import { TrackJobsComponent } from './clientPages/track-jobs/track-jobs.component';
+import { FeedbackComponent } from './clientPages/feedback/feedback.component';
 
 export const routes: Routes = [
   { path: '', component: LandingPageComponent },
@@ -60,9 +62,9 @@ export const routes: Routes = [
       { path: 'bids-in-progress', component: BidsInProgressComponent },
       { path: 'pending-bids', component: PendingBidsComponent },
       { path: 'job-in-progress', component: JobInProgressComponent },
-      { path: 'completed-jobs', component: CompletedJobsComponent }
-
-
+      { path: 'completed-jobs', component: CompletedJobsComponent },
+      { path: 'track-jobs', component: TrackJobsComponent },
+      { path: 'feedback', component: FeedbackComponent }
     ],
   },
 

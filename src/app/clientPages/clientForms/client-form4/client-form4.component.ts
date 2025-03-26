@@ -9,6 +9,7 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MatCheckboxModule } from '@angular/material/checkbox';
 import { ViewEncapsulation } from '@angular/core';
+import { FormDataService } from '../../../services/form-data.service';
 
 @Component({
   selector: 'app-client-form4',
@@ -30,9 +31,12 @@ import { ViewEncapsulation } from '@angular/core';
 })
 export class ClientForm4Component {
   clientForm: FormGroup;
-  
+
   totalSteps = 3; // ✅ Total forms
   currentStep = 2; // ✅ This is the second step
+
+  form3Data: any = {}; // ✅ Store data from previous form
+  
 
   // List of insurance options
   insuranceOptions = [
@@ -44,7 +48,7 @@ export class ClientForm4Component {
 
   selectedInsuranceTypes: any[] = [];
 
-  constructor(private fb: FormBuilder, private router: Router) {
+  constructor(private fb: FormBuilder, private router: Router, private formDataService: FormDataService) {
     this.clientForm = this.fb.group({
       projectStartDate: ['', Validators.required],
       budget: ['', Validators.required],
@@ -52,15 +56,27 @@ export class ClientForm4Component {
       generalCoverage: [''],
       professionalCoverage: [''],
       workersCompCoverage: [''],
-      otherCoverage: ['']
+      otherCoverage: [''],
     });
+  }
+
+  ngOnInit() {
+    this.form3Data = this.formDataService.getFormData();
+    // You can patch values into your next form here if needed
   }
 
   // ✅ Updates the list of selected insurance types
   onInsuranceChange() {
-    const selectedValues = this.clientForm.get('selectedInsurances')?.value || [];
-    this.selectedInsuranceTypes = selectedValues;
+    this.selectedInsuranceTypes = this.clientForm.value.selectedInsurances || [];
+
+    this.selectedInsuranceTypes.forEach(insurance => {
+      const controlName = insurance.coverageControlName;
+      if (!this.clientForm.contains(controlName)) {
+        this.clientForm.addControl(controlName, this.fb.control('', Validators.required));
+      }
+    });
   }
+
 
   // ✅ Calculate the Progress Percentage
   get progressPercentage(): number {
@@ -75,6 +91,9 @@ export class ClientForm4Component {
   // ✅ Navigate to Next Form
   navigateToNextForm() {
     if (this.clientForm.valid) {
+      const form4Data = this.clientForm.value;
+      const combinedData = { ...this.form3Data, ...form4Data };
+      this.formDataService.setFormData(combinedData);
       this.router.navigate(['/client/form-5']);
     }
   }

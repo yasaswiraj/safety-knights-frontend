@@ -8,6 +8,7 @@ import { MatInputModule } from '@angular/material/input';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { ViewEncapsulation } from '@angular/core';
+import { FormDataService } from '../../../services/form-data.service';
 
 @Component({
   selector: 'app-client-form3',
@@ -17,7 +18,7 @@ import { ViewEncapsulation } from '@angular/core';
   encapsulation: ViewEncapsulation.None,
   imports: [
     CommonModule,
-    FormsModule, 
+    FormsModule,
     ReactiveFormsModule, // ✅ Required for formGroup
     MatSelectModule,
     MatFormFieldModule,
@@ -34,14 +35,20 @@ export class ClientForm3Component {
   totalSteps = 3; // Total forms in the process
   currentStep = 1; // Update this for each form
 
-  constructor(private fb: FormBuilder, private router: Router) {
+  constructor(
+    private fb: FormBuilder,
+    private router: Router,
+    private formDataService: FormDataService
+  ) {
     this.clientForm = this.fb.group({
-      scopeOfService: [[], Validators.required], 
+      scopeOfService: [[], Validators.required],
       jobDescription: ['', Validators.required],
       location: ['', Validators.required],
-      deadline: ['', Validators.required] // ✅ Ensures deadline exists in FormGroup
+      deadline: ['', Validators.required],
+      uploadedFile: [null]  // ✅ Add file field to the form
     });
   }
+
 
   // ✅ Calculate the Progress Percentage
   get progressPercentage(): number {
@@ -51,15 +58,20 @@ export class ClientForm3Component {
   // ✅ Navigate to Next Form
   navigateToNextForm() {
     if (this.clientForm.valid) {
+      this.formDataService.setFormData(this.clientForm.value);
       this.router.navigate(['/client/form-4']);
     }
   }
 
   // ✅ Handle File Upload
-  onFileSelected(event: any) {
-    const file = event.target.files[0];
-    if (file) {
+  onFileSelected(event: Event) {
+    const input = event.target as HTMLInputElement;
+    if (input.files && input.files.length > 0) {
+      const file = input.files[0];
       this.uploadedFile = file;
+      this.clientForm.patchValue({ uploadedFile: file });
+      this.formDataService.setUploadedFile(file); // 🔁 Optional but recommended for continuity
     }
   }
+
 }
