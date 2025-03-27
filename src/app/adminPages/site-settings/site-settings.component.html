@@ -3,16 +3,6 @@
   <div class="flex items-center mb-4 bg-white w-100 rounded-full">
     <button
   [class]="
-    activeTab === 'client'
-      ? 'rounded-full px-4 py-3 w-50 text-center bg-(--text-color) text-white cursor-pointer'
-      : 'text-(--text-color) px-4 py-3 w-50 text-center cursor-pointer'
-  "
-  (click)="switchTab('client')">
-  Edit Consultant Form
-</button>
-
-    <button
-  [class]="
     activeTab === 'consultant'
       ? 'rounded-full px-4 py-3 w-50 text-center bg-(--text-color) text-white cursor-pointer'
       : 'text-(--text-color) px-4 py-3 w-50 text-center cursor-pointer'
@@ -21,21 +11,41 @@
   Edit Consultant Form
 </button>
 
+    <button
+  [class]="
+    activeTab === 'client'
+      ? 'rounded-full px-4 py-3 w-50 text-center bg-(--text-color) text-white cursor-pointer'
+      : 'text-(--text-color) px-4 py-3 w-50 text-center cursor-pointer'
+  "
+  (click)="switchTab('client')">
+  Edit Client Form
+</button>
+
   </div>
   <div *ngIf="activeTab === 'consultant'">
     <div class="environmental-services">
       <div class="flex justify-between items-center mb-4">
         <div class="flex items-center">
           <h2 class="text-xl text-(--text-color)">Environmental Services</h2>
-          <button class="ml-4 flex items-center justify-center">
-            <i
-              class="fas fa-circle-plus cursor-pointer text-(--text-color)/80 hover:text-(--text-color)/50"></i>
-          </button>
+          <!-- Overlay wrapper for Add button (line ~30) -->
+          <div class="relative inline-block ml-4">
+            <button class="flex items-center justify-center">
+              <i class="fas fa-circle-plus cursor-pointer text-(--text-color)/80 hover:text-(--text-color)/50"></i>
+            </button>
+            <div class="absolute bottom-full mb-1 left-1/2 transform -translate-x-1/2 bg-gray-800 text-white text-xs rounded py-1 px-2 opacity-0 hover:opacity-100 transition duration-200">
+              Add Option
+            </div>
+          </div>
         </div>
-        <button
-          class="bg-(--text-color) hover:bg-(--text-color)/80 text-white px-4 py-2 rounded-full cursor-pointer">
-          delete selected
-        </button>
+        <!-- Overlay wrapper for Delete Selected button (line ~35) -->
+        <div class="relative inline-block">
+          <button class="bg-(--text-color) hover:bg-(--text-color)/80 text-white px-4 py-2 rounded-full cursor-pointer">
+            delete selected
+          </button>
+          <div class="absolute bottom-full mb-1 left-1/2 transform -translate-x-1/2 bg-gray-800 text-white text-xs rounded py-1 px-2 opacity-0 hover:opacity-100 transition duration-200">
+            Delete Selected
+          </div>
+        </div>
       </div>
       <app-options-tree
         *ngIf="dataSourceEnvironmental?.data?.length"
@@ -48,15 +58,25 @@
       <div class="flex justify-between items-center mb-4">
         <div class="flex items-center">
           <h2 class="text-xl text-(--text-color)">Health Services</h2>
-          <button class="ml-4 flex items-center justify-center">
-            <i
-              class="fas fa-circle-plus cursor-pointer text-(--text-color)/80 hover:text-(--text-color)/50"></i>
-          </button>
+          <!-- Overlay wrapper for Add button (line ~51) -->
+          <div class="relative inline-block ml-4">
+            <button class="flex items-center justify-center">
+              <i class="fas fa-circle-plus cursor-pointer text-(--text-color)/80 hover:text-(--text-color)/50"></i>
+            </button>
+            <div class="absolute bottom-full mb-1 left-1/2 transform -translate-x-1/2 bg-gray-800 text-white text-xs rounded py-1 px-2 opacity-0 hover:opacity-100 transition duration-200">
+              Add Option
+            </div>
+          </div>
         </div>
-        <button
-          class="bg-(--text-color) hover:bg-(--text-color)/80 text-white px-4 py-2 rounded-full cursor-pointer">
-          delete selected
-        </button>
+        <!-- Overlay wrapper for Delete Selected button (line ~56) -->
+        <div class="relative inline-block">
+          <button class="bg-(--text-color) hover:bg-(--text-color)/80 text-white px-4 py-2 rounded-full cursor-pointer">
+            delete selected
+          </button>
+          <div class="absolute bottom-full mb-1 left-1/2 transform -translate-x-1/2 bg-gray-800 text-white text-xs rounded py-1 px-2 opacity-0 hover:opacity-100 transition duration-200">
+            Delete Selected
+          </div>
+        </div>
       </div>
       <app-options-tree
         *ngIf="dataSourceHealth?.data?.length"

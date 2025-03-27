@@ -49,7 +49,7 @@ export class OptionsTreeComponent implements OnInit, OnChanges {
   }
 
   ngOnChanges(changes: SimpleChanges): void {
-    if (changes.dataSource && this['dataSource']) {
+    if (changes['dataSource'] && this['dataSource']) {
       this.treeData.set([...this['dataSource'].data]);
     }
   }
