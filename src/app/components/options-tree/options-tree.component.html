@@ -1,0 +1,65 @@
+<mat-tree [dataSource]="dataSource" [treeControl]="treeControl">
+  <!-- This is the tree node template for leaf nodes -->
+  <mat-tree-node *matTreeNodeDef="let node" matTreeNodePadding>
+    <button mat-icon-button disabled></button>
+    <mat-checkbox [(ngModel)]="node.selected" color="primary">
+      <ng-container *ngIf="!node.editing; else editField">
+        {{ node.name }}
+      </ng-container>
+      <ng-template #editField>
+        <input type="text" [(ngModel)]="node.name" (blur)="node.editing = false" class="border rounded px-1 py-0.5" />
+      </ng-template>
+    </mat-checkbox>
+    <button (click)="node.editing = !node.editing" class="ml-4 flex items-center justify-center">
+      <i class="fas {{ node.editing ? 'fa-circle-check' : 'fa-edit' }} cursor-pointer text-(--text-color)/80 hover:text-(--text-color)/50"></i>
+    </button>
+    <button
+      (click)="openAddChildDialog(node)"
+      class="ml-4 flex items-center justify-center">
+      <i class="fas fa-circle-plus cursor-pointer text-(--text-color)/80 hover:text-(--text-color)/50"></i>
+    </button>
+    <button
+      (click)="openDeleteDialog(node)"
+      class="ml-4 flex items-center justify-center">
+      <i class="fa-solid fa-ban text-red-600 cursor-pointer hover:text-red-800"></i>
+    </button>
+  </mat-tree-node>
+
+  <!-- This is the tree node template for expandable nodes -->
+  <mat-tree-node
+    *matTreeNodeDef="let node; when: hasChild"
+    matTreeNodePadding
+    matTreeNodeToggle
+    [cdkTreeNodeTypeaheadLabel]="node.name"
+    class="flex items-center">
+    <button
+      mat-icon-button
+      matTreeNodeToggle
+      [attr.aria-label]="'Toggle ' + node.name">
+      <mat-icon class="mat-icon-rtl-mirror">
+        {{ treeControl.isExpanded(node) ? 'expand_more' : 'chevron_right' }}
+      </mat-icon>
+    </button>
+    <mat-checkbox [(ngModel)]="node.selected" color="primary">
+      <ng-container *ngIf="!node.editing; else editFieldEx">
+        {{ node.name }}
+      </ng-container>
+      <ng-template #editFieldEx>
+        <input type="text" [(ngModel)]="node.name" (blur)="node.editing = false" class="border rounded px-1 py-0.5" />
+      </ng-template>
+    </mat-checkbox>
+    <button (click)="node.editing = !node.editing" class="ml-4 flex items-center justify-center">
+      <i class="fas {{ node.editing ? 'fa-circle-check' : 'fa-edit' }} cursor-pointer text-(--text-color)/80 hover:text-(--text-color)/50"></i>
+    </button>
+    <button
+      (click)="openAddChildDialog(node)"
+      class="ml-4 flex items-center justify-center">
+      <i class="fas fa-circle-plus cursor-pointer text-(--text-color)/80 hover:text-(--text-color)/50"></i>
+    </button>
+    <button
+      (click)="openDeleteDialog(node)"
+      class="ml-4 flex items-center justify-center">
+      <i class="fa-solid fa-ban text-red-600 cursor-pointer hover:text-red-800"></i>
+    </button>
+  </mat-tree-node>
+</mat-tree>
