@@ -1,0 +1,68 @@
+<div class="h-screen flex flex-col bg-[var(--background-color)]">
+    
+    <!-- ✅ Main Content -->
+    <div class="flex-grow flex items-center justify-center px-6 pt-28">
+        <div class="w-full bg-white p-12 rounded-2xl shadow-lg relative border border-[var(--elements-color)]">
+            <!-- Form Title -->
+            <h2 class="text-2xl font-bold text-[var(--accent-color)] text-center mb-6">
+                EHS Consulting Network - Client Agreement
+            </h2>
+
+            <!-- ✅ FORM -->
+            <form [formGroup]="agreementForm">
+                <!-- ✅ Preferences -->
+                <div class="mb-6">
+                    <h3 class="font-bold text-lg text-[var(--text-color)] mb-2">Preference and Commitments</h3>
+
+                    <!-- Preferences Input -->
+                    <mat-form-field class="w-full mt-2" appearance="fill">
+                        <mat-label>Do you have any preferences regarding which contractors should not be considered?</mat-label>
+                        <input matInput formControlName="preferences" placeholder="Enter preferences">
+                    </mat-form-field>
+                </div>
+
+                <!-- ✅ Commitment Question -->
+                <div class="mb-6">
+                    <p class="text-sm text-[var(--text-color)] mb-2">
+                        If the proposal is within budget, would you commit to moving forward? <span class="text-black-500">*</span>
+                    </p>
+
+                    <mat-radio-group formControlName="commitment" class="flex flex-col gap-2">
+                        <mat-radio-button value="yes">Yes</mat-radio-button>
+                        <mat-radio-button value="no">No</mat-radio-button>
+                        <div class="flex items-center gap-2">
+                            <mat-radio-button value="other"></mat-radio-button>
+                            <input matInput formControlName="otherCommitment" placeholder="Other (Specify)"
+                                class="border-b border-gray-400 focus:outline-none px-2 py-1 w-45"
+                                [disabled]="agreementForm.controls['commitment'].value !== 'other'">
+                        </div>
+                    </mat-radio-group>
+
+                    <!-- ✅ Error Message -->
+                    <mat-error *ngIf="agreementForm.get('commitment')?.invalid && agreementForm.get('commitment')?.touched">
+                        Please select an option.
+                    </mat-error>
+                </div>
+                
+
+
+                <!-- ✅ Back & Submit Buttons -->
+                <div class="flex justify-center items-center mt-6 relative">
+                    <!-- Back Button -->
+                    <button class="absolute bottom-0 left-0 w-[50px] h-[50px] cursor-pointer hover:bg-opacity-80"
+                        type="button"
+                        (click)="navigateBack()">
+                        <img src="/back_button.png" alt="Back" class="w-full h-full object-contain" />
+                    </button>
+                    <!-- Submit Button -->
+                    <button class="bg-[var(--elements-color)] text-black px-6 py-2 rounded-full shadow-md font-bold cursor-pointer hover:bg-opacity-80 w-40"
+                    type="button"
+                    (click)="submitForm()"
+                    [disabled]="agreementForm.invalid">
+                    SUBMIT
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>

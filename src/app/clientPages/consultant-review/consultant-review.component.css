@@ -1,0 +1,118 @@
+.modal-container {
+    width: 50vw;
+    max-width: 700px;
+    height: auto;
+    max-height: 90vh;
+    padding: 30px;
+    background: var(--background-color);
+    border-radius: 15px;
+    box-shadow: 0px 10px 30px rgba(0, 0, 0, 0.2);
+    overflow-y: auto;
+    position: relative;
+    display: flex;
+    flex-direction: column;
+}
+
+/* Fix Material Dialog Padding */
+.full-screen-dialog .mat-dialog-container {
+    padding: 0px !important;
+    background: var(--background-color) !important;
+    border-radius: 15px;
+}
+
+/* Close Button (X) */
+.close-btn {
+    position: absolute;
+    top: 10px;
+    right: 15px;
+    background: none;
+    border: none;
+    font-size: 20px;
+    cursor: pointer;
+    color: #666;
+}
+
+.close-btn:hover {
+    color: #333;
+}
+
+/* Header */
+.header {
+    text-align: center;
+    margin-bottom: 15px;
+}
+
+.profile-img {
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    border: 3px solid #a4784c;
+}
+
+h2 {
+    font-size: 22px;
+    font-weight: bold;
+    color: #7d5a44;
+}
+
+.rating {
+    color: #f4b400;
+    font-size: 16px;
+}
+
+.reviews {
+    color: gray;
+    font-size: 14px;
+}
+
+/* Reviews Container */
+.reviews-container {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+/* Review Card */
+.review {
+    background: white;
+    padding: 15px;
+    border-radius: 10px;
+    box-shadow: 0px 5px 15px rgba(0, 0, 0, 0.1);
+}
+
+/* Review Header */
+.review-header {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.reviewer-img {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    border: 2px solid #a4784c;
+}
+
+.reviewer-name {
+    font-weight: bold;
+    color: #7d5a44;
+}
+
+.review-title {
+    font-size: 16px;
+    color: #333;
+    margin-top: 5px;
+}
+
+.review-text {
+    font-size: 14px;
+    color: #444;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .modal-container {
+        width: 90vw;
+    }
+}

@@ -1,0 +1,131 @@
+.modal-container {
+    width: 50vw; /* ✅ Adjust width dynamically */
+    max-width: 700px; /* ✅ Limit max width */
+    height: auto; /* ✅ Let it expand based on content */
+    max-height: 90vh; /* ✅ Prevent overflowing the screen */
+    padding: 30px; /* ✅ Reduce padding to avoid white space */
+    background: var(--background-color); /* ✅ Ensures background fills */
+    border-radius: 15px;
+    box-shadow: 0px 10px 30px rgba(0, 0, 0, 0.2);
+    overflow-y: auto;
+    position: relative;
+    display: flex;
+    flex-direction: column;
+  }
+  
+  /* Fix Material Dialog Container Issues */
+  .full-screen-dialog .mat-dialog-container {
+    padding: 0px !important; /* ✅ Remove unnecessary padding */
+    background: var(--background-color) !important; /* ✅ Ensures consistent background */
+    border-radius: 15px;
+  }
+  
+  /* Close Button (X) */
+  .close-btn {
+    position: absolute;
+    top: 10px;
+    right: 15px;
+    background: none;
+    border: none;
+    font-size: 20px;
+    cursor: pointer;
+    color: #666;
+  }
+  
+  .close-btn:hover {
+    color: #333;
+  }
+  
+  /* Header Styling */
+  .header {
+    text-align: center;
+    margin-bottom: 15px;
+  }
+  
+  .profile-img {
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    border: 3px solid #a4784c;
+  }
+  
+  h2 {
+    font-size: 22px;
+    font-weight: bold;
+    color: #7d5a44;
+  }
+  
+  .rating {
+    color: #f4b400;
+    font-size: 16px;
+  }
+  
+  .reviews {
+    color: gray;
+    font-size: 14px;
+  }
+  
+  /* Profile Content */
+  .profile-content {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 10px;
+    width: 100%;
+  }
+  
+  /* Profile Details */
+  .profile-details {
+    width: 100%;
+  }
+  
+  /* Sections */
+  .section {
+    margin-bottom: 15px;
+  }
+  
+  h3 {
+    font-size: 18px;
+    color: #a4784c;
+    font-weight: bold;
+  }
+  
+  ul {
+    padding-left: 15px;
+  }
+  
+  ul li {
+    font-size: 14px;
+    color: #444;
+  }
+  
+  /* View Certificates Button */
+  .profile-actions {
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    margin-top: 15px;
+  }
+  
+  .view-cert-btn {
+    background: linear-gradient(to right, #d1a367, #b07840);
+    color: white;
+    font-size: 16px;
+    padding: 10px 15px;
+    border: none;
+    border-radius: 10px;
+    cursor: pointer;
+    transition: all 0.3s ease-in-out;
+  }
+  
+  .view-cert-btn:hover {
+    background: linear-gradient(to right, #b07840, #9a5e33);
+  }
+  
+  /* Responsive for Small Screens */
+  @media (max-width: 768px) {
+    .modal-container {
+      width: 90vw; /* ✅ Adjust for smaller screens */
+    }
+  }
+  

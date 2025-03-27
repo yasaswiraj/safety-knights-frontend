@@ -1,0 +1,119 @@
+<div class="onboarding-container">
+    <div class="hidden md:inline bg-(--accent-color)/10 -rotate-45 bottom-1/2 -left-1/2 h-screen w-screen fixed"></div>
+    <div class="hidden md:inline bg-(--text-color)/10 rotate-45 top-1/2 -left-1/2 h-screen w-screen fixed"></div>
+    <div
+        class="hidden md:flex text-3xl font-bold border-r-4 px-15 h-60 justify-center items-center text-(--accent-color)">
+        Welcome!
+    </div>
+    <div class="form-wrapper">
+        <h2 class="text-[var(--accent-color)] text-3xl font-bold mb-4 text-center">
+            EHS Consulting Network - Client Signup Form
+        </h2>
+
+        <!-- Tab Navigation -->
+        <mat-tab-group [(selectedIndex)]="currentStep" [disableRipple]="true" class="tabs-container">
+
+            <!-- Basic Information Tab -->
+            <mat-tab label="Basic Information">
+                <form [formGroup]="clientForm">
+                    <mat-form-field class="full-width">
+                        <mat-label>Email</mat-label>
+                        <input matInput formControlName="email" type="email">
+                        <mat-error *ngIf="clientForm.get('email')?.hasError('required')">Email is required</mat-error>
+                        <mat-error *ngIf="clientForm.get('email')?.hasError('email')">Please enter a valid
+                            email</mat-error>
+                    </mat-form-field>
+
+                    <mat-form-field class="full-width">
+                        <mat-label>Full Name</mat-label>
+                        <input matInput formControlName="name">
+                        <mat-error *ngIf="clientForm.get('name')?.hasError('required')">Full name is
+                            required</mat-error>
+                    </mat-form-field>
+
+                    <mat-form-field class="full-width">
+                        <mat-label>Password</mat-label>
+                        <input matInput type="password" formControlName="password">
+                        <mat-error *ngIf="clientForm.get('password')?.hasError('required')">Password is
+                            required</mat-error>
+                        <mat-error *ngIf="clientForm.get('password')?.hasError('minlength')">Password must be at least 6
+                            characters</mat-error>
+                    </mat-form-field>
+
+                    <mat-form-field class="full-width">
+                        <mat-label>Confirm Password</mat-label>
+                        <input matInput type="password" formControlName="confirm_password">
+                        <mat-error *ngIf="clientForm.get('confirm_password')?.hasError('required')">Confirm password is
+                            required</mat-error>
+                    </mat-form-field>
+
+                    <div class="button-container ">
+                        <div class="login-link text-sm text-left">
+                            <span>Already have an account?</span>
+                            <a [routerLink]="'/login'" class="text-[--accent-color] font-bold hover:underline ml-1">Login</a>
+                          </div>
+                        <button mat-raised-button color="primary " (click)="nextStep()"
+                            [disabled]="!validateCurrentStep()">
+                            <img src="/next_button.png" alt="Next" class="button-icon" />
+                        </button>
+                    </div>
+                </form>
+            </mat-tab>
+
+            <!-- Company Details Tab -->
+            <mat-tab label="Company Details">
+                <form [formGroup]="clientForm">
+                    <mat-form-field class="full-width">
+                        <mat-label>Job Title</mat-label>
+                        <input matInput formControlName="job_title">
+                        <mat-error *ngIf="clientForm.get('job_title')?.hasError('required')">Job title is
+                            required</mat-error>
+                    </mat-form-field>
+
+                    <mat-form-field class="full-width">
+                        <mat-label>Company Name</mat-label>
+                        <input matInput formControlName="company_name">
+                        <mat-error *ngIf="clientForm.get('company_name')?.hasError('required')">Company name is
+                            required</mat-error>
+                    </mat-form-field>
+
+                    <mat-form-field class="full-width">
+                        <mat-label>Company Address</mat-label>
+                        <input matInput formControlName="company_address">
+                        <mat-error *ngIf="clientForm.get('company_address')?.hasError('required')">Company address is
+                            required</mat-error>
+                    </mat-form-field>
+
+                    <mat-form-field class="full-width">
+                        <mat-label>Contact Number</mat-label>
+                        <input matInput formControlName="phone_number">
+                        <mat-error *ngIf="clientForm.get('phone_number')?.hasError('required')">
+                            Contact number is required
+                        </mat-error>
+                        <mat-error *ngIf="clientForm.get('phone_number')?.hasError('pattern')">
+                            Please enter a valid 10-digit number
+                        </mat-error>
+                    </mat-form-field>
+
+                    <!-- Navigation Buttons -->
+                    <div class="button-container">
+                        <button mat-button class="back-button" (click)="previousStep()">
+                            <img src="/back_button.png" alt="Back" class="button-icon" />
+                        </button>
+
+                        <button mat-raised-button class="submit-button" color="primary" (click)="submitForm()">
+                            Submit & Get Started
+                        </button>
+                    </div>
+                </form>
+            </mat-tab>
+        </mat-tab-group>
+    </div>
+
+
+
+    <!-- Error Message -->
+    <div *ngIf="errorMessage" class="error-message">
+        {{ errorMessage }}
+    </div>
+</div>

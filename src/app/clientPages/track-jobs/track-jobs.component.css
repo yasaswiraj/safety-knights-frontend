@@ -1,0 +1,72 @@
+/* ✅ Centers the grid dynamically */
+.track-jobs-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); /* Adjusts columns dynamically */
+    gap: 25px;
+    width: 80%;
+    max-width: 1200px;
+    justify-content: center; /* Ensures content is centered */
+}
+
+/* ✅ Ensures the job cards look neat */
+.job-card {
+    background: white;
+    padding: 20px;
+    border-radius: 15px;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.15);
+    text-align: center;
+    border: 1px solid #ddd;
+    transition: transform 0.3s ease-in-out, box-shadow 0.3s ease-in-out;
+    position: relative; /* Allows positioning of message icon */
+}
+
+/* ✅ Hover effect for job cards */
+.job-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+}
+
+/* ✅ Consultant Name & Job Title (Using --element-color) */
+.consultant-name {
+    font-weight: bold;
+    font-size: 1.1rem;
+    color: var(--element-color); /* ✅ Dynamic color */
+}
+
+.job-title {
+    font-weight: bold;
+    font-size: 1rem;
+    color: var(--element-color); /* ✅ Dynamic color */
+}
+
+/* ✅ Style the message icon */
+.message-icon {
+    background: none;
+    border: none;
+    cursor: pointer;
+    font-size: 1.2rem;
+    color: #8B4513; /* Same brown as the user icon */
+    transition: transform 0.2s ease-in-out, color 0.2s;
+    position: absolute;
+    bottom: 10px;
+    right: 10px;
+}
+
+/* ✅ Add hover effect */
+.message-icon:hover {
+    transform: scale(1.1);
+    color: #A0522D; /* Slightly lighter brown */
+}
+
+/* ✅ Consultant Name & Job Title */
+.consultant-name {
+    font-weight: bold;
+    font-size: 1.1rem;
+    color: var(--element-color, #8B4513); /* Use the variable or fallback brown */
+}
+
+.job-title {
+    font-weight: bold;
+    font-size: 1rem;
+    color: var(--element-color, #8B4513); /* Use the variable or fallback brown */
+}
