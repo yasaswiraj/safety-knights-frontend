@@ -6,4 +6,8 @@ import { Component } from '@angular/core';
   templateUrl: './dashboard.component.html',
   styleUrl: './dashboard.component.css',
 })
-export class AdminDashboardComponent {}
+export class AdminDashboardComponent {
+  totalUsers = 69325;
+  totalBids = 45232;
+  currentMatches = 45232;
+}

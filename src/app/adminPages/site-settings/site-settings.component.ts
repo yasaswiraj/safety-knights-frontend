@@ -148,7 +148,7 @@ const healthAndSafetyOptions = [];
   styleUrl: './site-settings.component.css',
 })
 export class SiteSettingsComponent {
-  activeTab: string = 'client'; // Default to client tab
+  activeTab: string = 'consultant'; 
 
   private _transformer = (node: any, level: number) => {
     return {
