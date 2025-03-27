@@ -1,53 +1,51 @@
 <div class="rounded-lg px-8">
-    <h1 class="text-3xl font-bold mb-4">Completed Jobs</h1>
+  <h1 class="text-3xl font-bold mb-4">Completed Jobs</h1>
 
-    <!-- Search Bar -->
-    <div class="bg-white flex items-center px-3 py-1 text-sm border border-gray-300 rounded-full">
-        <i class="fas fa-search text-gray-400 pr-1"></i>
-        <input
-            matInput
-            [(ngModel)]="searchTerm"
-            (input)="applyFilter()"
-            placeholder="Search completed jobs"
-            class="w-full p-1 rounded-full outline-none placeholder-gray-400 bg-transparent"
-        />
-    </div>
+  <!-- Search Bar -->
+  <div class="bg-white flex items-center px-3 py-1 text-sm border border-gray-300 rounded-full">
+    <i class="fas fa-search text-gray-400 pr-1"></i>
+    <input matInput [(ngModel)]="searchTerm" (input)="applyFilter()" placeholder="Search completed jobs"
+      class="w-full p-1 rounded-full outline-none placeholder-gray-400 bg-transparent" />
+  </div>
 
-    <!-- Table Wrapper -->
-    <div class="bg-white h-[calc(100vh-17rem)] overflow-auto mt-4 rounded-3xl border border-gray-300">
-        <table mat-table [dataSource]="dataSource" matSort class="mat-elevation-z8 w-full">
+  <!-- Table Wrapper -->
+  <div class="bg-white h-[calc(100vh-17rem)] overflow-auto mt-4 rounded-3xl border border-gray-300">
+    <table mat-table [dataSource]="dataSource" matSort class="mat-elevation-z8 w-full">
 
-            <!-- Job ID Column -->
-            <ng-container matColumnDef="jobId">
-                <th mat-header-cell *matHeaderCellDef mat-sort-header class="p-3 text-left">Job ID</th>
-                <td mat-cell *matCellDef="let job" class="p-3">{{ job.jobId }}</td>
-            </ng-container>
+      <ng-container matColumnDef="jobId">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header>Job ID</th>
+        <td mat-cell *matCellDef="let job">{{ job.client_job_id }}</td>
+      </ng-container>
 
-            <!-- Job Name Column -->
-            <ng-container matColumnDef="jobName">
-                <th mat-header-cell *matHeaderCellDef mat-sort-header class="p-3 text-left">Job Name</th>
-                <td mat-cell *matCellDef="let job" class="p-3">{{ job.jobName }}</td>
-            </ng-container>
+      <ng-container matColumnDef="jobName">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header>Job Name</th>
+        <td mat-cell *matCellDef="let job">{{ job.scope_of_service }}</td>
+      </ng-container>
 
-            <!-- Consultant Column -->
-            <ng-container matColumnDef="consultant">
-                <th mat-header-cell *matHeaderCellDef mat-sort-header class="p-3 text-left">Consultant</th>
-                <td mat-cell *matCellDef="let job" class="p-3">{{ job.consultant }}</td>
-            </ng-container>
+      <ng-container matColumnDef="consultant">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header>Consultant</th>
+        <td mat-cell *matCellDef="let job">{{ job.consultant_company }}</td>
+      </ng-container>
 
-            <!-- Share Feedback Column -->
-            <ng-container matColumnDef="feedback">
-                <th mat-header-cell *matHeaderCellDef class="p-3 text-left">Share Feedback</th>
-                <td mat-cell *matCellDef="let job" class="p-3">
-                    <button mat-icon-button color="primary" (click)="handleFeedback(job)">
-                        <i class="fa-solid fa-comment-dots"></i> <!-- Feedback Icon -->
-                    </button>
-                </td>
-            </ng-container>
+      <ng-container matColumnDef="budget">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header>Bid Amount</th>
+        <td mat-cell *matCellDef="let job">${{ job.bid_amount }}</td>
+      </ng-container>
 
-            <!-- Table Header & Rows -->
-            <tr mat-header-row *matHeaderRowDef="displayedColumns" sticky></tr>
-            <tr mat-row *matRowDef="let row; columns: displayedColumns"></tr>
-        </table>
-    </div>
+      <ng-container matColumnDef="feedback">
+        <th mat-header-cell *matHeaderCellDef>Feedback</th>
+        <td mat-cell *matCellDef="let job">
+          <button mat-icon-button color="primary" (click)="handleFeedback(job)" >
+            <i class="fa-solid fa-comment-dots"></i>
+          </button>
+
+        </td>
+      </ng-container>
+
+      <!-- Table structure -->
+      <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+      <tr mat-row *matRowDef="let row; columns: displayedColumns"></tr>
+
+    </table>
+  </div>
 </div>

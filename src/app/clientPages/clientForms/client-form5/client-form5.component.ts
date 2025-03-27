@@ -35,10 +35,10 @@ export class ClientForm5Component {
   showOtherPaymentTerm = false;
   showOtherPaymentMethod = false;
 
-  totalSteps = 3; 
-  currentStep = 3; 
+  totalSteps = 3;
+  currentStep = 3;
 
-  form4Values: any = {}; 
+  form4Values: any = {};
 
   paymentOptions = [
     { label: '30 Days', value: '30_days' },
@@ -66,8 +66,21 @@ export class ClientForm5Component {
 
   ngOnInit() {
     this.form4Values = this.formDataService.getFormData();
-    // You can prefill form or use values as needed
+
+    const data = this.form4Values;
+    if (data) {
+      this.clientForm.patchValue({
+        paymentTerms: data.payment_terms || '',
+        otherPaymentTerm: data.otherPaymentTerm || '',
+        paymentMethod: data.payment_method || '',
+        otherPaymentMethod: data.otherPaymentMethod || ''
+      });
+
+      this.showOtherPaymentTerm = data.payment_terms === 'other';
+      this.showOtherPaymentMethod = data.payment_method === 'other';
+    }
   }
+
 
 
   get progressPercentage(): number {
@@ -90,31 +103,55 @@ export class ClientForm5Component {
     if (this.clientForm.valid) {
       const form5Data = this.clientForm.value;
       const form3and4 = this.form4Values;
-  
+
+      const formatToDateOnly = (dateStr: string | Date) => {
+        const d = new Date(dateStr);
+        return d.toISOString().split('T')[0];
+      };
       const combinedPayload = {
         scope_of_service: form3and4.scopeOfService.join(', '),
         work_in_detail: form3and4.jobDescription,
         project_location: form3and4.location,
-        proposal_deadline: form3and4.deadline,
-        expected_start_date: form3and4.projectStartDate,
-        budget: parseInt(form3and4.budget, 10),  
+        proposal_deadline: formatToDateOnly(form3and4.deadline),
+        expected_start_date: formatToDateOnly(form3and4.projectStartDate),
+        budget: parseInt(form3and4.budget, 10),
         insurance_requirements: (form3and4.selectedInsurances as { label: string }[]).map((i) => i.label).join(', '),
         payment_terms: form5Data.paymentTerms,
         payment_method: form5Data.paymentMethod,
         contractor_preferences: '',
         commitment_to_proceed: ''
       };
-  
-      this.clientJobsService.createJob(combinedPayload).subscribe({
-        next: (response) => {
-          console.log('Job created:', response);
-          this.router.navigate(['/client/pending-bids']);
-        },
-        error: (err) => {
-          console.error('Job creation failed:', err);
-        }
-      });
+
+      const jobId = this.formDataService.getJobId();
+
+      if (jobId) {
+        // edit job flow
+        this.clientJobsService.updateJob(jobId, combinedPayload).subscribe({
+          next: (response) => {
+            console.log('Job updated:', response);
+            this.router.navigate(['/client/pending-bids']);
+            console.log("Form 5 Edit: ", combinedPayload);
+          },
+          error: (err) => {
+            console.error('Job update failed:', err);
+          }
+        });
+      } else {
+        // New job creation flow
+        this.clientJobsService.createJob(combinedPayload).subscribe({
+          next: (response) => {
+            console.log('Job created:', response);
+            console.log("Form 5 Create: ", combinedPayload);
+            this.formDataService.clearAll();
+            this.router.navigate(['/client/pending-bids']);
+          },
+          error: (err) => {
+            console.error('Job creation failed:', err);
+          }
+        });
+      }
     }
   }
+
 }
 

@@ -8,9 +8,11 @@ import { Injectable } from '@angular/core';
 export class FormDataService {
   private formData: any = {};
   private file: File | null = null;
+  private jobId: number | null = null;
 
-  setFormData(data: any) {
-    this.formData = { ...this.formData, ...data };
+  setFormData(data: any, jobId?: number) {
+    this.formData = { ...this.formData, ...data }; // ✅ merge instead of replace
+    if (jobId !== undefined) this.jobId = jobId;
   }
 
   getFormData() {
@@ -25,9 +27,14 @@ export class FormDataService {
     return this.file;
   }
 
+  getJobId() {
+    return this.jobId;
+  }
+
   clearAll() {
     this.formData = {};
     this.file = null;
+    this.jobId = null;
   }
 }
 
