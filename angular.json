@@ -25,8 +25,8 @@
                 "output": "/"
               },
               {
-                "input": "src",
                 "glob": "_redirects",
+                "input": "src",
                 "output": "/"
               }
             ],
@@ -87,8 +87,8 @@
                 "output": "/"
               },
               {
-                "input": "src",
                 "glob": "_redirects",
+                "input": "src",
                 "output": "/"
               }
             ],
