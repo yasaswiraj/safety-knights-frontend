@@ -1,3 +1,66 @@
 <div>
-  <div class="text-3xl font-bold text-(--text-color)">Vetting</div>
+  <div class="flex justify-between items-center">
+    <div class="text-3xl font-bold text-(--text-color)">Vetting</div>
+    <button *ngIf="expandedElement" class="ml-2 px-2 py-1 bg-gray-200 rounded-full hover:bg-gray-300" (click)="closeDetail()">
+      Close
+    </button>
+  </div>
+  <app-vetting-user [ngClass]="{'hidden': !expandedElement}"></app-vetting-user>
+  <div [ngClass]="{'invisible': expandedElement}">
+    <!-- Search Bar -->
+  <div class="bg-white flex items-center px-3 py-1 text-sm border border-gray-300 rounded-full my-4">
+    <i class="fas fa-search text-gray-400 pr-1"></i>
+    <input type="text" (input)="onSearch($event)" placeholder="Search consultants" 
+           class="w-full p-1 rounded-full outline-none placeholder-gray-400 bg-transparent" />
+  </div>
+  <!-- Table Wrapper with Scrolling -->
+  <div class="bg-white h-[calc(100vh-17rem)] overflow-auto rounded-3xl border border-gray-300">
+    <table mat-table [dataSource]="dataSource" matSort class="mat-elevation-z8 w-full">
+      <!-- ID Column -->
+      <ng-container matColumnDef="id">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header class="p-3">ID</th>
+        <td mat-cell *matCellDef="let consultant" class="p-3">{{ consultant.id }}</td>
+      </ng-container>
+      <!-- Consultant Name Column -->
+      <ng-container matColumnDef="name">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header class="p-3">Consultant Name</th>
+        <td mat-cell *matCellDef="let consultant" class="p-3">{{ consultant.name }}</td>
+      </ng-container>
+      <!-- Actions Column -->
+      <ng-container matColumnDef="actions">
+        <th mat-header-cell *matHeaderCellDef class="p-3 w-20">Actions</th>
+        <td mat-cell *matCellDef="let consultant" class="p-3 flex justify-center items-center">
+          <button mat-icon-button color="primary" (click)="approve(consultant)">
+            <i class="fa-solid fa-check text-green-500"></i>
+          </button>
+          <button mat-icon-button color="warn" (click)="decline(consultant)">
+            <i class="fa-solid fa-times text-red-500"></i>
+          </button>
+          <button mat-icon-button color="accent" (click)="requestChanges(consultant)">
+            <i class="fa-solid fa-edit"></i>
+          </button>
+          <!-- Expand Button added to actions -->
+          <button mat-icon-button (click)="toggleRow(consultant); $event.stopPropagation()">
+            <i class="fa-solid fa-up-right-and-down-left-from-center"></i>
+          </button>
+        </td>
+      </ng-container>
+      <!-- Header Row -->
+      <tr mat-header-row *matHeaderRowDef="displayedColumns" sticky></tr>
+      <!-- Main Data Row -->
+      <tr mat-row *matRowDef="let consultant; columns: displayedColumns;"></tr>
+      <!-- Expanded Detail Row with when predicate -->
+      <tr mat-row 
+          *matRowDef="let consultant; columns: ['detail']; when: isExpansionDetailRow" 
+          class="detail-row">
+        <td [attr.colspan]="displayedColumns.length">
+          <div class="p-3 border-t border-gray-300">
+            <p><strong>Profile Details:</strong> Full profile info and attached files go here.</p>
+            <button mat-raised-button color="primary" (click)="addFile(consultant)">Add File</button>
+          </div>
+        </td>
+      </tr>
+    </table>
+  </div>
+  </div>
 </div>
