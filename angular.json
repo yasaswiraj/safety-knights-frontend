@@ -25,7 +25,7 @@
                 "output": "/"
               },
               {
-                "glob": ".htaccess",
+                "glob": "_redirects",
                 "input": "src",
                 "output": "/"
               }
@@ -87,7 +87,7 @@
                 "output": "/"
               },
               {
-                "glob": ".htaccess",
+                "glob": "_redirects",
                 "input": "src",
                 "output": "/"
               }
