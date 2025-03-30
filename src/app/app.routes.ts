@@ -29,9 +29,10 @@ import { ConsultantForm8Component } from './pages/consultant-forms/consultant-fo
 import { ConsultantFormsSubmissionComponent } from './pages/consultant-forms/consultant-forms-submission/consultant-forms-submission.component';
 import { ConsultantMatchesComponent } from './pages/consultant-matches/consultant-matches.component';
 import { ConsultantActiveJobsComponent } from './pages/consultant-active-jobs/consultant-active-jobs.component';
-import { ConsultantBiddedJobs } from './pages/consultant-bidded-jobs/consultant-bidded-jobs.component';
+import { ConsultantBiddedJobsComponent } from './pages/consultant-bidded-jobs/consultant-bidded-jobs.component';
 import path from 'path';
 import { ConsultantCompletedJobsComponent } from './pages/consultant-completed-jobs/consultant-completed-jobs.component';
+
 
 import { BidsInProgressComponent } from './clientPages/bids-in-progress/bids-in-progress.component';
 import { PendingBidsComponent } from './clientPages/pending-bids/pending-bids.component';
@@ -91,8 +92,8 @@ export const routes: Routes = [
     },
    
   {path: 'consultant-matches', component: ConsultantMatchesComponent },
+  {path: 'consultant-bidded', component: ConsultantBiddedJobsComponent},
   {path: 'consultant-active', component: ConsultantActiveJobsComponent},
-  {path: 'consultant-bidded', component: ConsultantBiddedJobs},
   {path: 'consultant-completed', component: ConsultantCompletedJobsComponent}
   ]    
   },

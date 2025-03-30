@@ -31,15 +31,15 @@ import { FormDataService } from '../../../services/form-data-service';
 })
 export class ConsultantForm3Component implements OnInit {
   signUpForm1: FormGroup;
-  services = ['Soil and Groundwater Sampling', 'Contamination Delineation', 'Waste Profiling', 'Beneficial Reuse Determination'];
+  services = ['Environmental Facility Compliance', 'Property Transactions', 'Field Activities/Construction', 'Hazardous Building Materials Surveys'];
   dependentServices: string[] = [];
   uploadedFile: File | null = null;
 
   private dependentOptionsMap: Record<string, string[]> = {
-    'Soil and Groundwater Sampling': ['Phase I ESA', 'Groundwater Monitoring', 'Vapor Intrusion Assessment'],
-    'Contamination Delineation': ['Site Characterization', 'Risk-Based Closure', 'Remedial Design'],
-    'Waste Profiling': ['Hazardous Waste Classification', 'DOT Classification', 'Waste Minimization'],
-    'Beneficial Reuse Determination': ['Material Testing', 'Regulatory Compliance', 'Sustainability Assessment']
+    'Environmental Facility Compliance': ['Environmental Compliance Programs', 'Environmental Compliance Audits', 'Air Emission Permitting','Wastewater Permitting & Management','Storm Water Permitting & Management (SWPPP)','Hazardous Waste Management','Spill / Discharge Planning (SPCC)','Chemical / Petroleum Bulk Storage'],
+    'Property Transactions': ['Strategic Transaction Support', 'Phase I / II Site Assessment (ASTM, AAI)', 'EHS Compliance / Risk Evaluation','Hazardous Materials Survey (asbestos, lead, mold, PCBs)','Liability Quantification / Cost Modeling','Post-Acquisition Integration /Optimization','Pre-Divestiture Planning','Portfolio Management'],
+    'Field Activities/Construction': ['Soil and Groundwater Sampling', 'Contamination Delineation', 'Waste Profiling','Beneficial Reuse Determination'],
+    'Hazardous Building Materials Surveys': ['Asbestos', 'Lead', 'Mold']
   };
   totalSteps = 2; // Total forms in the process
   currentStep = 1; // Update this for each form

@@ -31,15 +31,14 @@ import { FormDataService } from '../../../services/form-data-service'; // Import
 })
 export class ConsultantForm4Component implements OnInit {
   signUpForm1: FormGroup;
-  services = ['Soil and Groundwater Sampling', 'Contamination Delineation', 'Waste Profiling', 'Beneficial Reuse Determination'];
+  services = ['Safety Facility Compliance', 'Industrial Hygiene', 'Construction Safety'];
   dependentServices: string[] = [];
   uploadedFile: File | null = null;
 
   private dependentOptionsMap: Record<string, string[]> = {
-    'Soil and Groundwater Sampling': ['Phase I ESA', 'Groundwater Monitoring', 'Vapor Intrusion Assessment'],
-    'Contamination Delineation': ['Site Characterization', 'Risk-Based Closure', 'Remedial Design'],
-    'Waste Profiling': ['Hazardous Waste Classification', 'DOT Classification', 'Waste Minimization'],
-    'Beneficial Reuse Determination': ['Material Testing', 'Regulatory Compliance', 'Sustainability Assessment']
+    'Safety Facility Compliance': ['Infectious Disease Preparedness and Response Plans','Water Management Plans - Lead, Legionella','OSHA Compliance Programs','Job Hazard / Safety Analyses (JHAs/JSAs)','OSHA / Risk Audits and Assesments','Personal Protective Equipment','Confined Space','Machine Gaurding'],
+    'Industrial Hygiene': ['Industrial Hygiene Assesments','Ventilation Assessments / Controls','Indoor Air Quality','Noise Assessments / Controls','Asbestos, Lead & Mold Assessments, Management and Abatement'],
+    'Construction Safety': ['Company / Site-Specific Health & Safety Plans','On-Site Quality Control and Safety']
   };
   totalSteps = 2; // Total forms in the process
   currentStep = 2; // Update this for each form

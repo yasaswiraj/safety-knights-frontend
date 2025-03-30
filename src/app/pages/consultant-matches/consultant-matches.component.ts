@@ -6,7 +6,10 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatSortModule, MatSort } from '@angular/material/sort';
+import { MatDialog } from '@angular/material/dialog';
 import { FormsModule } from '@angular/forms';
+import { JobDetailDialogComponent } from '../job-detail-dialog/job-detail-dialog.component';
+import { ConsultantMatchesService } from '../../services/consultant-match.service';
 
 @Component({
   selector: 'app-consultant-matches',
@@ -26,65 +29,24 @@ import { FormsModule } from '@angular/forms';
 })
 export class ConsultantMatchesComponent implements AfterViewInit {
   @ViewChild(MatSort) sort!: MatSort;
-  searchQuery: string = '';
-  dataSource: MatTableDataSource<any>;
-
   displayedColumns: string[] = [
-    'jobid',
-    'jobname',
-    'company',
-    'postedDate',
-    'deadline',
+    'job_id',
+    'budget',
+    'project_location',
+    'expected_start_date',
     'actions'
   ];
 
-  jobs = [
-    {
-      jobid: 'J34232',
-      jobname: 'Software Engineer',
-      company: 'Google',
-      postedDate: '2025-02-20',
-      deadline: '2025-03-15',
-    },
-    {
-      jobid: 'J64362',
-      jobname: 'Data Scientist',
-      company: 'Facebook',
-      postedDate: '2025-02-18',
-      deadline: '2025-03-10',
-    },
-    {
-      jobid: 'J43212',
-      jobname: 'ML Engineer',
-      company: 'Amazon',
-      postedDate: '2025-02-22',
-      deadline: '2025-03-18',
-    },
-    {
-      jobid: 'J93242',
-      jobname: 'Cloud Architect',
-      company: 'Microsoft',
-      postedDate: '2025-02-25',
-      deadline: '2025-03-20',
-    },
-    {
-      jobid: 'J53221',
-      jobname: 'Backend Developer',
-      company: 'Netflix',
-      postedDate: '2025-02-15',
-      deadline: '2025-03-12',
-    },
-    {
-      jobid: 'J75339',
-      jobname: 'DevOps Engineer',
-      company: 'Spotify',
-      postedDate: '2025-02-27',
-      deadline: '2025-03-25',
-    },
-  ];
+  dataSource: MatTableDataSource<any> = new MatTableDataSource();
+  errorMessage: string | undefined;
 
-  constructor() {
-    this.dataSource = new MatTableDataSource(this.jobs);
+  constructor(
+    private consultantMatchesService: ConsultantMatchesService,
+    private dialog: MatDialog
+  ) {}
+
+  ngOnInit() {
+    this.fetchConsultantMatches();  // Fetch on component load
   }
 
   ngAfterViewInit() {
@@ -96,15 +58,62 @@ export class ConsultantMatchesComponent implements AfterViewInit {
     this.dataSource.filter = filterValue.trim().toLowerCase();
   }
 
-  viewDetail(job: any) {
-    console.log('Viewing details for:', job);
-    // Navigate to job details page or show a modal with more info
-  }
 
-  // JavaScript: Define the updateJob function
-updateJob(job: any) {
-  console.log('Updating job:', job);
-  // Implement the logic to navigate to an update form or open a modal
+fetchConsultantMatches() {
+  this.consultantMatchesService.getConsultantMatches().subscribe(response => {
+    console.log('Fetched matched jobs:', response.matched_jobs);
+    this.dataSource.data = response.matched_jobs;
+  }, error => {
+    console.error('Error fetching matched jobs:', error);
+  });
 }
 
+
+  // fetchConsultantMatches() {
+  //   console.log('Fetching consultant matches...');
+    
+  //   this.consultantMatchesService.getConsultantMatches().subscribe({
+  //     next: (response) => {
+  //       console.log('Consultant matches fetched successfully:', response);
+
+  //       if (response && response.matched_jobs) {
+  //         this.dataSource.data = response.matched_jobs.map((job: any) => ({
+  //           job_id: job.job_id,
+  //           budget: job.budget,
+  //           project_location: job.project_location,
+  //           expected_start_date: job.expected_start_date,
+  //         }));
+  //       }
+  //     },
+  //     error: (err) => {
+  //       console.error('Error fetching consultant matches:', err);
+  //     }
+  //   });
+  // }
+
+  viewDetail(job: any): void {
+    console.log('View detail clicked for job:', job);
+    const dialogRef = this.dialog.open(JobDetailDialogComponent, {
+      width: '1000px',
+      data: {
+        jobid: job.job_id,  // Updated property name
+        description: 'Work on the manufacturing department handling 150 employees',
+        createdDate: '2025-01-10',
+        deadline: '2025-04-13',
+        matchingCriteria: 'Skills: Similar work history, Preferred client',
+        phone: '000111290',
+        email: 'janedoe@gmail.com'
+      }
+      
+    });
+
+    dialogRef.afterClosed().subscribe(result => {
+      if (result && result.jobId) {
+        console.log(`Removing job with ID: ${result.jobId}`);
+  
+        // Remove job from table
+        this.dataSource.data = this.dataSource.data.filter(j => j.job_id !== result.jobId);
+      }
+    });
+  }
 }

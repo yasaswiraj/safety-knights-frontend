@@ -41,7 +41,7 @@ export class ConsultantFormsSubmissionComponent {
     
     console.log('Final JSON Payload:', this.finalPayload);
 
-    this.http.post('http://127.0.0.1:8000/consultant/signup', this.finalPayload)
+    this.http.post('http://127.0.0.1:8000/consultant/signup', this.finalPayload,{ withCredentials: true })
       .subscribe(response => {
         console.log('Form submitted successfully', response);
         this.formDataService.resetFormData(); // Clear after submission
