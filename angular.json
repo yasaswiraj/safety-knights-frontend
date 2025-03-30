@@ -21,10 +21,19 @@
             "assets": [
               {
                 "glob": "**/*",
-                "input": "public"
+                "input": "public",
+                "output": "/"
+              },
+              {
+                "input": "src",
+                "glob": "_redirects",
+                "output": "/"
               }
             ],
-            "styles": ["src/styles.css", "node_modules/@fortawesome/fontawesome-free/css/all.min.css"],
+            "styles": [
+              "src/styles.css",
+              "node_modules/@fortawesome/fontawesome-free/css/all.min.css"
+            ],
             "scripts": []
           },
           "configurations": {
@@ -74,7 +83,13 @@
             "assets": [
               {
                 "glob": "**/*",
-                "input": "public"
+                "input": "public",
+                "output": "/"
+              },
+              {
+                "input": "src",
+                "glob": "_redirects",
+                "output": "/"
               }
             ],
             "styles": ["src/styles.css"],
@@ -91,9 +106,7 @@
     }
   },
   "cli": {
-    "schematicCollections": [
-      "angular-eslint"
-    ],
+    "schematicCollections": ["angular-eslint"],
     "analytics": "eb991d3a-e670-4013-bc7a-9ed96dffba2b"
   }
 }
