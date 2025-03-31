@@ -36,7 +36,7 @@ export class LoginComponent {
           // localStorage.setItem('user_id', response.user_id);
   
           // Redirect to Dashboard
-          this.router.navigate(['/consultant']);
+          this.router.navigate(['/client/bids-in-progress']);
         },
         error: (error) => {
           console.error('Login Failed:', error);
@@ -49,7 +49,7 @@ export class LoginComponent {
   
 
   navigateToSignUp() {
-    this.router.navigate(['/consultant-form1']);
+    this.router.navigate(['/onboarding']);
   }
 
   navigateToForgotPassword() {
