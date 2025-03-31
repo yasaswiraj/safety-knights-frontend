@@ -7,7 +7,8 @@ import { MatRadioModule } from '@angular/material/radio';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { FormsModule, ReactiveFormsModule, FormBuilder, FormGroup, Validators } from '@angular/forms';
-import { Router } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
+import { ClientJobsService } from '../../services/client-jobs.service';
 
 @Component({
   selector: 'app-client-agreement',
@@ -23,7 +24,7 @@ import { Router } from '@angular/router';
     MatButtonModule,
     MatIconModule,
     FormsModule,
-    ReactiveFormsModule
+    ReactiveFormsModule,
   ]
 })
 export class ClientAgreementComponent implements OnInit {
@@ -32,16 +33,26 @@ export class ClientAgreementComponent implements OnInit {
   currentStep = 2;
   totalSteps = 4;
 
-  constructor(private fb: FormBuilder, private router: Router) {}
+  constructor(
+    private fb: FormBuilder,
+    private router: Router,
+    private route: ActivatedRoute,
+    private clientJobsService: ClientJobsService
+  ) { }
+
+  jobId!: number;
+  consultantId!: number;
 
   ngOnInit() {
+    this.jobId = Number(this.route.snapshot.queryParamMap.get('jobId'));
+    this.consultantId = Number(this.route.snapshot.queryParamMap.get('consultantId'));
+  
     this.agreementForm = this.fb.group({
       preferences: [''],
       commitment: ['', Validators.required],
       otherCommitment: ['']
     });
-
-    // Disable "Other" input unless "Other" radio is selected
+  
     this.agreementForm.get('commitment')?.valueChanges.subscribe(value => {
       if (value !== 'other') {
         this.agreementForm.get('otherCommitment')?.reset();
@@ -54,13 +65,22 @@ export class ClientAgreementComponent implements OnInit {
 
   submitForm() {
     if (this.agreementForm.invalid) return;
-
+  
     console.log("Form Submitted:", this.agreementForm.value);
-
-    this.router.navigate(['client/pending-bids']);
+  
+    this.clientJobsService.acceptBid(this.jobId, this.consultantId).subscribe({
+      next: () => {
+        console.log("Bid accepted, job marked as in_progress");
+        this.router.navigate(['client/pending-bids']);
+      },
+      error: (err) => {
+        console.error("Error accepting bid:", err);
+      }
+    });
   }
+  
 
   navigateBack() {
-    this.router.navigate(['client/received-bids']); 
+    this.router.navigate(['client/received-bids']);
   }
 }

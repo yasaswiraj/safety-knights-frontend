@@ -41,7 +41,8 @@ export class JobInProgressComponent implements OnInit, AfterViewInit {
           jobId: job.client_job_id,
           jobName: job.scope_of_service,
           expectedStartDate: job.expected_start_date,
-          daysRemaining: this.calculateDaysRemaining(job.expected_start_date)
+          proposal_deadline: job.proposal_deadline,
+          daysRemaining: this.calculateDaysRemaining(job.proposal_deadline)
         }));
         this.dataSource.data = jobs;
       },
@@ -61,7 +62,7 @@ export class JobInProgressComponent implements OnInit, AfterViewInit {
   }
 
   handleAction(job: any) {
-    this.router.navigate(['/client/job-progress-details'], { queryParams: { jobId: job.jobId } });
+    this.router.navigate(['/client/track-jobs'], { queryParams: { jobId: job.jobId } });
   }
 
   private calculateDaysRemaining(dateString: string): number {
