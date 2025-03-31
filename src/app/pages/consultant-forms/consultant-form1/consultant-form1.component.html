@@ -1,0 +1,68 @@
+<div class="h-screen flex flex-col bg-[var(--background-color)]">
+  <app-nav-bar></app-nav-bar>
+
+  <!-- ✅ Main Content -->
+  <!-- Main Content -->
+  <div class="flex-grow flex justify-center items-center px-6 pt--15">
+    <div class="bg-white p-10 rounded-2xl shadow-lg w-full max-w-3xl relative">
+      <h2 class="text-[var(--accent-color)] text-3xl font-bold mb-4 text-center">
+        EHS Consulting Network - Consultant Information Form
+      </h2>
+      <p class="text-[var(--text-color)] text-sm mb-5 text-justify">
+        Please complete this form to provide us with the details necessary for your environmental, health, and safety (EHS) consulting needs. 
+        Your responses will help us tailor our services to meet your specific requirements and connect you with the most suitable consultants.
+      </p>
+      <p class="text-[var(--text-color)] text-sm mb-5 text-justify">
+        The information gathered will include your contact details, the scope of the project, timelines, insurance requirements, 
+        payment terms, and any preferences regarding contractors. Please provide as much detail as possible to ensure an accurate and timely proposal.
+      </p>
+      <p class="text-[var(--text-color)] text-sm mb-10 text-justify">
+        If you have any questions while completing this form, feel free to reach out to us for assistance.
+      </p>
+
+          <!-- ✅ FORM WITH [formGroup] -->
+          <form [formGroup]="clientForm">
+              <!-- ✅ Email Input with Floating Placeholder -->
+              <mat-form-field class="w-full mb-6">
+                  <mat-label>Email </mat-label>
+                  <input matInput type="email" formControlName="email" placeholder="Enter your email">
+                  <mat-error *ngIf="clientForm.get('email')?.invalid && clientForm.get('email')?.touched">
+                      Please enter a valid email.
+                  </mat-error>
+              </mat-form-field>
+
+                      <!-- ✅ Password & Confirm Password Fields (Side by Side) -->
+            <div class="flex gap-4">
+              <!-- Password Field -->
+              <mat-form-field class="w-1/2 mb-6">
+                  <mat-label>Password</mat-label>
+                  <input matInput type="password" formControlName="password" placeholder="Enter your password">
+                  <mat-error *ngIf="clientForm.get('password')?.invalid && clientForm.get('password')?.touched">
+                      Password is required.
+                  </mat-error>
+              </mat-form-field>
+
+              <!-- Confirm Password Field -->
+              <mat-form-field class="w-1/2 mb-6">
+                  <mat-label>Confirm Password</mat-label>
+                  <input matInput type="password" formControlName="confirmPassword" placeholder="Re-enter your password">
+                  <mat-error *ngIf="clientForm.get('confirmPassword')?.invalid && clientForm.get('confirmPassword')?.touched">
+                      Passwords must match.
+                  </mat-error>
+              </mat-form-field>
+              </div>
+              <button
+                    class="absolute bottom-4 right-10 w-[50px] h-[50px] cursor-pointer hover:bg-opacity-80"
+                    type="button"
+                    (click)="navigateToNextForm()"
+                    [disabled]="clientForm.invalid">
+                    <img src="/next_button.png" alt="Next" class="w-full h-full object-contain" />
+                </button>
+          </form>
+          <button
+    class="fixed bottom-6 right-6 w-14 h-14 text-white rounded-full flex items-center justify-center shadow-lg cursor-pointer">
+    <img src="/chat.png" alt="Chat" class="w-8 h-8" />
+  </button>
+      </div>
+  </div>
+</div>

@@ -10,6 +10,9 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatCheckboxModule } from '@angular/material/checkbox';
 import { ViewEncapsulation, OnInit } from '@angular/core';
 import { FormDataService } from '../../../services/form-data.service';
+import { MatDatepickerModule } from '@angular/material/datepicker';
+import { MatNativeDateModule } from '@angular/material/core';
+
 
 @Component({
   selector: 'app-client-form4',
@@ -20,13 +23,15 @@ import { FormDataService } from '../../../services/form-data.service';
   imports: [
     CommonModule,
     FormsModule,
-    ReactiveFormsModule, // ✅ Required for formGroup
+    ReactiveFormsModule,
     MatSelectModule,
     MatFormFieldModule,
     MatInputModule,
     MatButtonModule,
     MatIconModule,
-    MatCheckboxModule
+    MatCheckboxModule,
+    MatDatepickerModule,
+    MatNativeDateModule,
   ]
 })
 export class ClientForm4Component implements OnInit {
@@ -36,7 +41,7 @@ export class ClientForm4Component implements OnInit {
   currentStep = 2; // ✅ This is the second step
 
   form3Data: any = {}; // ✅ Store data from previous form
-  
+
 
   // List of insurance options
   insuranceOptions = [
@@ -61,9 +66,68 @@ export class ClientForm4Component implements OnInit {
   }
 
   ngOnInit() {
-    this.form3Data = this.formDataService.getFormData();
-    // You can patch values into your next form here if needed
+    const data = this.formDataService.getFormData();
+    this.form3Data = data;
+  
+    if (data) {
+      const formattedStartDate = this.formatDateToYYYYMMDD(data.projectStartDate);
+  
+      this.clientForm.patchValue({
+        projectStartDate: formattedStartDate || '',  // 👈 formatted to yyyy-MM-dd
+        budget: data.budget || '',
+        selectedInsurances: data.selectedInsurances || []
+      });
+  
+      this.selectedInsuranceTypes = data.selectedInsurances || [];
+  
+      this.selectedInsuranceTypes.forEach((insurance: any) => {
+        const controlName = insurance.coverageControlName;
+        if (!this.clientForm.contains(controlName)) {
+          this.clientForm.addControl(controlName, this.fb.control('', Validators.required));
+        }
+        if (data[controlName]) {
+          this.clientForm.patchValue({ [controlName]: data[controlName] });
+        }
+      });
+  
+      setTimeout(() => this.clientForm.updateValueAndValidity(), 0);
+    }
   }
+  
+  
+
+  minDate = new Date();
+
+  onStartDateChange() {
+    const start = new Date(this.clientForm.value.projectStartDate);
+    const formData = this.formDataService.getFormData();
+    if (formData?.deadline) {
+      const deadline = new Date(formData.deadline);
+      if (deadline < start) {
+        alert('Project Start Date cannot be after Proposal Deadline. Please adjust accordingly.');
+      }
+    }
+  }
+
+
+  formatDateToYYYYMMDD(dateInput: string | Date): string | null {
+    try {
+      const date = new Date(dateInput);
+      if (isNaN(date.getTime())) return null;
+
+      const year = date.getFullYear();
+      const month = String(date.getMonth() + 1).padStart(2, '0');
+      const day = String(date.getDate()).padStart(2, '0');
+
+      return `${year}-${month}-${day}`;
+    } catch (err) {
+      console.error('Invalid date format:', dateInput);
+      return null;
+    }
+  }
+
+
+
 
   // ✅ Updates the list of selected insurance types
   onInsuranceChange() {
@@ -88,14 +152,29 @@ export class ClientForm4Component implements OnInit {
     this.router.navigate(['/client/form-3']);
   }
 
-  // ✅ Navigate to Next Form
   navigateToNextForm() {
+    console.log('VALID?', this.clientForm.valid);
+    console.log('VALUE:', this.clientForm.value);
+    console.log('ERRORS:', this.clientForm.errors);
+    console.log('Controls:', this.clientForm.controls);
+
     if (this.clientForm.valid) {
       const form4Data = this.clientForm.value;
-      const combinedData = { ...this.form3Data, ...form4Data };
+
+      const combinedData = {
+        ...this.formDataService.getFormData(),
+        ...form4Data
+      };
+
       this.formDataService.setFormData(combinedData);
       this.router.navigate(['/client/form-5']);
+    } else {
+      alert('Form is invalid!');
     }
   }
+
+
+
+
 }
 

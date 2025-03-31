@@ -9,6 +9,22 @@
   --mat-select-panel-background-color: #ffffff;
 }
 
+::ng-deep .custom-calendar-panel .mat-datepicker-content,
+::ng-deep .custom-calendar-panel .mat-calendar {
+  background-color: var(--mat-select-panel-background-color) !important;
+  color: var(--text-color) !important;
+  border-radius: 12px;
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.12);
+}
+
+/* Optional: style selected day */
+::ng-deep .custom-calendar-panel .mat-calendar-body-selected {
+  background-color: var(--accent-color) !important;
+  color: #fff !important;
+}
+
+
+
 html,
 body {
   height: 100%;
@@ -22,3 +38,6 @@ body {
 body {
   @apply bg-[var(--background-color)] text-[var(--text-color)];
 }
+
+html, body { height: 100%; }
+body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }

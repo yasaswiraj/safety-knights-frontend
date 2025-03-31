@@ -38,20 +38,37 @@ export class BidsInProgressComponent implements OnInit, AfterViewInit {
   ngOnInit() {
     this.clientJobsService.getBidsInProgress().subscribe({
       next: (response) => {
-        const jobs = response.jobs.map((job: BidInProgress) => ({
-          jobId: job.client_job_id,
-          jobName: job.scope_of_service,
-          deadline: job.proposal_deadline,
-          numBids: job.bid_count
-        }));
-        this.dataSource.data = jobs;
-        console.log('🔍 Jobs in progress:', jobs);
+        console.log('Bids in progress:', response);
+        const groupedJobsMap = new Map<number, any>();
+  
+        response.jobs.forEach((job: any) => {
+          const jobId = job.client_job_id;
+  
+          if (!groupedJobsMap.has(jobId)) {
+            groupedJobsMap.set(jobId, {
+              jobId: jobId,
+              jobName: job.scope_of_service,
+              deadline: job.proposal_deadline,
+              numBids: 1
+            });
+          } else {
+            // Increment the bid count for existing jobId
+            const existing = groupedJobsMap.get(jobId);
+            existing.numBids += 1;
+          }
+        });
+  
+        // Convert the grouped map to an array
+        const groupedJobsArray = Array.from(groupedJobsMap.values());
+  
+        this.dataSource.data = groupedJobsArray;
       },
       error: (err) => {
-        console.error('❌ Error fetching bids in progress:', err);
+        console.error('Error fetching bids in progress:', err);
       }
     });
   }
+  
 
   ngAfterViewInit() {
     this.dataSource.sort = this.sort;

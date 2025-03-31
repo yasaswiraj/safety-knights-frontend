@@ -1,35 +1,37 @@
-<div class="modal-container">
-    <!-- Close Button (X) -->
-    <button class="close-btn" (click)="closeDialog()">✖</button>
-
+<div class="modal-container p-6 max-w-3xl mx-auto bg-white rounded-xl shadow-lg">
+    <!-- Close Button -->
+    <button class="close-btn float-right text-xl text-gray-400 hover:text-gray-600" (click)="closeDialog()">✖</button>
+  
     <!-- Consultant Review Header -->
-    <div class="header">
-        <img src="/user.png" alt="Consultant Image" class="profile-img">
-        <h2>{{ data.name }}</h2>
-        <p class="rating">
-            <span *ngFor="let star of [0, 1, 2, 3, 4]; let i = index">
-                <span [class.filled]="i < data.rating">★</span>
-            </span>
-            <span class="reviews">({{ data.reviews }} reviews)</span>
-        </p>
+    <div class="header text-center mt-4">
+      <img src="/user.png" alt="Consultant Image" class="profile-img mx-auto w-20 h-20 rounded-full mb-2">
+      <h2 class="text-2xl font-semibold text-gray-800">{{ data.name }}</h2>
+      <p class="rating text-yellow-500 text-sm mt-1">
+        <span *ngFor="let star of [0, 1, 2, 3, 4]; let i = index">
+            <span [class.text-yellow-500]="i < data.rating" [class.text-gray-300]="i >= data.rating">★</span>
+        </span>
+        <span class="ml-1 text-gray-500">({{ data.reviews }} reviews)</span>
+      </p>
     </div>
-
+  
     <!-- Consultant Reviews -->
-    <div class="reviews-container">
-        <div class="review" *ngFor="let review of data.reviewsList">
-            <div class="review-header">
-                <img src="/user.png" alt="Reviewer Image" class="reviewer-img">
-                <div>
-                    <p class="reviewer-name">{{ review.reviewer }}</p>
-                    <p class="rating">
-                        <span *ngFor="let star of [0, 1, 2, 3, 4]; let i = index">
-                            <span [class.filled]="i < review.rating">★</span>
-                        </span>
-                    </p>
-                </div>
-            </div>
-            <p class="review-title"><strong>{{ review.title }}</strong></p>
-            <p class="review-text">{{ review.text }}</p>
+    <div class="reviews-container mt-6 space-y-6">
+      <div class="review border border-gray-200 rounded-lg p-4 shadow-sm bg-gray-50" *ngFor="let review of data.reviewsList">
+        <div class="review-header flex items-start gap-4">
+          <img src="/user.png" alt="Reviewer Image" class="w-10 h-10 rounded-full">
+          <div class="flex-1">
+            <p class="reviewer-name font-medium text-gray-800">{{ review.client_name }}</p>
+            <p class="rating text-yellow-500 text-sm">
+              <span *ngFor="let star of [0, 1, 2, 3, 4]; let i = index">
+                <span [ngClass]="i < review.rating ? 'text-yellow-500' : 'text-gray-300'">★</span>
+              </span>
+              <span class="ml-2 text-xs text-gray-400">{{ review.created_at | date: 'mediumDate' }}</span>
+            </p>
+            
+          </div>
         </div>
+        <p class="review-text mt-2 text-gray-700">{{ review.review }}</p>
+      </div>
     </div>
-</div>
+  </div>
+  

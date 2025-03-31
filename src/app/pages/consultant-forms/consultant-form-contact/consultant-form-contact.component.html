@@ -1,0 +1,76 @@
+<div class="h-screen flex flex-col bg-[var(--background-color)]">
+  <app-nav-bar></app-nav-bar>
+
+  <!-- ✅ Main Content -->
+  <div class="flex-grow flex justify-center items-center px-6 ">
+    <div class="bg-white p-10 rounded-2xl shadow-lg w-full max-w-3xl relative">
+      <h2 class="text-[var(--accent-color)] text-3xl font-bold mb-4 text-center">
+        EHS Consulting Network - Consultant Information Form
+      </h2>
+      <h3 class="text-[var(--text-color)] text-sm mb-4 text-justify">
+        Contact Information
+      </h3>
+
+      <!-- ✅ FORM WITH [formGroup] -->
+      <form [formGroup]="clientForm" class="space-y-4">
+        
+        <!-- ✅ Name Input -->
+        <mat-form-field class="w-full mb-2">
+          <mat-label>Name </mat-label>
+          <input matInput type="text" formControlName="name" placeholder="Enter your name">
+          <mat-error *ngIf="clientForm.get('name')?.invalid && clientForm.get('name')?.touched">
+            Name is required.
+          </mat-error>
+        </mat-form-field>
+
+        <!-- ✅ Job Title Input -->
+        <mat-form-field class="w-full mb-2">
+          <mat-label>Job Title </mat-label>
+          <input matInput type="text" formControlName="jobTitle" placeholder="Enter your job title">
+          <mat-error *ngIf="clientForm.get('jobTitle')?.invalid && clientForm.get('jobTitle')?.touched">
+            Job title is required.
+          </mat-error>
+        </mat-form-field>
+
+        <!-- ✅ Company Name Input -->
+        <mat-form-field class="w-full mb-2">
+          <mat-label>Company Name </mat-label>
+          <input matInput type="text" formControlName="companyName" placeholder="Enter company name">
+          <mat-error *ngIf="clientForm.get('companyName')?.invalid && clientForm.get('companyName')?.touched">
+            Company name is required.
+          </mat-error>
+        </mat-form-field>
+
+        <!-- ✅ Company Address Input -->
+        <mat-form-field class="w-full mb-6">
+          <mat-label>Company Address </mat-label>
+          <input matInput type="text" formControlName="companyAddress" placeholder="Enter company address">
+          <mat-error *ngIf="clientForm.get('companyAddress')?.invalid && clientForm.get('companyAddress')?.touched">
+            Company address is required.
+          </mat-error>
+        </mat-form-field>
+
+        <!-- ✅ Navigation Buttons -->
+        <div class="flex justify-between items-center">
+          <!-- Back Button -->
+          <button class="absolute bottom-4 left-10 w-[50px] h-[50px] cursor-pointer hover:bg-opacity-80" type="button" (click)="navigateToPreviousForm()">
+            <img src="/back_button.png" alt="Back" class="w-full h-full object-contain" />
+          </button>
+
+          <button
+          class="absolute bottom-4 right-10 w-[50px] h-[50px] cursor-pointer hover:bg-opacity-80"
+          type="button"
+          (click)="navigateToNextForm()"
+          >
+          <img src="/next_button.png" alt="Next" class="w-full h-full object-contain" />
+      </button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- ✅ Chat Button -->
+  <button class="fixed bottom-6 right-6 w-14 h-14 text-white rounded-full flex items-center justify-center shadow-lg cursor-pointer">
+    <img src="/chat.png" alt="Chat" class="w-8 h-8" />
+  </button>
+</div>
