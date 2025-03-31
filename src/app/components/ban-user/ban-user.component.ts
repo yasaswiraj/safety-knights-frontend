@@ -15,7 +15,7 @@ import { FormsModule } from '@angular/forms';
   styleUrl: './ban-user.component.css',
 })
 export class BanUserComponent {
-  banReason: string = '';
+  banReason = '';
 
   constructor(
     public dialogRef: MatDialogRef<BanUserComponent>,

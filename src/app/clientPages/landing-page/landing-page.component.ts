@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
 import { HttpClientModule } from '@angular/common/http'; // Import HttpClientModule
@@ -11,7 +11,7 @@ import { HttpClient } from '@angular/common/http'; // Import HttpClient
   templateUrl: './landing-page.component.html',
   styleUrls: ['./landing-page.component.css']
 })
-export class LandingPageComponent {
+export class LandingPageComponent implements OnInit {
   constructor(private http: HttpClient) {} // Inject HttpClient
 
   ngOnInit() {

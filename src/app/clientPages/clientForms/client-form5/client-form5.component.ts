@@ -8,7 +8,7 @@ import { MatInputModule } from '@angular/material/input';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MatRadioModule } from '@angular/material/radio';
-import { ViewEncapsulation } from '@angular/core';
+import { ViewEncapsulation, OnInit } from '@angular/core';
 import { FormDataService } from '../../../services/form-data.service';
 import { ClientJobsService } from '../../../services/client-jobs.service';
 
@@ -30,7 +30,7 @@ import { ClientJobsService } from '../../../services/client-jobs.service';
     MatRadioModule
   ]
 })
-export class ClientForm5Component {
+export class ClientForm5Component implements OnInit {
   clientForm: FormGroup;
   showOtherPaymentTerm = false;
   showOtherPaymentMethod = false;

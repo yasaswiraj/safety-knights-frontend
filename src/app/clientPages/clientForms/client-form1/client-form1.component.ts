@@ -21,8 +21,8 @@ import { MatIconModule } from '@angular/material/icon';
 })
 export class ClientForm1Component {
   clientForm: FormGroup;
-  showPassword: boolean = false;
-  showConfirmPassword: boolean = false;
+  showPassword = false;
+  showConfirmPassword = false;
 
   constructor(private fb: FormBuilder, private router: Router) {
     this.clientForm = this.fb.group({

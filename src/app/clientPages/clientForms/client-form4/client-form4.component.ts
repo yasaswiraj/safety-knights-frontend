@@ -8,7 +8,7 @@ import { MatInputModule } from '@angular/material/input';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MatCheckboxModule } from '@angular/material/checkbox';
-import { ViewEncapsulation } from '@angular/core';
+import { ViewEncapsulation, OnInit } from '@angular/core';
 import { FormDataService } from '../../../services/form-data.service';
 
 @Component({
@@ -29,7 +29,7 @@ import { FormDataService } from '../../../services/form-data.service';
     MatCheckboxModule
   ]
 })
-export class ClientForm4Component {
+export class ClientForm4Component implements OnInit {
   clientForm: FormGroup;
 
   totalSteps = 3; // ✅ Total forms

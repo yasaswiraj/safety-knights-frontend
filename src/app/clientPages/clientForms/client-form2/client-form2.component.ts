@@ -22,7 +22,7 @@ import { MatIconModule } from '@angular/material/icon';
 })
 export class ClientForm2Component {
   clientForm: FormGroup;
-  errorMessage: string = '';
+  errorMessage = '';
 
   constructor(
     private fb: FormBuilder, 

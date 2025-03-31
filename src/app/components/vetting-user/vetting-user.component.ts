@@ -18,7 +18,7 @@ interface ConsultantDetails {
   hazardous_materials: string[];
   safety_facility_compliance: string[];
   industrial_hygiene: string[];
-  written_responses: { [questionId: string]: string };
+  written_responses: Record<string, string>;
 }
 
 @Component({

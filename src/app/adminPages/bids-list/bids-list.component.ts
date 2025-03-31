@@ -26,7 +26,7 @@ import { FormsModule } from '@angular/forms';
 })
 export class BidsListComponent implements AfterViewInit {
   @ViewChild(MatSort) sort!: MatSort;
-  searchQuery: string = '';
+  searchQuery = '';
   dataSource: MatTableDataSource<any>;
 
   displayedColumns: string[] = [

@@ -29,8 +29,8 @@ import { MatCardModule } from '@angular/material/card';
 })
 export class OnboardingComponent {
   clientForm: FormGroup;
-  errorMessage: string = '';
-  currentStep: number = 0;
+  errorMessage = '';
+  currentStep = 0;
 
   constructor(
     private fb: FormBuilder, 

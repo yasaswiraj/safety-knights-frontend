@@ -1,4 +1,4 @@
-import { Component, EventEmitter, Output } from '@angular/core';
+import { Component, EventEmitter, Output, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { time } from 'console';
 import { identity, last } from 'rxjs';
@@ -10,7 +10,7 @@ import { identity, last } from 'rxjs';
   templateUrl: './messages-list.component.html',
   styleUrl: './messages-list.component.css',
 })
-export class MessagesListComponent {
+export class MessagesListComponent implements OnInit {
   @Output() chatSelected = new EventEmitter<any>();
 
   ngOnInit() {

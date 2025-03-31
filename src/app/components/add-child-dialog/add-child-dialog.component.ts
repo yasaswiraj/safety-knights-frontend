@@ -43,7 +43,7 @@ import { CommonModule } from '@angular/common';
   `,
 })
 export class AddChildDialog {
-  childName: string = '';
+  childName = '';
 
   constructor(public dialogRef: MatDialogRef<AddChildDialog>) {}
 

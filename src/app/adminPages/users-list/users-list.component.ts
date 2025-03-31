@@ -29,7 +29,7 @@ import { BanUserComponent } from '../../components/ban-user/ban-user.component';
 })
 export class UsersListComponent implements AfterViewInit {
   @ViewChild(MatSort) sort!: MatSort;
-  searchQuery: string = '';
+  searchQuery = '';
   dataSource: MatTableDataSource<any>;
 
   displayedColumns: string[] = [

@@ -148,7 +148,7 @@ const healthAndSafetyOptions = [];
   styleUrl: './site-settings.component.css',
 })
 export class SiteSettingsComponent {
-  activeTab: string = 'consultant'; 
+  activeTab = 'consultant'; 
 
   private _transformer = (node: any, level: number) => {
     return {
