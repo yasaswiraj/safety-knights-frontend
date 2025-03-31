@@ -41,12 +41,14 @@ import { CompletedJobsComponent } from './clientPages/completed-jobs/completed-j
 import { OnboardingComponent } from './clientPages/clientForms/onboarding/onboarding.component';
 import { TrackJobsComponent } from './clientPages/track-jobs/track-jobs.component';
 import { FeedbackComponent } from './clientPages/feedback/feedback.component';
+import { ConsultantLoginComponent } from './pages/consultant-login/consultant-login.component';
 
 export const routes: Routes = [
   { path: '', component: LandingPageComponent },
   { path: 'login', component: LoginComponent },
   { path: 'sign-up', component: SignUpComponent },
   { path: 'onboarding', component: OnboardingComponent }, // New combined form route
+  {path: 'consultant-login', component: ConsultantLoginComponent}, // Consultant login route
 
 
   // ✅ Client Routes with a Layout Component
