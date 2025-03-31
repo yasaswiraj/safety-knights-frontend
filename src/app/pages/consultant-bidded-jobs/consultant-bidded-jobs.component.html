@@ -1,0 +1,65 @@
+<div class="rounded-lg">
+    <h1 class="text-3xl font-bold mb-4">Bids in Progress</h1>
+
+    <!-- Search Bar -->
+    <div class="bg-white flex items-center px-3 py-1 text-sm border border-gray-300 rounded-full">
+        <i class="fas fa-search text-gray-400 pr-1"></i>
+        <input
+            type="text"
+            (input)="onSearch($event)"
+            placeholder="Search jobs"
+            class="w-full p-1 rounded-full outline-none placeholder-gray-400 bg-transparent" />
+    </div>
+
+    <!-- Table Wrapper with Scrolling -->
+    <div class="bg-white h-[calc(100vh-17rem)] overflow-auto mt-4 rounded-3xl border border-gray-300">
+        <table mat-table [dataSource]="dataSource" matSort class="mat-elevation-z8 w-full">
+
+            <!-- Job ID Column -->
+            <ng-container matColumnDef="job_id">
+                <th mat-header-cell *matHeaderCellDef mat-sort-header class="p-3 text-left">Job ID</th>
+                <td mat-cell *matCellDef="let job" class="p-3">{{ job.job_id }}</td>
+            </ng-container>
+
+            <!-- Scope of Service Column -->
+            <ng-container matColumnDef="scope_of_service">
+                <th mat-header-cell *matHeaderCellDef mat-sort-header class="p-3 text-left">Scope of Service</th>
+                <td mat-cell *matCellDef="let job" class="p-3">{{ job.scope_of_service }}</td>
+            </ng-container>
+
+            <!-- Location Column -->
+            <ng-container matColumnDef="location">
+                <th mat-header-cell *matHeaderCellDef mat-sort-header class="p-3 text-left">Location</th>
+                <td mat-cell *matCellDef="let job" class="p-3">{{ job.project_location }}</td>
+            </ng-container>
+
+            <!-- Proposal Deadline Column -->
+            <ng-container matColumnDef="deadline">
+                <th mat-header-cell *matHeaderCellDef mat-sort-header class="p-3 text-left">Deadline</th>
+                <td mat-cell *matCellDef="let job" class="p-3">{{ job.proposal_deadline }}</td>
+            </ng-container>
+
+            <!-- Expected Start Date Column -->
+            <ng-container matColumnDef="expected_start">
+                <th mat-header-cell *matHeaderCellDef mat-sort-header class="p-3 text-left">Expected Start</th>
+                <td mat-cell *matCellDef="let job" class="p-3">{{ job.expected_start_date }}</td>
+            </ng-container>
+
+            <!-- Bid Amount Column -->
+            <ng-container matColumnDef="bid_amount">
+                <th mat-header-cell *matHeaderCellDef mat-sort-header class="p-3 text-left">Bid Amount ($)</th>
+                <td mat-cell *matCellDef="let job" class="p-3">${{ job.bid_amount }}</td>
+            </ng-container>
+
+            <!-- Budget Column -->
+            <ng-container matColumnDef="budget">
+                <th mat-header-cell *matHeaderCellDef mat-sort-header class="p-3 text-left">Budget ($)</th>
+                <td mat-cell *matCellDef="let job" class="p-3">${{ job.budget }}</td>
+            </ng-container>
+
+            <!-- Table Header & Rows -->
+            <tr mat-header-row *matHeaderRowDef="displayedColumns" sticky></tr>
+            <tr mat-row *matRowDef="let row; columns: displayedColumns"></tr>
+        </table>
+    </div>
+</div>

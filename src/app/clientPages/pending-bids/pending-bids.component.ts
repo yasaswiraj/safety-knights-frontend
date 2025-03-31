@@ -8,6 +8,8 @@ import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { ClientJobsService, PendingBid } from '../../services/client-jobs.service';
+import { FormDataService } from '../../services/form-data.service';
+
 
 @Component({
   selector: 'app-pending-bids',
@@ -31,7 +33,7 @@ export class PendingBidsComponent implements AfterViewInit, OnInit {
   dataSource: MatTableDataSource<PendingBid> = new MatTableDataSource<PendingBid>([]);  
   displayedColumns: string[] = ['jobId', 'jobName', 'deadline', 'budget', 'actions'];
 
-  constructor(private router: Router, private clientJobsService: ClientJobsService) { }
+  constructor(private router: Router, private clientJobsService: ClientJobsService, private formDataService: FormDataService) { }
 
   ngOnInit() {
     this.fetchPendingBids();
@@ -74,7 +76,69 @@ export class PendingBidsComponent implements AfterViewInit, OnInit {
     this.dataSource.filter = term;
   }
 
-  handleAction(bid: PendingBid) {
-    this.router.navigate(['/client/pending-bid'], { queryParams: { jobId: bid.client_job_id } });
+  editJob(job: PendingBid) {
+    const formattedDeadline = this.formatDateToYYYYMMDD(job.proposal_deadline);
+    const formattedStartDate = this.formatDateToYYYYMMDD(job.expected_start_date);
+  
+    this.clientJobsService.getFilledForm(job.client_job_id).subscribe((res) => {
+      const jd = res?.filled_form?.job_details;
+    
+      if (!jd) return;
+    
+      const responses = jd.responses || [];
+    
+      // Map question -> response_value
+      const responseMap: Record<string, string> = {};
+      for (const entry of responses) {
+        responseMap[entry.question] = entry.response_value;
+      }
+    
+      const formData = {
+        scopeOfService: jd.scope_of_service?.split(', ') || [],
+        jobDescription: jd.work_in_detail,
+        location: jd.project_location,
+        deadline: jd.proposal_deadline,
+        projectStartDate: jd.expected_start_date,
+        budget: jd.budget,
+        selectedInsurances: [], // You could also extract this from responseMap if it's stored
+        payment_terms: responseMap['Payment Terms'] || '',
+        payment_method: responseMap['Preferred Method of Payment to Contractor'] || '',
+        contractor_preferences: responseMap['Do you have any preferences regarding which contractors should not be considered?'] || '',
+        commitment_to_proceed: responseMap['If the proposal is within budget, would you commit to moving forward?'] || '',
+      };
+    
+      this.formDataService.setFormData(formData, jd.client_job_id);
+      this.router.navigate(['/client/form-3']);
+    });
+    
   }
+  
+  
+  
+  
+
+  
+  formatDateToYYYYMMDD(dateInput: string | Date): string | null {
+    try {
+      const date = new Date(dateInput);
+      if (isNaN(date.getTime())) return null;
+  
+      const year = date.getFullYear();
+      const month = String(date.getMonth() + 1).padStart(2, '0');
+      const day = String(date.getDate()).padStart(2, '0');
+  
+      return `${year}-${month}-${day}`;
+    } catch (err) {
+      console.error('Invalid date format:', dateInput);
+      return null;
+    }
+  }
+  
+  
+  
+
+  handleAction(bid: PendingBid) {
+    this.editJob(bid);
+  }
+  
 }

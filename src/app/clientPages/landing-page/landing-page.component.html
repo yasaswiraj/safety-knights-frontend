@@ -31,7 +31,17 @@
         Find vetted Environmental, Health, and Safety consultants or offer your expertise in just a few clicks.
       </p>
       <div class="flex gap-4 mt-6">
-        <button 
+              <button 
+        class="bg-[var(--elements-color)] text-black px-6 py-2 rounded-full shadow-md font-bold cursor-pointer hover:bg-opacity-80"
+        [routerLink]="'/sign-up'">
+        Get started as a Client
+      </button>
+      <button class="bg-[var(--elements-color)] text-black px-6 py-2 rounded-full shadow-md font-bold cursor-pointer hover:bg-opacity-80"
+        [routerLink]="'/consultant-login'">
+        Join as a Consultant
+      </button></div>
+      </section>
+        <!-- <button 
   class="bg-[var(--elements-color)] text-black px-6 py-2 rounded-full shadow-md font-bold cursor-pointer hover:bg-opacity-80"
   [routerLink]="'/onboarding'">
   Get started as a Client
@@ -41,7 +51,12 @@
           Join as a Consultant
         </button>
       </div>
-  </section>
+
+        <button class="bg-[var(--elements-color)] text-black px-6 py-2 rounded-full shadow-md font-bold cursor-pointer hover:bg-opacity-80"
+        [routerLink]="'/sign-up'">
+       
+      </button> -->
+    
 
   <!-- Footer -->
   <footer class="w-full text-center py-6">
@@ -57,4 +72,4 @@
         <a href="#" class="mx-2">Privacy</a>
       </div>
   </footer>
-</div>
+

@@ -10,10 +10,16 @@ import { CommonModule } from '@angular/common';  // ✅ Required for Angular pip
 import { ClientJobsService } from '../../services/client-jobs.service';
 
 interface CompletedJob {
-  jobId: string;
-  jobName: string;
-  consultant: string;
+  client_job_id: number;
+  scope_of_service: string;
+  consultant_company: string;
+  bid_amount: number;
+  proposal_deadline: string;
+  expected_start_date: string;
+  consultant_user_id: number; 
 }
+
+
 
 @Component({
   selector: 'app-completed-jobs',
@@ -34,35 +40,29 @@ export class CompletedJobsComponent implements AfterViewInit {
   @ViewChild(MatSort) sort!: MatSort;
   searchTerm = '';
 
-  // completedJobs: CompletedJob[] = [
-  //   { jobId: '501', jobName: 'Network Security Audit', consultant: 'Michael Brown' },
-  //   { jobId: '502', jobName: 'Software Compliance Review', consultant: 'Sarah Johnson' },
-  //   { jobId: '503', jobName: 'Cloud Infrastructure Analysis', consultant: 'David Lee' },
-  // ];
-
-  dataSource: MatTableDataSource<any> = new MatTableDataSource<any>();
-  displayedColumns: string[] = ['jobId', 'jobName', 'consultant', 'feedback'];
+  dataSource: MatTableDataSource<CompletedJob> = new MatTableDataSource<CompletedJob>();
+  displayedColumns: string[] = ['jobId', 'jobName', 'consultant', 'budget', 'feedback'];
 
   constructor(private router: Router, private clientJobsService: ClientJobsService) {}
 
   ngOnInit() {
-    console.log('Fetching completed jobs...');
     this.clientJobsService.getCompletedJobs().subscribe({
       next: (response) => {
-        console.log('Completed Jobs:', response.jobs);
-        const jobs = response.jobs.map((job, index) => ({
-          jobId: job.client_job_id,
-          jobName: job.scope_of_service,
-          consultant: `Consultant ${index + 1}`  // 🔁 Mocked
+        const jobs: CompletedJob[] = response.jobs.map((job) => ({
+          ...job,
+          feedbackGiven: false
         }));
-        
+  
         this.dataSource.data = jobs;
       },
       error: (err) => {
-        console.error('Error fetching jobs in progress:', err);
+        console.error('Error fetching completed jobs:', err);
       }
     });
   }
+  
+  
+  
 
 
   ngAfterViewInit() {
@@ -75,6 +75,14 @@ export class CompletedJobsComponent implements AfterViewInit {
   }
 
   handleFeedback(job: CompletedJob) {
-    this.router.navigate(['/client/share-feedback'], { queryParams: { jobId: job.jobId } });
+    this.router.navigate(['/client/feedback'], {
+      queryParams: {
+        jobId: job.client_job_id,
+        consultantId: job.consultant_user_id,
+        consultantName: job.consultant_company,
+        scope: job.scope_of_service
+      }
+    });
   }
+  
 }

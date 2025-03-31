@@ -23,7 +23,7 @@ export class SignUpComponent {
   onSignup() {
     if (this.signUpForm.valid) {
       console.log('Sign-Up Successful', this.signUpForm.value);
-      this.router.navigate(['/client/form-1']);
+      this.router.navigate(['/consultant-form1']);
     }
   }
 
