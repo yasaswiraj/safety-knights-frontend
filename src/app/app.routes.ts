@@ -2,10 +2,7 @@ import { Routes } from '@angular/router';
 import { LoginComponent } from './clientPages/login/login.component';
 import { SignUpComponent } from './clientPages/sign-up/sign-up.component';
 import { LandingPageComponent } from './clientPages/landing-page/landing-page.component';
-import { ClientDashboardComponent } from './clientPages/client-dashboard/client-dashboard.component';
 import { ClientReceivedBidsComponent } from './clientPages/client-received-bids/client-received-bids.component';
-import { ClientForm1Component } from './clientPages/clientForms/client-form1/client-form1.component';
-import { ClientForm2Component } from './clientPages/clientForms/client-form2/client-form2.component';
 import { ClientForm3Component } from './clientPages/clientForms/client-form3/client-form3.component';
 import { ClientForm4Component } from './clientPages/clientForms/client-form4/client-form4.component';
 import { ClientForm5Component } from './clientPages/clientForms/client-form5/client-form5.component';
@@ -51,12 +48,11 @@ export const routes: Routes = [
   {path: 'consultant-login', component: ConsultantLoginComponent}, // Consultant login route
 
 
-  // ✅ Client Routes with a Layout Component
+  // Client Routes with a Layout Component
   {
     path: 'client',
     component: ClientLayoutComponent, // Wrapper for client-related pages
     children: [
-      { path: 'dashboard', component: ClientDashboardComponent },
       { path: 'received-bids', component: ClientReceivedBidsComponent },
       { path: 'form-3', component: ClientForm3Component },
       { path: 'form-4', component: ClientForm4Component },
@@ -71,7 +67,7 @@ export const routes: Routes = [
     ],
   },
 
-  // ✅ Admin Routes with a Layout Component
+  // Admin Routes with a Layout Component
   {
     path: 'admin',
     component: AdminLayoutComponent,

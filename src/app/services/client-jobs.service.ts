@@ -117,27 +117,27 @@ export class ClientJobsService {
 
   constructor(private http: HttpClient) { }
   getPendingBids(): Observable<{ jobs: PendingBid[] }> {
-    return this.http.get<{ jobs: PendingBid[] }>(`${environment.apiUrl}/pending-bids`, {
+    return this.http.get<{ jobs: PendingBid[] }>(`${environment.apiUrl}/client/pending-bids`, {
       withCredentials: true
     });
   }
 
   getBidsInProgress(): Observable<{ jobs: BidInProgress[] }> {
     console.log('getBidsInProgress');
-    return this.http.get<{ jobs: BidInProgress[] }>(`${environment.apiUrl}/bids-in-progress`, {
+    return this.http.get<{ jobs: BidInProgress[] }>(`${environment.apiUrl}/client/bids-in-progress`, {
       withCredentials: true
     });
   }
 
   getJobsInProgress(): Observable<{ jobs: JobInProgress[] }> {
     return this.http.get<{ jobs: JobInProgress[] }>(
-      `${environment.apiUrl}/jobs-in-progress`,
+      `${environment.apiUrl}/client/jobs-in-progress`,
       { withCredentials: true }
     );
   }
 
   getCompletedJobs(): Observable<{ jobs: CompletedJob[] }> {
-    return this.http.get<{ jobs: CompletedJob[] }>(`${environment.apiUrl}/completed_jobs`, {
+    return this.http.get<{ jobs: CompletedJob[] }>(`${environment.apiUrl}/client/completed_jobs`, {
       withCredentials: true
     });
   }
@@ -148,7 +148,7 @@ export class ClientJobsService {
     review: string;
     rating: number;
   }): Observable<any> {
-    return this.http.post(`${environment.apiUrl}/post_review`, data, {
+    return this.http.post(`${environment.apiUrl}/client/post_review`, data, {
       withCredentials: true
     });
   }
@@ -156,20 +156,20 @@ export class ClientJobsService {
 
 
   createJob(jobData: CreateJobRequest): Observable<any> {
-    return this.http.post(`${environment.apiUrl}/create-job`, jobData, {
+    return this.http.post(`${environment.apiUrl}/client/create-job`, jobData, {
       withCredentials: true
     });
   }
 
   // client-jobs.service.ts
   updateJob(jobId: number, jobData: any): Observable<any> {
-    return this.http.post(`${environment.apiUrl}/update-job/${jobId}`, jobData, {
+    return this.http.post(`${environment.apiUrl}/client/update-job/${jobId}`, jobData, {
       withCredentials: true
     });
   }
 
   getFilledForm(jobId: number): Observable<any> {
-    return this.http.get(`${environment.apiUrl}/get_filled_form/${jobId}`, { responseType: 'text', withCredentials: true })
+    return this.http.get(`${environment.apiUrl}/client/get_filled_form/${jobId}`, { responseType: 'text', withCredentials: true })
       .pipe(
         map((res: string) => {
           try {
@@ -192,13 +192,13 @@ export class ClientJobsService {
 
   getConsultantProfile(consultantId: number): Observable<ConsultantProfile> {
     return this.http.get<ConsultantProfile>(
-      `${environment.apiUrl}/get_consultant_profile/${consultantId}`,
+      `${environment.apiUrl}/client/get_consultant_profile/${consultantId}`,
       { withCredentials: true }
     );
   }
 
   acceptBid(jobId: number, consultantId: number): Observable<any> {
-    return this.http.post(`${environment.apiUrl}/accept_bid/${jobId}/${consultantId}`, {}, {
+    return this.http.post(`${environment.apiUrl}/client/accept_bid/${jobId}/${consultantId}`, {}, {
       withCredentials: true
     });
   }
@@ -217,7 +217,7 @@ export class ClientJobsService {
   }
 
   hasReview(jobId: number): Observable<boolean> {
-    return this.http.get<{ has_review: boolean }>(`${environment.apiUrl}/has_review/${jobId}`, {
+    return this.http.get<{ has_review: boolean }>(`${environment.apiUrl}/client/has_review/${jobId}`, {
       withCredentials: true
     }).pipe(map(res => res.has_review));
   }
