@@ -6,6 +6,8 @@ import { MatSortModule, MatSort } from '@angular/material/sort';
 import { FormsModule } from '@angular/forms';
 import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
+import { MatDialog } from '@angular/material/dialog';
+import { ClientFeedbackComponent } from '../client-feedback/client-feedback.component';
 
 @Component({
   selector: 'app-consultant-matches',
@@ -74,7 +76,7 @@ export class ConsultantCompletedJobsComponent implements AfterViewInit {
     },
   ];
 
-  constructor() {
+  constructor(public dialog: MatDialog) {
     this.dataSource = new MatTableDataSource(this.jobs);
   }
 
@@ -87,8 +89,24 @@ export class ConsultantCompletedJobsComponent implements AfterViewInit {
     this.dataSource.filter = filterValue.trim().toLowerCase();
   }
 
-  shareFeedback(job: any) {
-    alert(`Sharing feedback for job: ${job.jobname}`);
+ 
+
+  openFeedbackDialog(job: any) {
+    const dialogRef = this.dialog.open(ClientFeedbackComponent, {
+      width: '500px', // Adjust size as needed
+      data: {
+        jobId: job.id,
+        consultantId: job.consultantId,
+        consultantName: job.consultantName,
+        scope: job.scope
+      }
+    });
+
+    dialogRef.afterClosed().subscribe(result => {
+      if (result) {
+        console.log('Feedback submitted successfully');
+      }
+    });
   }
 }
 

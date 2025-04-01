@@ -5,7 +5,7 @@ import { ApiService } from '../../services/api.service'; // Import API Service
 import { CommonModule } from '@angular/common';
 
 @Component({
-  selector: 'app-login',
+  selector: 'app-consultant-login',
   templateUrl: './consultant-login.component.html',
   styleUrls: ['./consultant-login.component.css'],
   standalone: true,

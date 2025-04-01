@@ -1,0 +1,31 @@
+textarea {
+    border: 1px solid #ccc;
+    border-radius: 12px;
+    padding: 12px;
+    font-size: 14px;
+    width: 100%;
+    resize: none;
+    transition: box-shadow 0.3s ease;
+  }
+  
+  textarea:focus {
+    outline: none;
+    box-shadow: 0 0 0 2px #c6a47a;
+  }
+  
+  button {
+    background: linear-gradient(to right, #b68d5f, #a4784c);
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    font-weight: 600;
+    border-radius: 50px;
+    cursor: pointer;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
+    transition: all 0.3s ease;
+  }
+  
+  button:hover {
+    background: linear-gradient(to right, #a4784c, #8d6640);
+  }
+  
