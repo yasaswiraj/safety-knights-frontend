@@ -7,7 +7,6 @@ import { Observable, tap } from "rxjs";
   providedIn: 'root'
 })
 export class AuthService {
-  private baseUrl = 'http://localhost:8000';
 
   constructor(private http: HttpClient) {}
 
@@ -18,20 +17,18 @@ export class AuthService {
 
     console.log(access)
   
-    return this.http.post<{ access_token: string }>('http://localhost:8000/login', formData.toString(), {
+    return this.http.post<{ access_token: string }>('`${environment.apiUrl}/login', formData.toString(), {
       headers: new HttpHeaders({
-        'Content-Type': 'application/x-www-form-urlencoded',  // ✅ Required for OAuth2
+        'Content-Type': 'application/x-www-form-urlencoded',  
       }),
-      withCredentials: true  // ✅ Ensures cookies are sent & received
+      withCredentials: true  
     });
   }
 
-  // ✅ Get Stored Access Token
   getAccessToken(): string {
     return localStorage.getItem('access_token') || '';  
   }
 
-  // ✅ Check if User is Authenticated
   isAuthenticated(): boolean {
     return !!this.getAccessToken();
   }

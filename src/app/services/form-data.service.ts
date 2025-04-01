@@ -11,7 +11,7 @@ export class FormDataService {
   private jobId: number | null = null;
 
   setFormData(data: any, jobId?: number) {
-    this.formData = { ...this.formData, ...data }; // ✅ merge instead of replace
+    this.formData = { ...this.formData, ...data }; 
     if (jobId !== undefined) this.jobId = jobId;
   }
 
