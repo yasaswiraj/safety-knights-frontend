@@ -7,9 +7,11 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatSortModule, MatSort } from '@angular/material/sort';
 import { FormsModule } from '@angular/forms';
+import { JobUpdateDialogComponent } from '../job-update-dialog/job-update-dialog.component';
+import { MatDialog } from '@angular/material/dialog';
 
 @Component({
-  selector: 'app-consultant-matches',
+  selector: 'app-consultant-active-jobs',
   standalone: true,
   templateUrl: './consultant-active-jobs.component.html',
   styleUrls: ['./consultant-active-jobs.component.css'],
@@ -25,6 +27,7 @@ import { FormsModule } from '@angular/forms';
   ],
 })
 export class ConsultantActiveJobsComponent implements AfterViewInit {
+// Removed duplicate viewUpdate method
   @ViewChild(MatSort) sort!: MatSort;
   searchQuery: string = '';
   dataSource: MatTableDataSource<any>;
@@ -82,10 +85,14 @@ export class ConsultantActiveJobsComponent implements AfterViewInit {
       deadline: '2025-03-25',
     },
   ];
+  
 
-  constructor() {
+  constructor(private dialog: MatDialog) {
     this.dataSource = new MatTableDataSource(this.jobs);
   }
+
+
+  
 
   ngAfterViewInit() {
     this.dataSource.sort = this.sort;
@@ -96,8 +103,29 @@ export class ConsultantActiveJobsComponent implements AfterViewInit {
     this.dataSource.filter = filterValue.trim().toLowerCase();
   }
 
-  viewUpdate(job: any) {
-    console.log('Updating job:', job);
-    // Navigate to update form or show a modal for job editing
-  }
+   viewUpdate(): void {
+      console.log('View detail clicked for job:');
+      const dialogRef = this.dialog.open(JobUpdateDialogComponent, {
+        width: '1000px',
+        data: {
+          // jobid: job.job_id,  // Updated property name
+          description: 'Work on the manufacturing department handling 150 employees',
+          createdDate: '2025-01-10',
+          deadline: '2025-04-13',
+          matchingCriteria: 'Skills: Similar work history, Preferred client',
+          phone: '000111290',
+          email: 'janedoe@gmail.com'
+        }
+        
+      });
+  
+      // dialogRef.afterClosed().subscribe((result: { jobId: any; }) => {
+      //   if (result && result.jobId) {
+      //     console.log(`Removing job with ID: ${result.jobId}`);
+    
+      //     // Remove job from table
+      //     this.dataSource.data = this.dataSource.data.filter(j => j.job_id !== result.jobId);
+      //   }
+      // });
+    }
 }
