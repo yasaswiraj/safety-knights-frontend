@@ -23,9 +23,9 @@ export class ClientLayoutComponent {
 
   // ✅ Updated Sidebar with "Create Job"
   menuItems: MenuItem[] = [
-    { label: 'Create Job', route: '/client/form-3', icon: 'fa-solid fa-plus-circle' },
-    { label: 'Bids in Process', route: '/client/bids-in-progress', icon: 'fa-solid fa-spinner' },
+    { label: 'Create Job', route: '/client/client-form', icon: 'fa-solid fa-plus-circle' },
     { label: 'Pending Bids', route: '/client/pending-bids', icon: 'fa-solid fa-hourglass-half' },
+    { label: 'Bids in Process', route: '/client/bids-in-progress', icon: 'fa-solid fa-spinner' },
     { label: 'Job in Progress', route: '/client/job-in-progress', icon: 'fa-solid fa-briefcase' },
     { label: 'Completed Jobs', route: '/client/completed-jobs', icon: 'fa-solid fa-check-circle' },
     { label: 'Inbox', route: '/client/inbox', icon: 'fa-solid fa-inbox' },
@@ -47,7 +47,6 @@ export class ClientLayoutComponent {
     else if (routePath.includes('pending-bid')) this.pageTitle = 'Pending Bid';
     else if (routePath.includes('job-in-process')) this.pageTitle = 'Job in Process';
     else if (routePath.includes('completed-jobs')) this.pageTitle = 'Completed Jobs';
-    else if (routePath.includes('form-1')) this.pageTitle = 'Create Job'; // ✅ Set Title for "Create Job"
     else this.pageTitle = '';
   }
 

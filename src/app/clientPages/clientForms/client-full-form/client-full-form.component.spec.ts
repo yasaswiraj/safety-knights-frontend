@@ -1,18 +1,18 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { ClientForm3Component } from './client-form3.component';
+import { ClientFullFormComponent } from './client-full-form.component';
 
-describe('ClientForm3Component', () => {
-  let component: ClientForm3Component;
-  let fixture: ComponentFixture<ClientForm3Component>;
+describe('ClientFullFormComponent', () => {
+  let component: ClientFullFormComponent;
+  let fixture: ComponentFixture<ClientFullFormComponent>;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [ClientForm3Component]
+      imports: [ClientFullFormComponent]
     })
     .compileComponents();
 
-    fixture = TestBed.createComponent(ClientForm3Component);
+    fixture = TestBed.createComponent(ClientFullFormComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });

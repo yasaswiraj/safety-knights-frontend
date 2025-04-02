@@ -28,7 +28,7 @@ export class JobInProgressComponent implements OnInit, AfterViewInit {
   @ViewChild(MatSort) sort!: MatSort;
   searchTerm = '';
   dataSource: MatTableDataSource<any> = new MatTableDataSource<any>();
-  displayedColumns: string[] = ['jobId', 'jobName', 'daysRemaining', 'actions'];
+  displayedColumns: string[] = ['jobName', 'daysRemaining', 'actions'];
 
   constructor(private router: Router, private clientJobsService: ClientJobsService) {}
 

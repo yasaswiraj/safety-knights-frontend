@@ -28,7 +28,7 @@ export class BidsInProgressComponent implements OnInit, AfterViewInit {
   @ViewChild(MatSort) sort!: MatSort;
   searchTerm = '';
   dataSource: MatTableDataSource<Bid> = new MatTableDataSource<Bid>([]);
-  displayedColumns: string[] = ['jobId', 'jobName', 'deadline', 'numBids', 'actions'];
+  displayedColumns: string[] = ['jobName', 'deadline', 'numBids', 'actions'];
 
   constructor(
     private router: Router,

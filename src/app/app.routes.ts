@@ -3,9 +3,6 @@ import { LoginComponent } from './clientPages/login/login.component';
 import { SignUpComponent } from './clientPages/sign-up/sign-up.component';
 import { LandingPageComponent } from './clientPages/landing-page/landing-page.component';
 import { ClientReceivedBidsComponent } from './clientPages/client-received-bids/client-received-bids.component';
-import { ClientForm3Component } from './clientPages/clientForms/client-form3/client-form3.component';
-import { ClientForm4Component } from './clientPages/clientForms/client-form4/client-form4.component';
-import { ClientForm5Component } from './clientPages/clientForms/client-form5/client-form5.component';
 import { AdminDashboardComponent } from './adminPages/dashboard/dashboard.component';
 import { UsersListComponent } from './adminPages/users-list/users-list.component';
 import { MatchesListComponent } from './adminPages/matches-list/matches-list.component';
@@ -38,6 +35,7 @@ import { OnboardingComponent } from './clientPages/clientForms/onboarding/onboar
 import { TrackJobsComponent } from './clientPages/track-jobs/track-jobs.component';
 import { FeedbackComponent } from './clientPages/feedback/feedback.component';
 import { ConsultantLoginComponent } from './pages/consultant-login/consultant-login.component';
+import { ClientFullFormComponent } from './clientPages/clientForms/client-full-form/client-full-form.component';
 
 export const routes: Routes = [
   { path: '', component: LandingPageComponent },
@@ -52,9 +50,7 @@ export const routes: Routes = [
     component: ClientLayoutComponent, // Wrapper for client-related pages
     children: [
       { path: 'received-bids', component: ClientReceivedBidsComponent },
-      { path: 'form-3', component: ClientForm3Component },
-      { path: 'form-4', component: ClientForm4Component },
-      { path: 'form-5', component: ClientForm5Component },
+      { path: 'client-form', component: ClientFullFormComponent },
       { path: 'agreement', component: ClientAgreementComponent },
       { path: 'bids-in-progress', component: BidsInProgressComponent },
       { path: 'pending-bids', component: PendingBidsComponent },

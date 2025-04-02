@@ -3,7 +3,7 @@ import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
 import { environment } from '../../environments/environment.development';
-
+import { FormStructure } from '../interfaces/form.interface';
 
 export interface CreateJobRequest {
   scope_of_service: string;
@@ -221,6 +221,29 @@ export class ClientJobsService {
       withCredentials: true
     }).pipe(map(res => res.has_review));
   }
+
+  getClientFormStructure(): Observable<any> {
+    return this.http.get(`${environment.apiUrl}/client/get_client_form`, {
+      withCredentials: true
+    });
+  }
+
+  getClientForm4Structure(): Observable<FormStructure> {
+    return this.http.get<FormStructure>(`${environment.apiUrl}/api/forms/client-form-4`);
+  }
+
+  getFormStructure(): Observable<any> {
+    return this.http.get(`${environment.apiUrl}/client/get_client_form`, {
+      withCredentials: true
+    });
+  }  
+
+  submitForm(data: any): Observable<any> {
+    return this.http.post(`${environment.apiUrl}/client/create-job`, data, {
+      withCredentials: true
+    });
+  }
+  
   
 
 }
