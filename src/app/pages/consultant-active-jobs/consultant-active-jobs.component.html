@@ -1,5 +1,5 @@
 <div class="rounded-lg">
-    <h1 class="text-3xl font-bold mb-4">Active Jobs</h1>
+    <h1 class="text-3xl font-bold mb-4">Jobs In Progress</h1>
 
     <!-- Search Bar -->
     <div class="bg-white flex items-center px-3 py-1 text-sm border border-gray-300 rounded-full">
@@ -16,48 +16,47 @@
         <table mat-table [dataSource]="dataSource" matSort class="mat-elevation-z8 w-full">
             
             <!-- Job ID Column -->
-            <ng-container matColumnDef="jobid">
-                <th mat-header-cell *matHeaderCellDef mat-sort-header class="p-3 text-left">Job ID</th>
-                <td mat-cell *matCellDef="let job" class="p-3">{{ job.jobid }}</td>
+            <ng-container matColumnDef="job_id">
+                <th mat-header-cell *matHeaderCellDef mat-sort-header class="p-3 text-left">ID</th>
+                <td mat-cell *matCellDef="let job" class="p-3">{{ job.job_id }}</td>
             </ng-container>
 
-            <!-- Job Name Column -->
-            <ng-container matColumnDef="jobname">
-                <th mat-header-cell *matHeaderCellDef mat-sort-header class="p-3 text-left">Job Name</th>
-                <td mat-cell *matCellDef="let job" class="p-3">{{ job.jobname }}</td>
+            <!-- Scope Column -->
+            <ng-container matColumnDef="scope_of_service">
+                <th mat-header-cell *matHeaderCellDef mat-sort-header class="p-3 text-left">Scope</th>
+                <td mat-cell *matCellDef="let job" class="p-3">{{ job.scope_of_service }}</td>
             </ng-container>
 
-            <!-- Client Column -->
-            <ng-container matColumnDef="client">
-                <th mat-header-cell *matHeaderCellDef mat-sort-header class="p-3 text-left">Client</th>
-                <td mat-cell *matCellDef="let job" class="p-3">{{ job.client }}</td>
+            <!-- Location Column -->
+            <ng-container matColumnDef="project_location">
+                <th mat-header-cell *matHeaderCellDef mat-sort-header class="p-3 text-left">Location</th>
+                <td mat-cell *matCellDef="let job" class="p-3">{{ job.project_location }}</td>
             </ng-container>
 
-            <!-- Status Column -->
-            <ng-container matColumnDef="status">
-                <th mat-header-cell *matHeaderCellDef mat-sort-header class="p-3 text-left">Status</th>
-                <td mat-cell *matCellDef="let job" class="p-3">
-                    <span class="px-3 py-1 rounded-full text-white" 
-                          [ngClass]="{'bg-green-500': job.status === 'Active', 
-                                      'bg-yellow-500': job.status === 'Pending', 
-                                      'bg-red-500': job.status === 'Closed'}">
-                        {{ job.status }}
-                    </span>
-                </td>
+            <!-- Start Date Column -->
+            <ng-container matColumnDef="expected_start_date">
+                <th mat-header-cell *matHeaderCellDef mat-sort-header class="p-3 text-left">Start Date</th>
+                <td mat-cell *matCellDef="let job" class="p-3">{{ job.expected_start_date }}</td>
             </ng-container>
 
-            <!-- Deadline Column -->
-            <ng-container matColumnDef="deadline">
-                <th mat-header-cell *matHeaderCellDef mat-sort-header class="p-3 text-left">Deadline</th>
-                <td mat-cell *matCellDef="let job" class="p-3">{{ job.deadline }}</td>
+            <!-- Days Remaining Column -->
+            <ng-container matColumnDef="days_remaining">
+                <th mat-header-cell *matHeaderCellDef mat-sort-header class="p-3 text-left">Days Remaining</th>
+                <td mat-cell *matCellDef="let job" class="p-3">{{ calculateDaysRemaining(job.expected_start_date) }}</td>
             </ng-container>
 
-            <!-- View/Update Column -->
+            <!-- Budget Column -->
+            <ng-container matColumnDef="budget">
+                <th mat-header-cell *matHeaderCellDef mat-sort-header class="p-3 text-left">Budget ($)</th>
+                <td mat-cell *matCellDef="let job" class="p-3">{{ job.budget | currency }}</td>
+            </ng-container>
+
+            <!-- Actions Column -->
             <ng-container matColumnDef="actions">
-                <th mat-header-cell *matHeaderCellDef class="p-3 text-left">View/Update</th>
+                <th mat-header-cell *matHeaderCellDef class="p-3 text-left">Actions</th>
                 <td mat-cell *matCellDef="let job" class="p-3">
-                    <button mat-icon-button color="primary" (click)="viewUpdate()">
-                        <mat-icon>edit</mat-icon>
+                    <button mat-icon-button (click)="openEditDialog(job)">
+                        <mat-icon color="primary">edit</mat-icon>
                     </button>
                 </td>
             </ng-container>

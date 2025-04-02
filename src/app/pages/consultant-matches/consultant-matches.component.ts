@@ -69,40 +69,17 @@ fetchConsultantMatches() {
 }
 
 
-  // fetchConsultantMatches() {
-  //   console.log('Fetching consultant matches...');
-    
-  //   this.consultantMatchesService.getConsultantMatches().subscribe({
-  //     next: (response) => {
-  //       console.log('Consultant matches fetched successfully:', response);
-
-  //       if (response && response.matched_jobs) {
-  //         this.dataSource.data = response.matched_jobs.map((job: any) => ({
-  //           job_id: job.job_id,
-  //           budget: job.budget,
-  //           project_location: job.project_location,
-  //           expected_start_date: job.expected_start_date,
-  //         }));
-  //       }
-  //     },
-  //     error: (err) => {
-  //       console.error('Error fetching consultant matches:', err);
-  //     }
-  //   });
-  // }
-
   viewDetail(job: any): void {
     console.log('View detail clicked for job:', job);
     const dialogRef = this.dialog.open(JobDetailDialogComponent, {
       width: '1000px',
       data: {
         jobid: job.job_id,  // Updated property name
-        description: 'Work on the manufacturing department handling 150 employees',
-        createdDate: '2025-01-10',
-        deadline: '2025-04-13',
-        matchingCriteria: 'Skills: Similar work history, Preferred client',
-        phone: '000111290',
-        email: 'janedoe@gmail.com'
+        work_in_detail: job.work_in_detail || 'No description provided', // Fallback in case of undefined
+        scope_of_service: job.scope_of_service || 'No scope provided', // Fallback in case of undefined,
+        startDate : job.expected_start_date,
+        deadline: job.proposal_deadline || 'No deadline provided', // Fallback in case of undefined
+        location: job.project_location || 'No location provided', // Fallback in case of undefined 
       }
       
     });
