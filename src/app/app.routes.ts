@@ -30,7 +30,6 @@ import { ConsultantBiddedJobsComponent } from './pages/consultant-bidded-jobs/co
 import path from 'path';
 import { ConsultantCompletedJobsComponent } from './pages/consultant-completed-jobs/consultant-completed-jobs.component';
 
-
 import { BidsInProgressComponent } from './clientPages/bids-in-progress/bids-in-progress.component';
 import { PendingBidsComponent } from './clientPages/pending-bids/pending-bids.component';
 import { JobInProgressComponent } from './clientPages/job-in-progress/job-in-progress.component';
@@ -45,8 +44,7 @@ export const routes: Routes = [
   { path: 'login', component: LoginComponent },
   { path: 'sign-up', component: SignUpComponent },
   { path: 'onboarding', component: OnboardingComponent }, // New combined form route
-  {path: 'consultant-login', component: ConsultantLoginComponent}, // Consultant login route
-
+  { path: 'consultant-login', component: ConsultantLoginComponent }, // Consultant login route
 
   // Client Routes with a Layout Component
   {
@@ -63,7 +61,7 @@ export const routes: Routes = [
       { path: 'job-in-progress', component: JobInProgressComponent },
       { path: 'completed-jobs', component: CompletedJobsComponent },
       { path: 'track-jobs', component: TrackJobsComponent },
-      { path: 'feedback', component: FeedbackComponent }
+      { path: 'feedback', component: FeedbackComponent },
     ],
   },
 
@@ -82,27 +80,36 @@ export const routes: Routes = [
       { path: '**', redirectTo: '', pathMatch: 'full' },
     ],
   },
-  {path: 'consultant', component: ConsultantDashboardComponent
-,
-  children: [
-    {
-      path : '' , component : ConsultantMatchesComponent
-    },
-   
-  {path: 'consultant-matches', component: ConsultantMatchesComponent },
-  {path: 'consultant-bidded', component: ConsultantBiddedJobsComponent},
-  {path: 'consultant-active', component: ConsultantActiveJobsComponent},
-  {path: 'consultant-completed', component: ConsultantCompletedJobsComponent}
-  ]    
+  {
+    path: 'consultant',
+    component: ConsultantDashboardComponent,
+    children: [
+      {
+        path: '',
+        component: ConsultantMatchesComponent,
+      },
+
+      { path: 'consultant-matches', component: ConsultantMatchesComponent },
+      { path: 'consultant-bidded', component: ConsultantBiddedJobsComponent },
+      { path: 'consultant-active', component: ConsultantActiveJobsComponent },
+      {
+        path: 'consultant-completed',
+        component: ConsultantCompletedJobsComponent,
+      },
+    ],
   },
-  {path: 'consultant-form1', component: ConsultantForm1Component},
-  {path: 'consultant-form-contact', component: ConsultantFormContactComponent},
-  {path: 'consultant-form3', component: ConsultantForm3Component},
-  {path: 'consultant-form4', component: ConsultantForm4Component},
-  {path: 'consultant-form8', component: ConsultantForm8Component},
-  {path: 'consultant-forms-submission', component: ConsultantFormsSubmissionComponent },
+  { path: 'consultant-form1', component: ConsultantForm1Component },
+  {
+    path: 'consultant-form-contact',
+    component: ConsultantFormContactComponent,
+  },
+  { path: 'consultant-form3', component: ConsultantForm3Component },
+  { path: 'consultant-form4', component: ConsultantForm4Component },
+  { path: 'consultant-form8', component: ConsultantForm8Component },
+  {
+    path: 'consultant-forms-submission',
+    component: ConsultantFormsSubmissionComponent,
+  },
 
-  
   { path: '**', component: PageNotFoundComponent },
-
-]
+];

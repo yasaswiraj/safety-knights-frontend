@@ -36,7 +36,12 @@ export class LoginComponent {
           // localStorage.setItem('user_id', response.user_id);
   
           // Redirect to Dashboard
+          if(response.user_type === 'client')
           this.router.navigate(['/client/bids-in-progress']);
+          else if(response.user_type === 'consultant')
+          this.router.navigate(['/consultant/consultant-matches']);
+          else 
+          this.router.navigate(['/admin']);
         },
         error: (error) => {
           console.error('Login Failed:', error);
