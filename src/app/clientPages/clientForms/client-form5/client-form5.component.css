@@ -1,8 +1,0 @@
-mat-calendar {
-    background-color: var(--background-color) !important;
-    color: #000 !important;
-    border-radius: 6px;
-    border-color: #000 !important;
-    padding: 10px;
-    box-sizing: border-box;
-}

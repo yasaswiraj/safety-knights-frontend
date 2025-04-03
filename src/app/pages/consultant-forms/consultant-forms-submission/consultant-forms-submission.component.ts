@@ -14,8 +14,8 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatButtonModule } from '@angular/material/button';
 import { NavBarComponent } from "../../../components/nav-bar/nav-bar.component";
-import { FormDataService } from '../../../services/form-data-service'; // Import the FormDataService
 import { HttpClient, HttpClientModule } from '@angular/common/http';
+import { FormDataService } from '../../../services/form-data.service';
 @Component({
   selector: 'app-consultant-forms-submission',
   standalone: true,
@@ -44,7 +44,7 @@ export class ConsultantFormsSubmissionComponent {
     this.http.post('', this.finalPayload,{ withCredentials: true })
       .subscribe(response => {
         console.log('Form submitted successfully', response);
-        this.formDataService.resetFormData(); // Clear after submission
+        this.formDataService.setFormData({}); // Clear after submission
       }, error => {
         console.error('Error submitting form', error);
       });

@@ -1,0 +1,62 @@
+<div class="rounded-lg px-8">
+    <h1 class="text-3xl font-bold mb-4">Verify Completion</h1>
+
+
+    <!-- Search Bar -->
+    <div class="bg-white flex items-center px-3 py-1 text-sm border border-gray-300 rounded-full">
+        <i class="fas fa-search text-gray-400 pr-1"></i>
+        <input matInput [(ngModel)]="searchTerm" (input)="applyFilter()" placeholder="Search pending bids"
+            class="w-full p-1 rounded-full outline-none placeholder-gray-400 bg-transparent" />
+    </div>
+
+    <div class="bg-white h-[calc(100vh-17rem)] overflow-auto mt-4 rounded-3xl border border-gray-300">
+        <div class="container">
+            <table mat-table [dataSource]="dataSource" class="mat-elevation-z8">
+                <!-- Job Name Column -->
+                <ng-container matColumnDef="jobName">
+                    <th mat-header-cell *matHeaderCellDef>Job Name</th>
+                    <td mat-cell *matCellDef="let job">{{ job.jobName }}</td>
+                </ng-container>
+
+                <!-- Consultant Column -->
+                <ng-container matColumnDef="consultant">
+                    <th mat-header-cell *matHeaderCellDef>Consultant</th>
+                    <td mat-cell *matCellDef="let job">{{ job.consultant }}</td>
+                </ng-container>
+
+                <!-- Bid Amount Column -->
+                <ng-container matColumnDef="bidAmount">
+                    <th mat-header-cell *matHeaderCellDef>Bid Amount</th>
+                    <td mat-cell *matCellDef="let job">{{ job.bid_amount | currency }}</td>
+                </ng-container>
+
+                <!-- Actions Column -->
+                <ng-container matColumnDef="actions">
+                    <th mat-header-cell *matHeaderCellDef class="text-center">
+                      Do you consider the Job to be completed?
+                    </th>
+                    <td mat-cell *matCellDef="let job">
+                      <div class="w-full flex justify-center items-center gap-4">
+                        <button
+                          class="bg-[var(--elements-color)] text-black px-4 py-1 rounded-full shadow-md font-bold hover:bg-opacity-80 transition"
+                          (click)="markAsCompleted(job.client_job_id)">
+                          Yes
+                        </button>
+                        <button
+                          class="bg-gray-300 text-black px-4 py-1 rounded-full shadow-md font-bold hover:bg-opacity-80 transition"
+                          (click)="moveToInProgress(job.client_job_id)">
+                          No
+                        </button>
+                      </div>
+                    </td>
+                  </ng-container>
+                  
+
+
+
+                <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+                <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+            </table>
+        </div>
+    </div>
+</div>

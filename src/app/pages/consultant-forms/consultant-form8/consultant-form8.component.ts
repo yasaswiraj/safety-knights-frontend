@@ -13,7 +13,7 @@ import { MatButtonModule } from '@angular/material/button';
 import { RouterModule } from '@angular/router';
 import { Router } from '@angular/router';
 import { NavBarComponent } from '../../../components/nav-bar/nav-bar.component';
-import { FormDataService } from '../../../services/form-data-service'; // Import the FormDataService
+import { FormDataService } from '../../../services/form-data.service';
 
 @Component({
   selector: 'app-consultant-form1',
@@ -44,7 +44,7 @@ export class ConsultantForm8Component {
     
       console.log('Navigating to Client-Form2');
       // Save form data to the service
-      this.formDataService.setFormData(5, this.consultantForm.value);
+      this.formDataService.setFormData(this.consultantForm.value, 5);
 
       this.router.navigate(['/consultant-forms-submission']);
     
