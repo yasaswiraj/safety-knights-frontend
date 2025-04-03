@@ -25,4 +25,8 @@ export class AdminService {
   approveUser(user_id: number): Observable<any> {
     return this.http.post(`${environment.apiUrl}/admin/user_approve/${user_id}`, {}, { withCredentials: true });
   }
+
+  getBids(): Observable<any[]> {
+    return this.http.get<any[]>(`${environment.apiUrl}/admin/bids`, { withCredentials: true });
+  }
 }
