@@ -27,6 +27,7 @@ export class ClientLayoutComponent {
     { label: 'Pending Bids', route: '/client/pending-bids', icon: 'fa-solid fa-hourglass-half' },
     { label: 'Bids in Process', route: '/client/bids-in-progress', icon: 'fa-solid fa-spinner' },
     { label: 'Job in Progress', route: '/client/job-in-progress', icon: 'fa-solid fa-briefcase' },
+    { label: 'Verify Completion', route: '/client/verify-completion', icon: 'fa-solid fa-check-double' },
     { label: 'Completed Jobs', route: '/client/completed-jobs', icon: 'fa-solid fa-check-circle' },
     { label: 'Inbox', route: '/client/inbox', icon: 'fa-solid fa-inbox' },
     { label: 'Profile', route: '/client/profile', icon: 'fa-solid fa-user' },
@@ -46,6 +47,7 @@ export class ClientLayoutComponent {
     else if (routePath.includes('bids-in-process')) this.pageTitle = 'Bids in Process';
     else if (routePath.includes('pending-bid')) this.pageTitle = 'Pending Bid';
     else if (routePath.includes('job-in-process')) this.pageTitle = 'Job in Process';
+    else if (routePath.includes('verify-completion')) this.pageTitle = 'Verify Completion';
     else if (routePath.includes('completed-jobs')) this.pageTitle = 'Completed Jobs';
     else this.pageTitle = '';
   }

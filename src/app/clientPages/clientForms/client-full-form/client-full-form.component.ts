@@ -78,7 +78,7 @@ export class ClientFullFormComponent implements OnInit {
   ngOnInit() {
     const jobId = this.formDataService.getJobId();
     const formData = this.formDataService.getFormData();
-  
+
     this.clientJobsService.getFormStructure().subscribe({
       next: (response) => {
         this.formStructure = response.form;
@@ -92,9 +92,9 @@ export class ClientFullFormComponent implements OnInit {
           );
           return hasVisible;
         });
-  
+
         this.buildForm();
-  
+
         if (formData && jobId) {
           this.jobIdToEdit = jobId;
           this.prefillForm(formData);
@@ -103,7 +103,7 @@ export class ClientFullFormComponent implements OnInit {
       error: (err) => console.error('Failed to fetch form structure:', err)
     });
   }
-  
+
 
   prefillForm(data: any) {
     setTimeout(() => {
@@ -122,12 +122,12 @@ export class ClientFullFormComponent implements OnInit {
 
         // console.log('[PATCHED VALUES]', this.clientForm.value);
 
-  
+
         if (data.payment_terms === 'Other...') {
           this.showOtherInputs['paymentTerms'] = true;
           this.otherInputs['paymentTerms'] = '';
         }
-  
+
         if (data.payment_method === 'Other...') {
           this.showOtherInputs['preferredMethodOfPaymentToContractor'] = true;
           this.otherInputs['preferredMethodOfPaymentToContractor'] = '';
@@ -135,7 +135,7 @@ export class ClientFullFormComponent implements OnInit {
       }
     });
   }
-  
+
 
 
   getQuestionEntries(category: string): { key: string; value: QuestionConfig }[] {
@@ -146,6 +146,21 @@ export class ClientFullFormComponent implements OnInit {
       .filter((key) => entries[key] && !this.excludedQuestions.includes(key))
       .map((key) => ({ key, value: entries[key] }));
   }
+
+  selectedInsuranceOptions: string[] = [];
+  insuranceCoverageMap: { [key: string]: string } = {};
+
+  onInsuranceSelectChange(selectedOptions: string[]) {
+    this.selectedInsuranceOptions = selectedOptions;
+
+    // Remove coverage entries for deselected options
+    for (const key of Object.keys(this.insuranceCoverageMap)) {
+      if (!selectedOptions.includes(key)) {
+        delete this.insuranceCoverageMap[key];
+      }
+    }
+  }
+
 
 
   buildForm() {
@@ -159,23 +174,27 @@ export class ClientFullFormComponent implements OnInit {
         const question = questions[questionKey];
         const formKey = this.camelCase(questionKey);
 
-        if (questionKey === 'Scope of Service Needed') {
-          controls[formKey] = [[], question.required ? Validators.required : []];
-        } else if (question.type === 'text' || question.type === 'date') {
-          controls[formKey] = ['', question.required ? Validators.required : []];
-        } else if (question.type === 'radio') {
-          controls[formKey] = [[], question.required ? Validators.required : []];
-        } else if (question.type === 'checkbox') {
-          controls[formKey] = [[], question.required ? Validators.required : []];
+        // Mark as required unless it's one of the exceptions
+        const isRequired = questionKey !== 'Insurance Requirements for the Contractor' &&
+          questionKey !== 'Please describe the work in detail';
+
+        if (questionKey === 'Scope of Service Needed' || questionKey === 'Insurance Requirements for the Contractor') {
+          controls[formKey] = [[], isRequired ? Validators.required : []];
         }
-
-
+        else if (['text', 'date', 'radio', 'checkbox'].includes(question.type)) {
+          controls[formKey] = [[], isRequired ? Validators.required : []];
+        }
       }
     }
+
     this.clientForm = this.fb.group(controls);
     console.log('Form controls:', Object.keys(this.clientForm.controls));
-
   }
+
+  isFieldRequired(key: string): boolean {
+    return key !== 'Insurance Requirements for the Contractor';
+  }
+
 
   onMultiSelectChange(selectedValues: string[], field: string) {
     this.showScopeOfServiceOther = selectedValues.includes('Other...');
@@ -236,9 +255,8 @@ export class ClientFullFormComponent implements OnInit {
       ? [...(selectedServices.filter((s: string) => s !== 'Other...')), this.scopeOfServiceOtherText]
       : selectedServices;
 
-    const insuranceReq = rawForm.insuranceRequirementsForTheContractor?.includes('Other') && this.otherInputs['insuranceRequirementsForTheContractor']
-      ? [...rawForm.insuranceRequirementsForTheContractor.filter((v: string) => v !== 'Other'), this.otherInputs['insuranceRequirementsForTheContractor']]
-      : rawForm.insuranceRequirementsForTheContractor;
+    const insuranceReq = rawForm.insuranceRequirementsForTheContractor || [];
+
 
     const paymentTerms = rawForm.paymentTerms === 'Other...'
       ? this.otherInputs['paymentTerms']
@@ -247,27 +265,28 @@ export class ClientFullFormComponent implements OnInit {
     const paymentMethod = rawForm.preferredMethodOfPaymentToContractor === 'Other...'
       ? this.otherInputs['preferredMethodOfPaymentToContractor']
       : rawForm.preferredMethodOfPaymentToContractor;
-      
-      const payload: any = {
-        scope_of_service: scopeServices.join(', '),
-        work_in_detail: rawForm.pleaseDescribeTheWorkInDetail,
-        project_location: rawForm.projectLocation,
-        proposal_deadline: rawForm.proposalDeadline,
-        expected_start_date: rawForm.whenDoYouNeedTheWorkConducted,
-        budget: parseFloat(rawForm.budgetForService),
-        insurance_requirements: insuranceReq?.join(', '),
-        payment_terms: paymentTerms,
-        payment_method: paymentMethod,
-        uploadedFileName: this.uploadedFile?.name || ''
-      };
-      
-      // Only include these if editing (jobIdToEdit is set)
-      if (this.jobIdToEdit) {
-        payload.contractor_preferences = this.otherInputs['contractorPreferences'] || '';
-        payload.commitment_to_proceed = this.otherInputs['commitmentToProceed'] || '';
-      }
-      
-      
+
+    const payload: any = {
+      scope_of_service: scopeServices.join(', '),
+      work_in_detail: rawForm.pleaseDescribeTheWorkInDetail,
+      project_location: rawForm.projectLocation,
+      proposal_deadline: rawForm.proposalDeadline,
+      expected_start_date: rawForm.whenDoYouNeedTheWorkConducted,
+      budget: parseFloat(rawForm.budgetForService),
+      insurance_requirements: Array.isArray(insuranceReq) ? insuranceReq.join(', ') : '',
+      insurance_coverage_details: this.insuranceCoverageMap,
+      payment_terms: paymentTerms,
+      payment_method: paymentMethod,
+      uploadedFileName: this.uploadedFile?.name || ''
+    };
+
+    // Only include these if editing (jobIdToEdit is set)
+    if (this.jobIdToEdit) {
+      payload.contractor_preferences = this.otherInputs['contractorPreferences'] || '';
+      payload.commitment_to_proceed = this.otherInputs['commitmentToProceed'] || '';
+    }
+
+
 
     const request$ = this.jobIdToEdit
       ? this.clientJobsService.updateJob(this.jobIdToEdit, payload)
@@ -286,17 +305,46 @@ export class ClientFullFormComponent implements OnInit {
     const d = new Date(dateInput);
     return isNaN(d.getTime()) ? '' : d.toISOString().split('T')[0];
   }
-  
+
+  onInsuranceCheckboxChange(event: any, fieldName: string) {
+    const control = this.clientForm.get(fieldName);
+    if (!control) return;
+
+    const currentValues = control.value || [];
+    const value = event.target.value;
+
+    if (event.target.checked) {
+      control.setValue([...currentValues, value]);
+    } else {
+      control.setValue(currentValues.filter((v: string) => v !== value));
+      delete this.insuranceCoverageMap[value]; // Clear the input when deselected
+    }
+  }
+
+  normalizeType(key: string, type: string): string {
+    const map: { [key: string]: string } = {
+      CHECKBOX_GROUP: 'checkbox',
+      RADIO_GROUP: 'radio'
+    };
+
+    if (key === 'Insurance Requirements for the Contractor') return 'checkbox';
+
+    return map[type] || type;
+  }
+
+
 
 
 }
 
 export interface QuestionConfig {
-  type: 'text' | 'date' | 'radio';
+  type: 'text' | 'date' | 'radio' | 'checkbox' | 'CHECKBOX_GROUP' | 'RADIO_GROUP';
   label?: string;
   placeholder?: string;
   required?: boolean;
   options?: string[];
 }
+
+
 
 

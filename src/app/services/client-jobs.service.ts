@@ -64,7 +64,7 @@ export interface JobInProgress {
   proposal_deadline: string;
   expected_start_date: string;
   budget: number;
-} 
+}
 
 export interface CompletedJob {
   client_job_id: number;
@@ -73,8 +73,8 @@ export interface CompletedJob {
   bid_amount: number;
   proposal_deadline: string;
   expected_start_date: string;
-  consultant_user_id: number; 
-  
+  consultant_user_id: number;
+
 }
 
 
@@ -114,6 +114,12 @@ export interface ConsultantProfile {
   providedIn: 'root'
 })
 export class ClientJobsService {
+  getClosedJobs(): Observable<{ jobs: CompletedJob[] }> {
+    return this.http.get<{ jobs: CompletedJob[] }>(
+      `${environment.apiUrl}/client/closed-jobs`,
+      { withCredentials: true }
+    );
+  }
 
   constructor(private http: HttpClient) { }
   getPendingBids(): Observable<{ jobs: PendingBid[] }> {
@@ -141,7 +147,7 @@ export class ClientJobsService {
       withCredentials: true
     });
   }
-  
+
   postReview(data: {
     job_id: number;
     consultant_user_id: number;
@@ -152,7 +158,7 @@ export class ClientJobsService {
       withCredentials: true
     });
   }
-  
+
 
 
   createJob(jobData: CreateJobRequest): Observable<any> {
@@ -202,8 +208,13 @@ export class ClientJobsService {
       withCredentials: true
     });
   }
-  
-  
+
+  getClientProfile(): Observable<any> {
+    return this.http.get(`${environment.apiUrl}/client/profile`, {
+      withCredentials: true
+    });
+  }
+
 
 
   // Optional helper
@@ -236,15 +247,28 @@ export class ClientJobsService {
     return this.http.get(`${environment.apiUrl}/client/get_client_form`, {
       withCredentials: true
     });
-  }  
+  }
 
   submitForm(data: any): Observable<any> {
     return this.http.post(`${environment.apiUrl}/client/create-job`, data, {
       withCredentials: true
     });
   }
-  
-  
+
+  updateClosedJobToCompleted(jobId: number): Observable<any> {
+    return this.http.post(`${environment.apiUrl}/client/update_closed_job_to_completed/${jobId}`, {}, {
+      withCredentials: true
+    });
+  }
+
+  updateClosedJobToInProgress(jobId: number): Observable<any> {
+    return this.http.post(`${environment.apiUrl}/client/update_closed_job_in_progress/${jobId}`, {}, {
+      withCredentials: true
+    });
+  }
+
+
+
 
 }
 

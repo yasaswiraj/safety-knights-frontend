@@ -11,10 +11,16 @@
                 <div *ngFor="let questionEntry of getQuestionEntries(category); let i = index; trackBy: trackByQuestionKey"
                     class="mb-4">
                     <ng-container *ngIf="questionEntry?.value as question">
-                        <!-- Special Handling: Material Dropdown for Scope of Service Needed -->
+
+                        <!-- Scope of Service Needed -->
                         <ng-container *ngIf="questionEntry.key === 'Scope of Service Needed'; else defaultRenderer">
+                            <!-- Label outside the mat-form-field -->
+                            <label class="block font-semibold mb-1">
+                                {{ question.label || questionEntry.key }}
+                                <span *ngIf="isFieldRequired(questionEntry.key)" class="text-black-500">*</span>
+                            </label>
+
                             <mat-form-field appearance="fill" class="w-full">
-                                <mat-label>{{ question.label || questionEntry.key }}</mat-label>
                                 <mat-select [formControlName]="camelCase(questionEntry.key)" multiple
                                     (selectionChange)="onMultiSelectChange($event.value, 'scopeOfServiceOtherText')">
                                     <mat-option *ngFor="let opt of question.options || []" [value]="opt">
@@ -23,7 +29,6 @@
                                 </mat-select>
                             </mat-form-field>
 
-                            <!-- Show custom input when 'Other...' is selected -->
                             <div *ngIf="showScopeOfServiceOther">
                                 <input class="border border-gray-300 rounded-lg p-2 w-full mt-2"
                                     placeholder="Please specify other service" [(ngModel)]="scopeOfServiceOtherText"
@@ -31,13 +36,19 @@
                             </div>
                         </ng-container>
 
-                        <!-- Default Renderer for all other questions -->
+
+
+                        <!-- Default Renderer -->
                         <ng-template #defaultRenderer>
-                            <ng-container [ngSwitch]="question?.type">
+                            <ng-container [ngSwitch]="normalizeType(questionEntry.key, question?.type ?? '')">
+
+
                                 <!-- Text -->
                                 <div *ngSwitchCase="'text'">
-                                    <label class="block font-semibold mb-1">{{ question.label || questionEntry.key
-                                        }}</label>
+                                    <label class="block font-semibold mb-1">
+                                        {{ question.label || questionEntry.key }}
+                                        <span *ngIf="isFieldRequired(questionEntry.key)" class="text-black-500">*</span>
+                                    </label>
                                     <input class="border border-gray-300 rounded-lg p-2 w-full"
                                         [formControlName]="camelCase(questionEntry.key)"
                                         [placeholder]="question.placeholder || ''" />
@@ -45,42 +56,56 @@
 
                                 <!-- Date -->
                                 <div *ngSwitchCase="'date'">
-                                    <label class="block font-semibold mb-1">{{ question.label || questionEntry.key
-                                        }}</label>
+                                    <label class="block font-semibold mb-1">
+                                        {{ question.label || questionEntry.key }}
+                                        <span *ngIf="isFieldRequired(questionEntry.key)" class="text-black-500">*</span>
+                                    </label>
                                     <input type="date" class="border border-gray-300 rounded-lg p-2 w-full"
                                         [formControlName]="camelCase(questionEntry.key)" />
                                 </div>
 
                                 <!-- Checkbox -->
+                                <!-- Multi-select for Insurance Requirements -->
                                 <div *ngSwitchCase="'checkbox'">
-                                    <label class="block font-semibold mb-1">{{ question.label || questionEntry.key
-                                        }}</label>
-                                    <div class="flex flex-col gap-2">
-                                        <label *ngFor="let opt of question.options || []"
-                                            class="inline-flex items-center">
-                                            <input type="checkbox" [value]="opt"
-                                                [checked]="clientForm.get(camelCase(questionEntry.key))?.value?.includes(opt)"
-                                                (change)="onCheckboxChange($event, camelCase(questionEntry.key))"
-                                                class="mr-2" />
-                                            {{ opt }}
-                                        </label>
-                                    </div>
+                                    <label class="block font-semibold mb-1">
+                                        {{ question.label || questionEntry.key }}
+                                        <span *ngIf="isFieldRequired(questionEntry.key)" class="text-black-500">*</span>
+                                    </label>
 
-                                    <!-- 'Other' text input for checkboxes -->
-                                    <div *ngIf="showOtherInputs[camelCase(questionEntry.key)]">
+                                    <!-- Subheading OUTSIDE mat-select dropdown -->
+                                    <p *ngIf="questionEntry.key === 'Insurance Requirements for the Contractor'"
+                                        class="text-sm text-gray-600 mb-2">
+                                        For each option checked, list the coverage minimum below. eg: $1M policy
+                                    </p>
+
+                                    <mat-form-field appearance="fill" class="w-full">
+                                        <mat-select [formControlName]="camelCase(questionEntry.key)" multiple
+                                            (selectionChange)="onInsuranceSelectChange($event.value)">
+                                            <mat-option *ngFor="let opt of question.options || []" [value]="opt">
+                                                {{ opt }}
+                                            </mat-option>
+                                        </mat-select>
+                                    </mat-form-field>
+
+                                    <!-- Show coverage input field for each selected option -->
+                                    <div *ngFor="let opt of clientForm.get(camelCase(questionEntry.key))?.value || []">
                                         <input class="border border-gray-300 rounded-lg p-2 w-full mt-2"
-                                            placeholder="Please specify"
-                                            [(ngModel)]="otherInputs[camelCase(questionEntry.key)]"
+                                            [placeholder]="'Minimum coverage for ' + opt"
+                                            [(ngModel)]="insuranceCoverageMap[opt]"
                                             [ngModelOptions]="{ standalone: true }"
-                                            name="{{ camelCase(questionEntry.key) }}_other" />
+                                            name="{{ camelCase(opt) }}_coverage" />
                                     </div>
                                 </div>
 
 
+
+
                                 <!-- Radio -->
                                 <div *ngSwitchCase="'radio'">
-                                    <label class="block font-semibold mb-1">{{ question.label || questionEntry.key
-                                        }}</label>
+                                    <label class="block font-semibold mb-1">
+                                        {{ question.label || questionEntry.key }}
+                                        <span *ngIf="isFieldRequired(questionEntry.key)" class="text-black-500">*</span>
+                                    </label>
                                     <div class="flex flex-col gap-2">
                                         <label *ngFor="let opt of question.options || []"
                                             class="inline-flex items-center">
@@ -91,7 +116,7 @@
                                         </label>
                                     </div>
 
-                                    <!-- Show text input for 'Other...' -->
+                                    <!-- 'Other' text input -->
                                     <div *ngIf="showOtherInputs[camelCase(questionEntry.key)]">
                                         <input class="border border-gray-300 rounded-lg p-2 w-full mt-2"
                                             placeholder="Please specify"
@@ -99,10 +124,11 @@
                                             name="{{ camelCase(questionEntry.key) }}_other" />
                                     </div>
                                 </div>
+
                             </ng-container>
                         </ng-template>
 
-                        <!-- File Upload after a specific question -->
+                        <!-- File Upload -->
                         <ng-container *ngIf="questionEntry.key === 'Please describe the work in detail'">
                             <div class="mb-4 mt-2">
                                 <label class="block font-semibold mb-1">Upload Job Description</label>
@@ -119,11 +145,12 @@
                                 </div>
                             </div>
                         </ng-container>
+
                     </ng-container>
                 </div>
             </div>
 
-            <!-- Submit -->
+            <!-- Submit Button -->
             <button
                 class="mt-6 bg-[var(--elements-color)] text-black px-6 py-2 rounded-full shadow-md font-bold hover:bg-opacity-80 transition"
                 type="button" (click)="submitForm()" [disabled]="clientForm.invalid">

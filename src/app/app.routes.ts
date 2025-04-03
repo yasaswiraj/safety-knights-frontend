@@ -36,6 +36,8 @@ import { TrackJobsComponent } from './clientPages/track-jobs/track-jobs.componen
 import { FeedbackComponent } from './clientPages/feedback/feedback.component';
 import { ConsultantLoginComponent } from './pages/consultant-login/consultant-login.component';
 import { ClientFullFormComponent } from './clientPages/clientForms/client-full-form/client-full-form.component';
+import { VerifyCompletionComponent } from './clientPages/verify-completion/verify-completion.component';
+import { ClientProfileComponent } from './clientPages/client-profile/client-profile.component';
 
 export const routes: Routes = [
   { path: '', component: LandingPageComponent },
@@ -55,8 +57,10 @@ export const routes: Routes = [
       { path: 'bids-in-progress', component: BidsInProgressComponent },
       { path: 'pending-bids', component: PendingBidsComponent },
       { path: 'job-in-progress', component: JobInProgressComponent },
+      { path: 'verify-completion', component: VerifyCompletionComponent },
       { path: 'completed-jobs', component: CompletedJobsComponent },
       { path: 'track-jobs', component: TrackJobsComponent },
+      { path: 'profile', component: ClientProfileComponent },
       { path: 'feedback', component: FeedbackComponent },
     ],
   },
