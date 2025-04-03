@@ -62,6 +62,9 @@ export class FormDataService {
    console.log("Transform data :",transformedData);
     return transformedData;
 
+  } 
+  
+}
   //   return {
   //     name: inputData?.step1?.name || "John Doe",
   //     email: inputData?.step2?.email || "consultanttest@gmail.com",
@@ -84,8 +87,4 @@ export class FormDataService {
   //         "Additional Information, Comments or Clarifications": "Certified in ISO 14001 and OSHA safety standards."
   //     }
   // };
-  }
- 
-   
   
-}

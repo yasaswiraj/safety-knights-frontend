@@ -39,7 +39,7 @@ export class LoginComponent {
           if(response.user_type === 'client')
           this.router.navigate(['/client/bids-in-progress']);
           else if(response.user_type === 'consultant')
-          this.router.navigate(['/consultant/consultant-matches']);
+          this.router.navigate(['/consultant/']);
           else 
           this.router.navigate(['/admin']);
         },
