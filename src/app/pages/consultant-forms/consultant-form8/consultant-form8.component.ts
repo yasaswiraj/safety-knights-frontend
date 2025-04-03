@@ -56,7 +56,7 @@ export class ConsultantForm8Component {
 
   
   navigateToPreviousForm() {
-    this.router.navigate(['/consultant-form4']);
+    this.router.navigate(['/consultant-form3']);
   }
   onSubmit() {
     

@@ -33,6 +33,7 @@ export class ConsultantCompletedJobsComponent implements AfterViewInit {
   displayedColumns: string[] = [
     'job_id',
     'client_name',
+    'client_id',
     'scope_of_service', // Ensure this matches your data structure
     'project_location',        // Adjust based on your actual data keys
     'completed_date', // Adjust based on your actual data keys, e.g., 'completed_date'
