@@ -12,8 +12,14 @@
       class="w-full p-1 rounded-full outline-none placeholder-gray-400 bg-transparent" />
   </div>
 
+  <!-- Loading Spinner -->
+  <div *ngIf="isLoading" class="flex justify-center items-center h-[calc(100vh-17rem)]">
+    <mat-spinner></mat-spinner>
+  </div>
+
   <!-- Table Wrapper with Scrolling -->
   <div
+    *ngIf="!isLoading"
     class="bg-white h-[calc(100vh-17rem)] overflow-auto mt-4 rounded-3xl border border-gray-300">
     <table
       mat-table
