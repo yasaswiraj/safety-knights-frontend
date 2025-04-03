@@ -47,7 +47,7 @@ export class ConsultantFormContactComponent {
   //  Navigate to Next Form
   navigateToNextForm() {
     console.log("Button Clicked!");
-    this.formDataService.setFormData(1, this.clientForm.value);
+    this.formDataService.setFormData(this.clientForm.value);
     this.router.navigate(['/consultant-form3']);
     if (this.clientForm.valid) {
       console.log('Form is valid, navigating to consultant-form3');
