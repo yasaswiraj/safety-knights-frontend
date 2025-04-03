@@ -17,4 +17,8 @@ export class AdminService {
   getVettedUsers(): Observable<any> {
     return this.http.get(`${environment.apiUrl}/admin/users/vetting`, { withCredentials: true });
   }
+
+  getConsultantDetail(user_id: number): Observable<any> {
+    return this.http.get(`${environment.apiUrl}/admin/get_consultant_detail/${user_id}`, { withCredentials: true });
+  }
 }

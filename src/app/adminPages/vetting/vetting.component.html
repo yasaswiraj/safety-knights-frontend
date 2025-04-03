@@ -7,7 +7,8 @@
   </div>
   <app-vetting-user 
     [ngClass]="{'hidden': !expandedElement}" 
-    [userID]="expandedElement?.user_id">
+    [userID]="expandedElement?.user_id"
+    [consultantDetails]="loading ? null : consultantDetails">
   </app-vetting-user>
   <div [ngClass]="{'invisible': expandedElement}">
     <!-- Search Bar -->

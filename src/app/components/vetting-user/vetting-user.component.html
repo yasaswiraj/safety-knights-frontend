@@ -1,41 +1,46 @@
 <div class="bg-white p-6 border border-gray-300 rounded-xl my-4">
     <h2 class="text-xl font-bold mb-4">Consultant Details</h2>
-    <!-- Basic Details -->
-    <p><strong>Name:</strong> John Smith {{this.userID}}</p>
-    <p><strong>Email:</strong> {{'john.smith@example.com'}}</p>
-    <p><strong>Job Title:</strong> Senior Environmental Consultant</p>
-    <p><strong>Company Name:</strong> EcoSafe Solutions</p>
-    <p><strong>Company Address:</strong> 123 Corporate Blvd, Buffalo, NY 14228</p>
-    <p><strong>Phone Number:</strong> (716) 555-1234</p>
-    
-    <!-- Service Selections -->
-    <div class="mt-4">
-        <h3 class="font-semibold">Services Selected:</h3>
-        <p><strong>Environmental Services:</strong> Environmental Site Assessments, Regulatory Compliance, Environmental Permitting</p>
-        <p><strong>Property Transactions:</strong> Phase I ESA, Phase II ESA, Transaction Screen</p>
-        <p><strong>Field Activities:</strong> Soil Sampling, Groundwater Monitoring, Air Monitoring</p>
-        <p><strong>Hazardous Materials:</strong> Asbestos, Lead, Mold</p>
-        <p><strong>Safety Facility Compliance:</strong> OSHA Compliance, Safety Audits, Safety Training</p>
-        <p><strong>Industrial Hygiene:</strong> Indoor Air Quality, Noise Monitoring, Ventilation Assessment</p>
-    </div>
-    
-    <!-- Written Responses -->
-    <div class="mt-4">
-        <h3 class="font-semibold">Written Responses:</h3>
-        <div>
-            <p><strong>Experience:</strong> Over 15 years of experience in environmental consulting with specialization in industrial compliance.</p>
-            <p><strong>Qualifications:</strong> Licensed Professional Engineer, Certified Industrial Hygienist, OSHA 40-Hour HAZWOPER certified.</p>
-            <p><strong>Previous Projects:</strong> Led remediation efforts for 3 brownfield sites, managed environmental compliance for 12 manufacturing facilities.</p>
+    <div *ngIf="consultantDetails; else loadingOrNoData">
+        <!-- Basic Details -->
+        <p><strong>Name:</strong> {{ consultantDetails.name }}</p>
+        <p><strong>Email:</strong> {{ consultantDetails.email }}</p>
+        <p><strong>Job Title:</strong> {{ consultantDetails.job_title }}</p>
+        <p><strong>Company Name:</strong> {{ consultantDetails.company_name }}</p>
+        <p><strong>Company Address:</strong> {{ consultantDetails.company_address }}</p>
+        <p><strong>Phone Number:</strong> {{ consultantDetails.phone_number }}</p>
+        
+        <!-- Service Selections -->
+        <div class="mt-4">
+            <h3 class="font-semibold">Services Selected:</h3>
+            <p><strong>Environmental Services:</strong> {{ consultantDetails.environmental_services?.join(', ') }}</p>
+            <p><strong>Property Transactions:</strong> {{ consultantDetails.property_transactions?.join(', ') }}</p>
+            <p><strong>Field Activities:</strong> {{ consultantDetails.field_activities?.join(', ') }}</p>
+            <p><strong>Hazardous Materials:</strong> {{ consultantDetails.hazardous_materials?.join(', ') }}</p>
+            <p><strong>Safety Facility Compliance:</strong> {{ consultantDetails.safety_facility_compliance?.join(', ') }}</p>
+            <p><strong>Industrial Hygiene:</strong> {{ consultantDetails.industrial_hygiene?.join(', ') }}</p>
+            <p><strong>Construction Safety:</strong> {{ consultantDetails.construction_safety?.join(', ') }}</p>
+        </div>
+        
+        <!-- Written Responses -->
+        <div class="mt-4">
+            <h3 class="font-semibold">Written Responses:</h3>
+            <div *ngFor="let key of consultantDetails.written_responses | keyvalue">
+                <p><strong>{{ key.key }}:</strong> {{ key.value }}</p>
+            </div>
+        </div>
+        
+        <!-- Approval/Rejection Buttons -->
+        <div class="mt-6 flex space-x-4">
+            <button class="bg-green-500 text-white px-4 py-2 rounded-full hover:bg-green-600">
+                Approve Consultant
+            </button>
+            <button class="bg-red-500 text-white px-4 py-2 rounded-full hover:bg-red-600">
+                Reject Consultant
+            </button>
         </div>
     </div>
-    
-    <!-- Approval/Rejection Buttons -->
-    <div class="mt-6 flex space-x-4">
-        <button class="bg-green-500 text-white px-4 py-2 rounded-full hover:bg-green-600">
-            Approve Consultant
-        </button>
-        <button class="bg-red-500 text-white px-4 py-2 rounded-full hover:bg-red-600">
-            Reject Consultant
-        </button>
-    </div>
+    <ng-template #loadingOrNoData>
+        <p *ngIf="userID" class="text-gray-500">Loading consultant details...</p>
+        <p *ngIf="!userID" class="text-gray-500">No data available for this consultant.</p>
+    </ng-template>
 </div>

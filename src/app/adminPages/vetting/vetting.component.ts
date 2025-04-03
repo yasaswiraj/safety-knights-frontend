@@ -36,6 +36,8 @@ export class VettingComponent implements OnInit, AfterViewInit {
   }>; // Explicitly define the type
   displayedColumns: string[] = ['user_id', 'name', 'email_id', 'job_title', 'company_name', 'contact', 'actions'];
   expandedElement: any = null;
+  consultantDetails: any = null; // Store fetched consultant details
+  loading: boolean = false; // Add loading flag
 
   constructor(private adminService: AdminService) {
     this.dataSource = new MatTableDataSource<{ 
@@ -75,8 +77,21 @@ export class VettingComponent implements OnInit, AfterViewInit {
   toggleRow(consultant: any) {
     if (this.expandedElement === consultant) {
       this.expandedElement = null;
+      this.consultantDetails = null; // Clear details when collapsing
+      this.loading = false; // Reset loading flag
     } else {
       this.expandedElement = consultant;
+      this.loading = true; // Set loading flag
+      this.adminService.getConsultantDetail(consultant.user_id).subscribe(
+        (data) => {
+          this.consultantDetails = data; // Store fetched details
+          this.loading = false; // Clear loading flag
+        },
+        (error) => {
+          console.error('Error fetching consultant details:', error);
+          this.loading = false; // Clear loading flag on error
+        }
+      );
     }
   }
 
@@ -102,6 +117,8 @@ export class VettingComponent implements OnInit, AfterViewInit {
    * Closes the detailed view and resets the expanded element
    */
   closeDetail(): void {
-    this.expandedElement = false;
+    this.expandedElement = null; // Ensure expandedElement is reset
+    this.consultantDetails = null; // Clear consultant details
+    this.loading = false; // Reset loading flag
   }
 }
