@@ -11,7 +11,9 @@ export class FormDataService {
   private jobId: number | null = null;
 
   setFormData(data: any, jobId?: number) {
+  
     this.formData = { ...this.formData, ...data }; 
+    console.log("Setting form data:", this.formData); // Log the current state of formData
     if (jobId !== undefined) this.jobId = jobId;
    
   }
@@ -21,7 +23,6 @@ export class FormDataService {
       ...this.formData, 
       [`step${step}`]: { ...this.formData[`step${step}`], ...data } 
   };
-  console.log("Setting form data with transform for step:", step, "Data:", data);
   this.formData = this.transformFormData(this.formData);
   }
 

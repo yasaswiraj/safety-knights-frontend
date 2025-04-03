@@ -79,7 +79,7 @@ export class ConsultantForm4Component implements OnInit {
   }
 
   navigateToNextForm() {
-    this.formDataService.setFormData(4, this.signUpForm1.value);
+    // this.formDataService.setFormData(4, this.signUpForm1.value);
       this.router.navigate(['/consultant-form8']);
     
   }

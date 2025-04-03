@@ -11,7 +11,7 @@ import { RouterModule, Router } from '@angular/router';
 import { NavBarComponent } from '../../../components/nav-bar/nav-bar.component';
 import { FormDataService } from '../../../services/form-data.service';
 import { HttpClient } from '@angular/common/http';
-import { environment } from '../../../../environments/environment.development';
+import { environment } from '../../../../environments/environment';
 
 @Component({
   selector: 'app-consultant3-form',
@@ -44,14 +44,7 @@ export class ConsultantForm3Component implements OnInit {
     private http: HttpClient
   ) {
     this.signUpForm = this.fb.group({
-      name: [''],
-      email: [''],
-      password: [''],
-      confirm_password: [''],
-      job_title: [''],
-      company_name: [''],
-      company_address: [''],
-      phone_number: [''],
+      
       scopeOfService: [[]],  
       dependentService: [[]], 
       jobDescription: [''],
@@ -120,7 +113,7 @@ export class ConsultantForm3Component implements OnInit {
   }
 
   navigateToNextForm() {
-    this.formDataService.setFormDataWithTransform(3, this.signUpForm.value);
+    this.formDataService.setFormData(this.signUpForm.value);
       this.router.navigate(['/consultant-form8']);
     
   }

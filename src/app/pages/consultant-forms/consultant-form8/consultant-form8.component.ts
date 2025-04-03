@@ -47,7 +47,7 @@ export class ConsultantForm8Component {
     
       console.log('Navigating to Client-Form2');
       // Save form data to the service
-      this.formDataService.setFormDataWithTransform(4,this.consultantForm.value);
+      this.formDataService.setFormData(this.consultantForm.value);
 
       this.router.navigate(['/consultant-forms-submission']);
     
