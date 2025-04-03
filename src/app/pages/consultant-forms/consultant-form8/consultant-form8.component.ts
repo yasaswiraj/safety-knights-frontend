@@ -5,6 +5,7 @@ import {
   FormControl,
   Validators,
   ReactiveFormsModule,
+  FormBuilder,
 } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import { MatFormFieldModule } from '@angular/material/form-field';
@@ -13,7 +14,7 @@ import { MatButtonModule } from '@angular/material/button';
 import { RouterModule } from '@angular/router';
 import { Router } from '@angular/router';
 import { NavBarComponent } from '../../../components/nav-bar/nav-bar.component';
-import { FormDataService } from '../../../services/form-data-service'; // Import the FormDataService
+import { FormDataService } from '../../../services/form-data.service';
 
 @Component({
   selector: 'app-consultant-form1',
@@ -32,19 +33,21 @@ import { FormDataService } from '../../../services/form-data-service'; // Import
   styleUrls: ['./consultant-form8.component.css'],
 })
 export class ConsultantForm8Component {
-  consultantForm = new FormGroup({
-    // email: new FormControl('', [Validators.required, Validators.email]),
-    // password: new FormControl('', [Validators.required, Validators.minLength(6)]),
-    // confirmPassword: new FormControl('', [Validators.required]),
-  });
+  consultantForm: FormGroup;
 
-  constructor(private router: Router, private formDataService: FormDataService) {}
+
+  constructor(private fb: FormBuilder,private router: Router, private formDataService: FormDataService) {
+    this.consultantForm = this.fb.group({
+      jobDescription1: [''],
+      jobDescription2: ['']
+    });
+  }
 
   navigateToNextForm() {
     
       console.log('Navigating to Client-Form2');
       // Save form data to the service
-      this.formDataService.setFormData(5, this.consultantForm.value);
+      this.formDataService.setFormData(this.consultantForm.value);
 
       this.router.navigate(['/consultant-forms-submission']);
     
@@ -56,7 +59,7 @@ export class ConsultantForm8Component {
 
   
   navigateToPreviousForm() {
-    this.router.navigate(['/consultant-form4']);
+    this.router.navigate(['/consultant-form3']);
   }
   onSubmit() {
     

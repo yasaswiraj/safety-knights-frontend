@@ -1,0 +1,48 @@
+<div class="p-8">
+    <div class="bg-white shadow-lg rounded-xl p-8 max-w-5xl mx-auto">
+      <h1 class="text-4xl font-extrabold text-gray-800 mb-8">👤 My Profile</h1>
+  
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-10 text-gray-700 text-base">
+        <!-- Personal Info -->
+        <div>
+          <h2 class="text-xl font-semibold mb-4">🧍 Personal Info</h2>
+          <div class="space-y-2">
+            <p><span class="font-medium">Name:</span> {{ profile.name }}</p>
+            <p><span class="font-medium">Email:</span> {{ profile.email }}</p>
+            <p><span class="font-medium">Contact:</span> {{ profile.contact }}</p>
+            <p><span class="font-medium">Job Title:</span> {{ profile.job_title }}</p>
+          </div>
+        </div>
+  
+        <!-- Company Info -->
+        <div>
+          <h2 class="text-xl font-semibold mb-4">🏢 Company Info</h2>
+          <div class="space-y-2">
+            <p><span class="font-medium">Company Name:</span> {{ profile.company_name }}</p>
+            <p><span class="font-medium">Address:</span> {{ profile.company_address }}</p>
+          </div>
+        </div>
+  
+        <!-- Job Statistics -->
+        <div>
+          <h2 class="text-xl font-semibold mb-4">📊 Job Statistics</h2>
+          <div class="space-y-2">
+            <p><span class="font-medium">Total Jobs:</span> {{ profile.job_statistics.total_jobs }}</p>
+            <p><span class="font-medium">Completed:</span> {{ profile.job_statistics.completed_jobs }}</p>
+            <p><span class="font-medium">Active:</span> {{ profile.job_statistics.active_jobs }}</p>
+            <p><span class="font-medium">In Progress:</span> {{ profile.job_statistics.in_progress_jobs }}</p>
+          </div>
+        </div>
+  
+        <!-- Ratings -->
+        <div>
+          <h2 class="text-xl font-semibold mb-4">⭐ Ratings</h2>
+          <div class="space-y-2">
+            <p><span class="font-medium">Average Rating:</span> {{ profile.rating.average_rating | number: '1.1-1' }}</p>
+            <p><span class="font-medium">Total Reviews:</span> {{ profile.rating.total_reviews }}</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  

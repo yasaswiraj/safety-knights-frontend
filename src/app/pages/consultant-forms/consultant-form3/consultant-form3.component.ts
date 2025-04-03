@@ -9,10 +9,12 @@ import { MatIconModule } from '@angular/material/icon';
 import { ViewEncapsulation } from '@angular/core';
 import { RouterModule, Router } from '@angular/router';
 import { NavBarComponent } from '../../../components/nav-bar/nav-bar.component';
-import { FormDataService } from '../../../services/form-data-service';
+import { FormDataService } from '../../../services/form-data.service';
+import { HttpClient } from '@angular/common/http';
+import { environment } from '../../../../environments/environment';
 
 @Component({
-  selector: 'app-consultant-form3',
+  selector: 'app-consultant3-form',
   templateUrl: './consultant-form3.component.html',
   styleUrls: ['./consultant-form3.component.css'],
   standalone: true,
@@ -30,85 +32,93 @@ import { FormDataService } from '../../../services/form-data-service';
   ]
 })
 export class ConsultantForm3Component implements OnInit {
-  signUpForm1: FormGroup;
-  services = ['Environmental Facility Compliance', 'Property Transactions', 'Field Activities/Construction', 'Hazardous Building Materials Surveys'];
-  dependentServices: string[] = [];
-  uploadedFile: File | null = null;
+  signUpForm!: FormGroup;  
+  selectedPrimaryServices: Record<string, string[]> = {};  
+  dependentServices: Record<string, string[]> = {};  
+  categories: Record<string, Record<string, { type: string; option?: string[] }>> = {};  // Corrected to directly store category data
 
-  private dependentOptionsMap: Record<string, string[]> = {
-    'Environmental Facility Compliance': ['Environmental Compliance Programs', 'Environmental Compliance Audits', 'Air Emission Permitting','Wastewater Permitting & Management','Storm Water Permitting & Management (SWPPP)','Hazardous Waste Management','Spill / Discharge Planning (SPCC)','Chemical / Petroleum Bulk Storage'],
-    'Property Transactions': ['Strategic Transaction Support', 'Phase I / II Site Assessment (ASTM, AAI)', 'EHS Compliance / Risk Evaluation','Hazardous Materials Survey (asbestos, lead, mold, PCBs)','Liability Quantification / Cost Modeling','Post-Acquisition Integration /Optimization','Pre-Divestiture Planning','Portfolio Management'],
-    'Field Activities/Construction': ['Soil and Groundwater Sampling', 'Contamination Delineation', 'Waste Profiling','Beneficial Reuse Determination'],
-    'Hazardous Building Materials Surveys': ['Asbestos', 'Lead', 'Mold']
-  };
-  totalSteps = 2; // Total forms in the process
-  currentStep = 1; // Update this for each form
-
-  constructor(private fb: FormBuilder, private router: Router, private formDataService: FormDataService) {
-  this.signUpForm1 = this.fb.group({
-    scopeOfService: [{ value: [], disabled: false }, Validators.required],
-    dependentService: [{ value: '', disabled: false }, Validators.required],
-    jobDescription: [{ value: '', disabled: false }, Validators.required],
-    location: [{ value: '', disabled: false }, Validators.required],
-    deadline: [{ value: '', disabled: false }, Validators.required],
-    serviceDetails: this.fb.array([])
-  }); }
-  
-  // ✅ Calculate the Progress Percentage
-  get progressPercentage(): number {
-    return (this.currentStep / this.totalSteps) * 100;
-  }
-
-  ngOnInit() {
-    this.setupDependentDropdown();
-  }
-
-  get serviceDetails(): FormArray {
-    return this.signUpForm1.get('serviceDetails') as FormArray;
-  }
-
-  private setupDependentDropdown() {
-    this.signUpForm1.get('scopeOfService')?.valueChanges.subscribe((selected: string[]) => {
-      this.dependentServices = [
-        ...new Set(selected.flatMap(service => 
-          this.dependentOptionsMap[service] || []
-        ))
-      ];
-      this.signUpForm1.get('dependentService')?.reset();
+  constructor(
+    private fb: FormBuilder,
+    private router: Router,
+    private formDataService: FormDataService,
+    private http: HttpClient
+  ) {
+    this.signUpForm = this.fb.group({
+      
+      scopeOfService: [[]],  
+      dependentService: [[]], 
+      jobDescription: [''],
+      categories: this.fb.group({})  
     });
   }
 
-  navigateToNextForm() {
-    this.formDataService.setFormData(3, this.signUpForm1.value);
-      this.router.navigate(['/consultant-form4']);
-    
+  ngOnInit() {
+    this.fetchCategories();
   }
 
-  navigateToPreviousForm() {
-    this.router.navigate(['/consultant-form-contact']);
+  fetchCategories() {
+    this.http.get(`${environment.apiUrl}/consultant/get-form`).subscribe((response: any) => {
+      const filteredCategories = { ...response.categories };
+    delete filteredCategories["Availability & Additional Comments"];
+
+    this.categories = filteredCategories;
+    this.initializeForm();
+    });
   }
 
-  getServiceControl(index: number): FormControl {
-    return this.serviceDetails.at(index) as FormControl;
+  initializeForm() {
+    const categoryGroup = this.signUpForm.get('categories') as FormGroup;
+    if (!categoryGroup) {
+      console.error('Category group is undefined');
+      return;
+    }
+
+    Object.keys(this.categories).forEach(category => {  // ✅ Fixed reference
+      const subcategories = this.categories[category];
+
+      categoryGroup.addControl(category, this.fb.group({}));
+
+      Object.keys(subcategories).forEach(subcategory => {
+        const subcategoryControl = categoryGroup.get(category) as FormGroup;
+
+        if (subcategoryControl) {
+          const subcategoryData = subcategories[subcategory];
+          
+          if (subcategoryData.type === 'checkbox') {
+            subcategoryControl.addControl(subcategory, this.fb.array([]));
+          } else {
+            subcategoryControl.addControl(subcategory, this.fb.control(''));
+          }
+        }
+      });
+    });
   }
 
-  submitForm() {
-    console.log(this.signUpForm1.value);
-  }
+  onPrimaryServiceChange(category: string, subcategory: string, selectedServices: string[]) {
+    this.selectedPrimaryServices[subcategory] = selectedServices;
 
-  navigateToLandingPage() {
-    this.router.navigate(['/']);
+    const categoryData = this.categories[category];  // ✅ Fixed reference
+    const availableOptions = categoryData[subcategory]?.option || [];
+
+    this.dependentServices[subcategory] = availableOptions.filter((option: string) =>
+      selectedServices.includes(option)
+    );
   }
 
   onFileSelected(event: any) {
     const file = event.target.files[0];
     if (file) {
-      this.uploadedFile = file;
+      console.log('Selected file:', file.name);
     }
-  
   }
 
-  addServiceDetail() {
-    this.serviceDetails.push(this.fb.control(''));
+  navigateToNextForm() {
+    this.formDataService.setFormData(this.signUpForm.value);
+      this.router.navigate(['/consultant-form8']);
+    
+  }
+
+  navigateToPreviousForm() {
+    this.router.navigate(['/consultant-form1']);
   }
 }

@@ -6,7 +6,7 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatIconModule } from '@angular/material/icon';
 import { NavBarComponent } from '../../../components/nav-bar/nav-bar.component';
-import { FormDataService } from '../../../services/form-data-service'; // Import the FormDataService
+import { FormDataService } from '../../../services/form-data.service';
 
 @Component({
   selector: 'app-consultant-form1',
@@ -43,7 +43,7 @@ export class ConsultantForm1Component {
 
   navigateToNextForm() {
     if (this.clientForm.valid) {
-      this.formDataService.setFormData(2, this.clientForm.value);
+      this.formDataService.setFormData(this.clientForm.value);
       this.router.navigate(['/consultant-form-contact']);
     }
   }

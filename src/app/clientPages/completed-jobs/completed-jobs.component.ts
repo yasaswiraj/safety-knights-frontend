@@ -27,7 +27,7 @@ interface CompletedJob {
   templateUrl: './completed-jobs.component.html',
   styleUrls: ['./completed-jobs.component.css'],
   imports: [
-    CommonModule,  // ✅ Enables pipes like currency, number, etc.
+    CommonModule,  
     MatTableModule,
     MatSortModule,
     MatInputModule,
@@ -41,7 +41,7 @@ export class CompletedJobsComponent implements AfterViewInit, OnInit {
   searchTerm = '';
 
   dataSource: MatTableDataSource<CompletedJob> = new MatTableDataSource<CompletedJob>();
-  displayedColumns: string[] = ['jobId', 'jobName', 'consultant', 'budget', 'feedback'];
+  displayedColumns: string[] = ['jobName', 'consultant', 'budget', 'feedback'];
 
   constructor(private router: Router, private clientJobsService: ClientJobsService) {}
 

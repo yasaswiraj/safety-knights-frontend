@@ -4,10 +4,14 @@
     <!-- Job Description Section -->
     <div class="description">
       <h3>Description:</h3>
-      <p>{{ data.description }}</p>
-      <p><strong>Created on:</strong> {{ data.createdDate }}</p>
-      <p><strong>Deadline:</strong> {{ data.deadline }}</p>
-      <p><strong>Matching Criteria:</strong> {{ data.matchingCriteria }}</p>
+      <p>{{ data.work_in_detail }}</p> 
+      <p><strong>Scope of Service:</strong> {{ data.scope_of_service }}</p>
+      <p><strong>Created on:</strong> {{ data.expected_start_date }}</p>
+      <p><strong>Deadline:</strong> {{ data.deadline }}</p>  
+      <p><strong>Location:</strong> {{ data.location }}</p>
+      <p><strong>Budget:</strong>{{ data.budget }} </p>
+ 
+        
     </div>
   
     <!-- Client Contact Information Section -->
@@ -24,15 +28,15 @@
       <form (ngSubmit)="onSubmit()">
         <mat-form-field appearance="outline">
           <mat-label>Enter Amount</mat-label>
-          <input matInput [(ngModel)]="bidAmount" name="amount" required />
+          <input class="bg-(--elements-color)/20 rounded-full w-100 py-3 px-5 mb-5 text-(--text-color)" [(ngModel)]="bidAmount" name="amount" required />
         </mat-form-field>
   
         <mat-form-field appearance="outline">
           <mat-label>Enter Availability</mat-label>
-          <input matInput [(ngModel)]="availability" name="availability" required />
+          <input class="bg-(--elements-color)/20 rounded-full w-100 py-3 px-5 mb-5 text-(--text-color)" [(ngModel)]="availability" name="availability" required />
         </mat-form-field>
   
-        <button mat-raised-button color="#B8860B" type="submit">Submit Request</button>
+        <button class="rounded-full bg-(--elements-color)" type="submit">Submit Request</button>
       </form>
     </div>
   

@@ -1,22 +1,25 @@
 <h2 class="dialog-title">Update Status</h2>
 <div class="dialog-content">
-  <h3>Job {{ data.jobId }}</h3>
+  <h3>Job {{ data.job_id }}</h3>
   <p><strong>Description:</strong> {{ data.description }}</p>
   <p><strong>Created on:</strong> {{ data.createdOn }}</p>
   <p><strong>Deadline:</strong> {{ data.deadline }}</p>
 
-  <textarea placeholder="Add Comments"></textarea>
+  <textarea placeholder="Add Comments" [(ngModel)]="comment"></textarea>
 
   <h4>Update Job Status:</h4>
-  <label><input type="radio" name="status" value="completed"> Mark as Completed</label><br>
-  <label><input type="radio" name="status" value="pending"> Change to Pending</label><br>
-  <label><input type="radio" name="status" value="in_progress"> Mark in Progress</label><br>
-
-  <!-- <h4>Add Supporting Documents:</h4>
-  <button>+ Add files</button> -->
+  <label>
+    <input type="radio" name="status" value="in_progress" [(ngModel)]="selectedStatus"> In Progress
+  </label><br>
+  <label>
+    <input type="radio" name="status" value="waiting" [(ngModel)]="selectedStatus"> Change to Pending
+  </label><br>
+  <label>
+    <input type="radio" name="status" value="completed" [(ngModel)]="selectedStatus"> Mark as Completed
+  </label><br>
 
   <div class="dialog-actions">
-    <button class="update-button">Update</button>
+    <button class="update-button" (click)="updateJobStatus()">Update</button>
     <button class="close-button" (click)="closeDialog()">Close</button>
   </div>
 </div>

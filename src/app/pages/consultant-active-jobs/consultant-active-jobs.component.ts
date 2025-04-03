@@ -7,8 +7,20 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatSortModule, MatSort } from '@angular/material/sort';
 import { FormsModule } from '@angular/forms';
-import { JobUpdateDialogComponent } from '../job-update-dialog/job-update-dialog.component';
 import { MatDialog } from '@angular/material/dialog';
+import { JobUpdateDialogComponent } from '../job-update-dialog/job-update-dialog.component';
+import { HttpClient } from '@angular/common/http';
+import { ConsultantMatchesService } from '../../services/consultant-match.service';
+
+interface Job {
+  job_id: number;
+  scope_of_service: string;
+  project_location: string;
+  expected_start_date: string;
+  proposal_deadline: string;
+  budget: number;
+  days_remaining?: number; // Computed field
+}
 
 @Component({
   selector: 'app-consultant-active-jobs',
@@ -27,105 +39,76 @@ import { MatDialog } from '@angular/material/dialog';
   ],
 })
 export class ConsultantActiveJobsComponent implements AfterViewInit {
-// Removed duplicate viewUpdate method
   @ViewChild(MatSort) sort!: MatSort;
-  searchQuery: string = '';
-  dataSource: MatTableDataSource<any>;
-
-  displayedColumns: string[] = [
-    'jobid',
-    'jobname',
-    'client',
-    'status',
-    'deadline',
-    'actions'
-  ];
-
-  jobs = [
-    {
-      jobid: 'J34232',
-      jobname: 'Software Engineer',
-      client: 'Google',
-      status: 'Active',
-      deadline: '2025-03-15',
-    },
-    {
-      jobid: 'J64362',
-      jobname: 'Data Scientist',
-      client: 'Facebook',
-      status: 'Pending',
-      deadline: '2025-03-10',
-    },
-    {
-      jobid: 'J43212',
-      jobname: 'ML Engineer',
-      client: 'Amazon',
-      status: 'Active',
-      deadline: '2025-03-18',
-    },
-    {
-      jobid: 'J93242',
-      jobname: 'Cloud Architect',
-      client: 'Microsoft',
-      status: 'Closed',
-      deadline: '2025-03-20',
-    },
-    {
-      jobid: 'J53221',
-      jobname: 'Backend Developer',
-      client: 'Netflix',
-      status: 'Active',
-      deadline: '2025-03-12',
-    },
-    {
-      jobid: 'J75339',
-      jobname: 'DevOps Engineer',
-      client: 'Spotify',
-      status: 'Pending',
-      deadline: '2025-03-25',
-    },
-  ];
   
 
-  constructor(private dialog: MatDialog) {
-    this.dataSource = new MatTableDataSource(this.jobs);
+  displayedColumns: string[] = [
+    'job_id',
+    'scope_of_service',
+    'project_location',
+    'expected_start_date',
+    'days_remaining',
+    'budget',
+    'actions'
+  ];
+  dataSource: MatTableDataSource<any> = new MatTableDataSource();
+  
+  constructor(private consultantMatchesService: ConsultantMatchesService, private dialog: MatDialog) {
+    // this.jobs.forEach(job => {
+    //   job.days_remaining = this.calculateDaysRemaining(job.expected_start_date);
+    // });
+    // this.dataSource = new MatTableDataSource(this.jobs);
+    // this.dataSource.filterPredicate = (data: any, filter: string) => {
+    //   return Object.values(data).some(value => 
+    //     typeof value === 'string' && value.toLowerCase().includes(filter) ||
+    //     typeof value === 'number' && value.toString().includes(filter)
+    //   );
+    // };
+    
   }
 
+  ngOnInit() {
+    this.fetchActiveJobs();
+  }
 
+  onSearch(event: Event) {
+    const filterValue = (event.target as HTMLInputElement).value.trim().toLowerCase();
+    this.dataSource.filter = filterValue;
+  }
+  
   
 
   ngAfterViewInit() {
     this.dataSource.sort = this.sort;
   }
 
-  onSearch(event: Event) {
-    const filterValue = (event.target as HTMLInputElement).value;
-    this.dataSource.filter = filterValue.trim().toLowerCase();
+  fetchActiveJobs() {
+    this.consultantMatchesService.getActiveJobs().subscribe(response => {
+      console.log('Fetched matched jobs:', response.matched_jobs);
+      this.dataSource.data = response.jobs_in_progress;
+    }, error => {
+      console.error('Error fetching matched jobs:', error);
+    });
   }
 
-   viewUpdate(): void {
-      console.log('View detail clicked for job:');
-      const dialogRef = this.dialog.open(JobUpdateDialogComponent, {
-        width: '1000px',
-        data: {
-          // jobid: job.job_id,  // Updated property name
-          description: 'Work on the manufacturing department handling 150 employees',
-          createdDate: '2025-01-10',
-          deadline: '2025-04-13',
-          matchingCriteria: 'Skills: Similar work history, Preferred client',
-          phone: '000111290',
-          email: 'janedoe@gmail.com'
-        }
-        
-      });
-  
-      // dialogRef.afterClosed().subscribe((result: { jobId: any; }) => {
-      //   if (result && result.jobId) {
-      //     console.log(`Removing job with ID: ${result.jobId}`);
+  calculateDaysRemaining(startDate: string): number {
+    const today = new Date();
+    const start = new Date(startDate);
+    const timeDiff = start.getTime() - today.getTime();
+    return Math.ceil(timeDiff / (1000 * 3600 * 24)); // Convert milliseconds to days
+  }
+
+  openEditDialog(job: Job): void {
+    const dialogRef = this.dialog.open(JobUpdateDialogComponent, {
+      width: '600px',
+      data: { job_id: job.job_id,
+              scope_of_service: job.scope_of_service, // Pass the necessary job fields to the dialog
+              project_location: job.project_location, // Pass the necessary job fields to the dialog
+              
+       }
+    });
+
     
-      //     // Remove job from table
-      //     this.dataSource.data = this.dataSource.data.filter(j => j.job_id !== result.jobId);
-      //   }
-      // });
-    }
+  }
+
 }

@@ -8,6 +8,7 @@ import { FormsModule } from '@angular/forms';
 import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms'; 
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Observable } from 'rxjs';
+import { environment } from '../../../environments/environment';
 
 @Component({
   selector: 'app-job-detail-dialog',
@@ -44,7 +45,7 @@ export class JobDetailDialogComponent {
   
     console.log(`Submitting Bid for Job ID ${jobId}:`, bidData);
   
-    this.http.post(`http://localhost:8000/consultant/${jobId}/place_bid`, bidData,{ withCredentials: true }).subscribe({
+    this.http.post(`${environment.apiUrl}/consultant/${jobId}/place_bid`, bidData,{ withCredentials: true }).subscribe({
       next: (response) => {
         console.log('Bid submitted successfully:', response);
   

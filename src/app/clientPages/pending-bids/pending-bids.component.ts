@@ -31,7 +31,7 @@ export class PendingBidsComponent implements AfterViewInit, OnInit {
   searchTerm = '';
 
   dataSource: MatTableDataSource<PendingBid> = new MatTableDataSource<PendingBid>([]);  
-  displayedColumns: string[] = ['jobId', 'jobName', 'deadline', 'budget', 'actions'];
+  displayedColumns: string[] = ['jobName', 'deadline', 'budget', 'actions'];
 
   constructor(private router: Router, private clientJobsService: ClientJobsService, private formDataService: FormDataService) { }
 
@@ -81,6 +81,8 @@ export class PendingBidsComponent implements AfterViewInit, OnInit {
     const formattedStartDate = this.formatDateToYYYYMMDD(job.expected_start_date);
   
     this.clientJobsService.getFilledForm(job.client_job_id).subscribe((res) => {
+      console.log('[EDIT JOB] Getting filled form for jobId:', job);
+
       const jd = res?.filled_form?.job_details;
     
       if (!jd) return;
@@ -108,7 +110,7 @@ export class PendingBidsComponent implements AfterViewInit, OnInit {
       };
     
       this.formDataService.setFormData(formData, jd.client_job_id);
-      this.router.navigate(['/client/form-3']);
+      this.router.navigate(['/client/client-form']);
     });
     
   }

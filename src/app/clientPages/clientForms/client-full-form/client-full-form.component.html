@@ -1,0 +1,161 @@
+<div class="flex-grow flex justify-center items-center px-6 pt-28">
+    <div class="w-full max-w-2xl bg-white p-10 rounded-2xl shadow-lg relative border border-[var(--elements-color)]">
+        <h2 class="text-2xl font-bold text-[var(--accent-color)] text-center mb-6">
+            EHS Consulting Network - Client Information Form
+        </h2>
+
+        <form *ngIf="clientForm" [formGroup]="clientForm">
+            <div *ngFor="let category of categories">
+                <h3 class="text-lg font-bold mt-6 text-[var(--text-color)]">{{ category }}</h3>
+
+                <div *ngFor="let questionEntry of getQuestionEntries(category); let i = index; trackBy: trackByQuestionKey"
+                    class="mb-4">
+                    <ng-container *ngIf="questionEntry?.value as question">
+
+                        <!-- Scope of Service Needed -->
+                        <ng-container *ngIf="questionEntry.key === 'Scope of Service Needed'; else defaultRenderer">
+                            <!-- Label outside the mat-form-field -->
+                            <label class="block font-semibold mb-1">
+                                {{ question.label || questionEntry.key }}
+                                <span *ngIf="isFieldRequired(questionEntry.key)" class="text-black-500">*</span>
+                            </label>
+
+                            <mat-form-field appearance="fill" class="w-full">
+                                <mat-select [formControlName]="camelCase(questionEntry.key)" multiple
+                                    (selectionChange)="onMultiSelectChange($event.value, 'scopeOfServiceOtherText')">
+                                    <mat-option *ngFor="let opt of question.options || []" [value]="opt">
+                                        {{ opt }}
+                                    </mat-option>
+                                </mat-select>
+                            </mat-form-field>
+
+                            <div *ngIf="showScopeOfServiceOther">
+                                <input class="border border-gray-300 rounded-lg p-2 w-full mt-2"
+                                    placeholder="Please specify other service" [(ngModel)]="scopeOfServiceOtherText"
+                                    name="scopeOfServiceOtherText" />
+                            </div>
+                        </ng-container>
+
+
+
+                        <!-- Default Renderer -->
+                        <ng-template #defaultRenderer>
+                            <ng-container [ngSwitch]="normalizeType(questionEntry.key, question?.type ?? '')">
+
+
+                                <!-- Text -->
+                                <div *ngSwitchCase="'text'">
+                                    <label class="block font-semibold mb-1">
+                                        {{ question.label || questionEntry.key }}
+                                        <span *ngIf="isFieldRequired(questionEntry.key)" class="text-black-500">*</span>
+                                    </label>
+                                    <input class="border border-gray-300 rounded-lg p-2 w-full"
+                                        [formControlName]="camelCase(questionEntry.key)"
+                                        [placeholder]="question.placeholder || ''" />
+                                </div>
+
+                                <!-- Date -->
+                                <div *ngSwitchCase="'date'">
+                                    <label class="block font-semibold mb-1">
+                                        {{ question.label || questionEntry.key }}
+                                        <span *ngIf="isFieldRequired(questionEntry.key)" class="text-black-500">*</span>
+                                    </label>
+                                    <input type="date" class="border border-gray-300 rounded-lg p-2 w-full"
+                                        [formControlName]="camelCase(questionEntry.key)" />
+                                </div>
+
+                                <!-- Checkbox -->
+                                <!-- Multi-select for Insurance Requirements -->
+                                <div *ngSwitchCase="'checkbox'">
+                                    <label class="block font-semibold mb-1">
+                                        {{ question.label || questionEntry.key }}
+                                        <span *ngIf="isFieldRequired(questionEntry.key)" class="text-black-500">*</span>
+                                    </label>
+
+                                    <!-- Subheading OUTSIDE mat-select dropdown -->
+                                    <p *ngIf="questionEntry.key === 'Insurance Requirements for the Contractor'"
+                                        class="text-sm text-gray-600 mb-2">
+                                        For each option checked, list the coverage minimum below. eg: $1M policy
+                                    </p>
+
+                                    <mat-form-field appearance="fill" class="w-full">
+                                        <mat-select [formControlName]="camelCase(questionEntry.key)" multiple
+                                            (selectionChange)="onInsuranceSelectChange($event.value)">
+                                            <mat-option *ngFor="let opt of question.options || []" [value]="opt">
+                                                {{ opt }}
+                                            </mat-option>
+                                        </mat-select>
+                                    </mat-form-field>
+
+                                    <!-- Show coverage input field for each selected option -->
+                                    <div *ngFor="let opt of clientForm.get(camelCase(questionEntry.key))?.value || []">
+                                        <input class="border border-gray-300 rounded-lg p-2 w-full mt-2"
+                                            [placeholder]="'Minimum coverage for ' + opt"
+                                            [(ngModel)]="insuranceCoverageMap[opt]"
+                                            [ngModelOptions]="{ standalone: true }"
+                                            name="{{ camelCase(opt) }}_coverage" />
+                                    </div>
+                                </div>
+
+
+
+
+                                <!-- Radio -->
+                                <div *ngSwitchCase="'radio'">
+                                    <label class="block font-semibold mb-1">
+                                        {{ question.label || questionEntry.key }}
+                                        <span *ngIf="isFieldRequired(questionEntry.key)" class="text-black-500">*</span>
+                                    </label>
+                                    <div class="flex flex-col gap-2">
+                                        <label *ngFor="let opt of question.options || []"
+                                            class="inline-flex items-center">
+                                            <input type="radio" [formControlName]="camelCase(questionEntry.key)"
+                                                [value]="opt" (change)="onRadioChange(camelCase(questionEntry.key))"
+                                                class="mr-2" name="{{ camelCase(questionEntry.key) }}" />
+                                            {{ opt }}
+                                        </label>
+                                    </div>
+
+                                    <!-- 'Other' text input -->
+                                    <div *ngIf="showOtherInputs[camelCase(questionEntry.key)]">
+                                        <input class="border border-gray-300 rounded-lg p-2 w-full mt-2"
+                                            placeholder="Please specify"
+                                            [(ngModel)]="otherInputs[camelCase(questionEntry.key)]"
+                                            name="{{ camelCase(questionEntry.key) }}_other" />
+                                    </div>
+                                </div>
+
+                            </ng-container>
+                        </ng-template>
+
+                        <!-- File Upload -->
+                        <ng-container *ngIf="questionEntry.key === 'Please describe the work in detail'">
+                            <div class="mb-4 mt-2">
+                                <label class="block font-semibold mb-1">Upload Job Description</label>
+                                <div class="relative w-full flex items-center">
+                                    <input type="file" id="fileInput" class="hidden" (change)="onFileSelected($event)"
+                                        accept=".pdf,.doc,.docx" />
+                                    <label for="fileInput"
+                                        class="cursor-pointer bg-[var(--elements-color)] px-5 py-2 rounded-full shadow-md font-bold flex items-center gap-3 hover:bg-opacity-80 transition">
+                                        <mat-icon>attach_file</mat-icon> Choose File
+                                    </label>
+                                    <span class="ml-4 text-sm text-gray-600 truncate" *ngIf="uploadedFile">
+                                        {{ uploadedFile.name }}
+                                    </span>
+                                </div>
+                            </div>
+                        </ng-container>
+
+                    </ng-container>
+                </div>
+            </div>
+
+            <!-- Submit Button -->
+            <button
+                class="mt-6 bg-[var(--elements-color)] text-black px-6 py-2 rounded-full shadow-md font-bold hover:bg-opacity-80 transition"
+                type="button" (click)="submitForm()" [disabled]="clientForm.invalid">
+                Submit
+            </button>
+        </form>
+    </div>
+</div>

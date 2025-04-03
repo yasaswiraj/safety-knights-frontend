@@ -8,6 +8,7 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
 import { MatDialog } from '@angular/material/dialog';
 import { ClientFeedbackComponent } from '../client-feedback/client-feedback.component';
+import { ConsultantMatchesService } from '../../services/consultant-match.service';
 
 @Component({
   selector: 'app-consultant-matches',
@@ -27,57 +28,28 @@ import { ClientFeedbackComponent } from '../client-feedback/client-feedback.comp
 export class ConsultantCompletedJobsComponent implements AfterViewInit {
   @ViewChild(MatSort) sort!: MatSort;
   searchQuery: string = '';
-  dataSource: MatTableDataSource<any>;
+  dataSource: MatTableDataSource<any> = new MatTableDataSource();
 
   displayedColumns: string[] = [
-    'jobid',
-    'jobname',
-    'client',
-    'completedDate',
-    'shareFeedback'
+    'job_id',
+    'client_name',
+    'client_id',
+    'scope_of_service', // Ensure this matches your data structure
+    'project_location',        // Adjust based on your actual data keys
+    'completed_date', // Adjust based on your actual data keys, e.g., 'completed_date'
+    'shareFeedback' // For the feedback button
+
   ];
 
-  jobs = [
-    {
-      jobid: 'J34232',
-      jobname: 'Software Engineer',
-      client: 'Google',
-      completedDate: '2025-02-15',
-    },
-    {
-      jobid: 'J64362',
-      jobname: 'Data Scientist',
-      client: 'Facebook',
-      completedDate: '2025-02-20',
-    },
-    {
-      jobid: 'J43212',
-      jobname: 'ML Engineer',
-      client: 'Amazon',
-      completedDate: '2025-02-18',
-    },
-    {
-      jobid: 'J93242',
-      jobname: 'Cloud Architect',
-      client: 'Microsoft',
-      completedDate: '2025-02-25',
-    },
-    {
-      jobid: 'J53221',
-      jobname: 'Backend Developer',
-      client: 'Netflix',
-      completedDate: '2025-02-10',
-    },
-    {
-      jobid: 'J75339',
-      jobname: 'DevOps Engineer',
-      client: 'Spotify',
-      completedDate: '2025-02-22',
-    },
-  ];
+  
 
-  constructor(public dialog: MatDialog) {
-    this.dataSource = new MatTableDataSource(this.jobs);
+  constructor(private consultantMatchesService: ConsultantMatchesService,
+      private dialog: MatDialog) {
+    
+  }
+
+  ngOnInit() {
+    this.fetchCompletedJobs();  // Fetch on component load
   }
 
   ngAfterViewInit() {
@@ -89,6 +61,14 @@ export class ConsultantCompletedJobsComponent implements AfterViewInit {
     this.dataSource.filter = filterValue.trim().toLowerCase();
   }
 
+  fetchCompletedJobs() {
+    this.consultantMatchesService.getCompletedJobs().subscribe(response => {
+      console.log('Fetched bidded jobs:', response.pending_bids);
+      this.dataSource.data = response.completed_jobs;
+    }, error => {
+      console.error('Error fetching bidded jobs:', error);
+    });
+  }
  
 
   openFeedbackDialog(job: any) {
