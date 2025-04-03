@@ -10,6 +10,7 @@ import { ViewEncapsulation } from '@angular/core';
 import { RouterModule, Router } from '@angular/router';
 import { NavBarComponent } from '../../../components/nav-bar/nav-bar.component';
 import { FormDataService } from '../../../services/form-data.service';
+import { HttpClient } from '@angular/common/http';
 
 @Component({
   selector: 'app-consultant3-form',
@@ -33,7 +34,7 @@ export class ConsultantForm3Component implements OnInit {
   signUpForm!: FormGroup;  
   selectedPrimaryServices: Record<string, string[]> = {};  
   dependentServices: Record<string, string[]> = {};  
-  categories: Categories = {};  // Corrected to directly store category data
+  categories: Record<string, Record<string, { type: string; option?: string[] }>> = {};  // Corrected to directly store category data
 
   constructor(
     private fb: FormBuilder,
@@ -63,7 +64,7 @@ export class ConsultantForm3Component implements OnInit {
 
   fetchCategories() {
     this.http.get('https://safetyknights-6zzro.ondigitalocean.app/consultant/get-form').subscribe((response: any) => {
-      this.categories = response.categories as Categories;  // ✅ Corrected assignment
+      this.categories = response.categories as Record<string, Record<string, { type: string; option?: string[] }>>;  // ✅ Corrected assignment
       this.initializeForm();
     });
   }

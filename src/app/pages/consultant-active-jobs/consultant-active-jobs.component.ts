@@ -108,27 +108,7 @@ export class ConsultantActiveJobsComponent implements AfterViewInit {
        }
     });
 
-    // dialogRef.afterClosed().subscribe(result => {
-    //   if (result && result.jobId) {
-    //     console.log(`Removing job with ID: ${result.jobId}`);
-  
-    //     // Remove job from table
-    //     this.dataSource.data = this.dataSource.data.filter(j => j.job_id !== result.jobId);
-    //   }
-    // });
+    
   }
 
-  // editJob(job: Job): void {
-  //   this.editingJob = { ...job };
-  // }
-
-  // updateJob(updatedJob: Job): void {
-  //   const index = this.jobs.findIndex(j => j.job_id === updatedJob.job_id);
-  //   if (index !== -1) {
-  //     this.jobs[index] = updatedJob;
-  //     this.jobs[index].days_remaining = this.calculateDaysRemaining(updatedJob.expected_start_date);
-  //     this.dataSource.data = [...this.jobs];
-  //   }
-  //   this.editingJob = null;
-  // }
 }
