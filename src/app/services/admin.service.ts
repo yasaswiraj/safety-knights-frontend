@@ -21,4 +21,8 @@ export class AdminService {
   getConsultantDetail(user_id: number): Observable<any> {
     return this.http.get(`${environment.apiUrl}/admin/get_consultant_detail/${user_id}`, { withCredentials: true });
   }
+
+  approveUser(user_id: number): Observable<any> {
+    return this.http.post(`${environment.apiUrl}/admin/user_approve/${user_id}`, {}, { withCredentials: true });
+  }
 }

@@ -31,10 +31,10 @@
         
         <!-- Approval/Rejection Buttons -->
         <div class="mt-6 flex space-x-4">
-            <button class="bg-green-500 text-white px-4 py-2 rounded-full hover:bg-green-600">
+            <button class="bg-green-500 text-white px-4 py-2 rounded-full hover:bg-green-600" (click)="approve()">
                 Approve Consultant
             </button>
-            <button class="bg-red-500 text-white px-4 py-2 rounded-full hover:bg-red-600">
+            <button class="bg-red-500 text-white px-4 py-2 rounded-full hover:bg-red-600" (click)="decline()">
                 Reject Consultant
             </button>
         </div>

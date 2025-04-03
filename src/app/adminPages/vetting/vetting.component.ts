@@ -96,7 +96,17 @@ export class VettingComponent implements OnInit, AfterViewInit {
   }
 
   approve(consultant: any) {
-    console.log('Approved', consultant);
+    this.adminService.approveUser(consultant.user_id).subscribe(
+      () => {
+        console.log('User approved successfully:', consultant);
+        alert('User approved successfully!'); // Show success message
+        this.closeDetail(); // Close the expansion
+        this.fetchVettedUsers(); // Refresh the vetted users list
+      },
+      (error) => {
+        console.error('Error approving user:', error);
+      }
+    );
   }
 
   decline(consultant: any) {
