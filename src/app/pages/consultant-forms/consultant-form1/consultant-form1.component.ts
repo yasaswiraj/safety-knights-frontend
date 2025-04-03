@@ -43,7 +43,7 @@ export class ConsultantForm1Component {
 
   navigateToNextForm() {
     if (this.clientForm.valid) {
-      this.formDataService.setFormData(2, this.clientForm.value);
+      this.formDataService.setFormDataWithTransform(2, this.clientForm.value);
       this.router.navigate(['/consultant-form-contact']);
     }
   }

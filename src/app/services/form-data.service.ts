@@ -13,6 +13,16 @@ export class FormDataService {
   setFormData(data: any, jobId?: number) {
     this.formData = { ...this.formData, ...data }; 
     if (jobId !== undefined) this.jobId = jobId;
+   
+  }
+
+  setFormDataWithTransform(step: number, data: any) {
+    this.formData = { 
+      ...this.formData, 
+      [`step${step}`]: { ...this.formData[`step${step}`], ...data } 
+  };
+  console.log("Setting form data with transform for step:", step, "Data:", data);
+  this.formData = this.transformFormData(this.formData);
   }
 
   getFormData() {
@@ -40,6 +50,7 @@ export class FormDataService {
   }
 
   private transformFormData(formData: any): any {
+    console.log("Transforming form data:", formData);
     const categoryMap: { [key: string]: string } = {
       "Environmental Facility Compliance": "environmental_services",
       "Property Transactions": "property_transactions",
@@ -66,7 +77,7 @@ export class FormDataService {
       transformedData[key] = [];
     });
   
-    ["step3", "step4", "step5"].forEach((stepKey) => {
+    ["step3", "step4"].forEach((stepKey) => {
       const step = formData[stepKey];
       if (step?.scopeOfService && step?.dependentService) {
         step.scopeOfService.forEach((service: string) => {

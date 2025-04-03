@@ -11,6 +11,7 @@ import { RouterModule, Router } from '@angular/router';
 import { NavBarComponent } from '../../../components/nav-bar/nav-bar.component';
 import { FormDataService } from '../../../services/form-data.service';
 import { HttpClient } from '@angular/common/http';
+import { environment } from '../../../../environments/environment.development';
 
 @Component({
   selector: 'app-consultant3-form',
@@ -63,9 +64,12 @@ export class ConsultantForm3Component implements OnInit {
   }
 
   fetchCategories() {
-    this.http.get('https://safetyknights-6zzro.ondigitalocean.app/consultant/get-form').subscribe((response: any) => {
-      this.categories = response.categories as Record<string, Record<string, { type: string; option?: string[] }>>;  // ✅ Corrected assignment
-      this.initializeForm();
+    this.http.get(`${environment.apiUrl}/consultant/get-form`).subscribe((response: any) => {
+      const filteredCategories = { ...response.categories };
+    delete filteredCategories["Availability & Additional Comments"];
+
+    this.categories = filteredCategories;
+    this.initializeForm();
     });
   }
 
@@ -116,7 +120,7 @@ export class ConsultantForm3Component implements OnInit {
   }
 
   navigateToNextForm() {
-    this.formDataService.setFormData(4, this.signUpForm.value);
+    this.formDataService.setFormDataWithTransform(3, this.signUpForm.value);
       this.router.navigate(['/consultant-form8']);
     
   }

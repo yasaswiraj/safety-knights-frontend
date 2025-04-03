@@ -6,7 +6,7 @@
                 EHS Consulting Network - Consultant Information Form
             </h2>
 
-            <form [formGroup]="signUpForm" (ngSubmit)="navigateToNextForm()">
+            <form [formGroup]="signUpForm" >
                 <div *ngFor="let category of categories | keyvalue">
                     <h3 class="font-bold text-lg text-[var(--text-color)]">{{ category.key }}</h3>
                     
