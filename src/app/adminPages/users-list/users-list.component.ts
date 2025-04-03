@@ -1,4 +1,4 @@
-import { Component, ViewChild, AfterViewInit } from '@angular/core';
+import { Component, ViewChild, AfterViewInit, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { MatTableModule, MatTableDataSource } from '@angular/material/table';
 import { MatInputModule } from '@angular/material/input';
@@ -8,7 +8,18 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatSortModule, MatSort } from '@angular/material/sort';
 import { FormsModule } from '@angular/forms';
 import { MatDialog, MatDialogModule } from '@angular/material/dialog';
+import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { BanUserComponent } from '../../components/ban-user/ban-user.component';
+import { AdminService } from '../../services/admin.service';
+
+// Define an interface for user data
+interface User {
+  id: number | null;
+  name: string;
+  email: string;
+  phone: string;
+  type: string;
+}
 
 @Component({
   selector: 'app-users-list',
@@ -25,12 +36,15 @@ import { BanUserComponent } from '../../components/ban-user/ban-user.component';
     MatSortModule,
     FormsModule,
     MatDialogModule,
+    MatProgressSpinnerModule, // Add this module
   ],
+  providers: [AdminService], // Add this line to explicitly provide the service
 })
-export class UsersListComponent implements AfterViewInit {
+export class UsersListComponent implements AfterViewInit, OnInit {
   @ViewChild(MatSort) sort!: MatSort;
   searchQuery = '';
-  dataSource: MatTableDataSource<any>;
+  dataSource: MatTableDataSource<User>; // Use the User interface as the generic type
+  isLoading = true; // Add loading state
 
   displayedColumns: string[] = [
     'id',
@@ -41,162 +55,33 @@ export class UsersListComponent implements AfterViewInit {
     'actions',
   ];
 
-  users = [
-    {
-      id: 34232,
-      name: 'Yasaswi Raj',
-      email: 'yasaswi@profesional.com',
-      phone: '643 234 4552',
-      type: 'Consultant',
-    },
-    {
-      id: 64362,
-      name: 'Steve Rogers',
-      email: 'steve@language.com',
-      phone: '863 234 4352',
-      type: 'Client',
-    },
-    {
-      id: 43212,
-      name: 'Chris Hemsworth',
-      email: 'chrish@pointbreak.com',
-      phone: '534 234 4528',
-      type: 'Consultant',
-    },
-    {
-      id: 93242,
-      name: 'John Doe',
-      email: 'john@hey.com',
-      phone: '753 231 7532',
-      type: 'Consultant',
-    },
-    {
-      id: 53221,
-      name: 'Peter Stark',
-      email: 'ironspider@starkindustries.com',
-      phone: '643 234 4552',
-      type: 'Client',
-    },
-    {
-      id: 56432,
-      name: 'Mark Ruffalo',
-      email: 'angrybigguy@greenlove.com',
-      phone: '643 234 4552',
-      type: 'Client',
-    },
-    {
-      id: 75339,
-      name: 'Natasha Romanoff',
-      email: 'natsha@widows.com',
-      phone: '643 234 4552',
-      type: 'Client',
-    },
-    {
-      id: 39285,
-      name: 'Clark Kent',
-      email: 'karel@justiceleague.com',
-      phone: '643 234 4552',
-      type: 'Client',
-    },
-    {
-      id: 32853,
-      name: 'Bruce Wayne',
-      email: 'billionairefromdc@plotarmour.com',
-      phone: '643 234 4552',
-      type: 'Consultant',
-    },
-    {
-      id: 37538,
-      name: 'Barry Allen',
-      email: 'timetraveller@justiceleague.com',
-      phone: '643 234 4552',
-      type: 'Client',
-    },
-    {
-      id: 9472,
-      name: 'Ana de Armas',
-      email: 'mywife@iwish.com',
-      phone: '643 234 4552',
-      type: 'Client',
-    },
-    {
-      id: 79342,
-      name: 'Voldemort',
-      email: 'tomriddle@thedeatheaters.com',
-      phone: '666 234 4552',
-      type: 'Client',
-    },
-    {
-      id: 89532,
-      name: 'Harry Potter',
-      email: 'theboywholived@griffindor.com',
-      phone: '643 234 4552',
-      type: 'Consultant',
-    },
-    {
-      id: 45231,
-      name: 'Sherlock Holmes',
-      email: 'detective@bakerstreet.com',
-      phone: '444 221 7891',
-      type: 'Consultant',
-    },
-    {
-      id: 67123,
-      name: 'James Bond',
-      email: '007@mi6.gov.uk',
-      phone: '007 007 0007',
-      type: 'Client',
-    },
-    {
-      id: 89124,
-      name: 'Walter White',
-      email: 'heisenberg@crystal.com',
-      phone: '505 842 4455',
-      type: 'Consultant',
-    },
-    {
-      id: 34789,
-      name: 'Jon Snow',
-      email: 'kinginthenorth@winterfell.got',
-      phone: '888 123 4567',
-      type: 'Client',
-    },
-    {
-      id: 56234,
-      name: 'Eleven',
-      email: 'eleven@hawkins.lab',
-      phone: '111 111 1111',
-      type: 'Consultant',
-    },
-    {
-      id: 78901,
-      name: 'Doctor Who',
-      email: 'doctor@tardis.time',
-      phone: '123 456 7890',
-      type: 'Consultant',
-    },
-    {
-      id: 23456,
-      name: 'Rick Sanchez',
-      email: 'rick@c137.universe',
-      phone: '137 137 1377',
-      type: 'Client',
-    },
-    {
-      id: 90123,
-      name: 'Wednesday Addams',
-      email: 'wednesday@nevermore.edu',
-      phone: '666 666 6666',
-      type: 'Consultant',
-    },
-  ];
+  users: User[] = []; // Explicitly type the users array
 
-  constructor(private dialog: MatDialog) {
-    this.dataSource = new MatTableDataSource(this.users);
+  constructor(private dialog: MatDialog, private adminService: AdminService) {
+    this.dataSource = new MatTableDataSource<User>([]); // Use the User interface here
   }
 
   ngAfterViewInit() {
     this.dataSource.sort = this.sort;
+  }
+
+  ngOnInit() {
+    this.fetchUsers();
+  }
+
+  fetchUsers() {
+    this.isLoading = true; // Set loading to true before fetching
+    this.adminService.getAllUsers().subscribe((response: any) => {
+      this.users = response.users.map((user: any) => ({
+        id: user.id || null, // Assuming `id` is not part of the API response
+        name: user.name,
+        email: user.email_id,
+        phone: user.contact,
+        type: user.user_type.charAt(0).toUpperCase() + user.user_type.slice(1), // Capitalize first letter
+      }));
+      this.dataSource.data = this.users;
+      this.isLoading = false; // Set loading to false after fetching
+    });
   }
 
   onSearch(event: Event) {
@@ -204,7 +89,7 @@ export class UsersListComponent implements AfterViewInit {
     this.dataSource.filter = filterValue.trim().toLowerCase();
   }
 
-  openBanDialog(user: any): void {
+  openBanDialog(user: User): void { // Use the User interface here
     const dialogRef = this.dialog.open(BanUserComponent, {
       width: '400px',
       data: { userName: user.name },
