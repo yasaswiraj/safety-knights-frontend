@@ -72,8 +72,8 @@ export class UsersListComponent implements AfterViewInit, OnInit {
   fetchUsers() {
     this.isLoading = true; // Set loading to true before fetching
     this.adminService.getAllUsers().subscribe((response: any) => {
-      this.users = response.users.map((user: any) => ({
-        id: user.id || null, // Assuming `id` is not part of the API response
+      this.users = response.users.map((user: any, index: number) => ({
+        id: index + 1, // Use index as id
         name: user.name,
         email: user.email_id,
         phone: user.contact,
