@@ -38,10 +38,38 @@ import { ConsultantLoginComponent } from './pages/consultant-login/consultant-lo
 import { ClientFullFormComponent } from './clientPages/clientForms/client-full-form/client-full-form.component';
 import { VerifyCompletionComponent } from './clientPages/verify-completion/verify-completion.component';
 import { ClientProfileComponent } from './clientPages/client-profile/client-profile.component';
+import { inject } from '@angular/core';
+import { Router } from '@angular/router';
 
 export const routes: Routes = [
-  { path: '', component: LandingPageComponent },
-  { path: 'login', component: LoginComponent },
+  {
+    path: '',
+    component: LandingPageComponent,
+    canActivate: [() => {
+      const router = inject(Router);
+      if (localStorage.getItem('loggedIn')) {
+        const userType = localStorage.getItem('userType');
+        if (userType === 'client') return router.parseUrl('/client/bids-in-progress');
+        if (userType === 'consultant') return router.parseUrl('/consultant/consultant-matches');
+        if (userType === 'admin') return router.parseUrl('/admin');
+      }
+      return true; // Allow access to landing page if not logged in
+    }],
+  },
+  {
+    path: 'login',
+    component: LoginComponent,
+    canActivate: [() => {
+      const router = inject(Router);
+      if (localStorage.getItem('loggedIn')) {
+        const userType = localStorage.getItem('userType');
+        if (userType === 'client') return router.parseUrl('/client/bids-in-progress');
+        if (userType === 'consultant') return router.parseUrl('/consultant/consultant-matches');
+        if (userType === 'admin') return router.parseUrl('/admin');
+      }
+      return true; // Allow access to login page if not logged in
+    }],
+  },
   { path: 'sign-up', component: SignUpComponent },
   { path: 'onboarding', component: OnboardingComponent }, // New combined form route
   { path: 'consultant-login', component: ConsultantLoginComponent }, // Consultant login route
@@ -50,6 +78,13 @@ export const routes: Routes = [
   {
     path: 'client',
     component: ClientLayoutComponent, // Wrapper for client-related pages
+    canActivate: [() => {
+      const router = inject(Router);
+      if (!localStorage.getItem('loggedIn') || localStorage.getItem('userType') !== 'client') {
+        return router.parseUrl('/login'); // Redirect to login if not authorized
+      }
+      return true;
+    }],
     children: [
       { path: 'received-bids', component: ClientReceivedBidsComponent },
       { path: 'client-form', component: ClientFullFormComponent },
@@ -69,6 +104,13 @@ export const routes: Routes = [
   {
     path: 'admin',
     component: AdminLayoutComponent,
+    canActivate: [() => {
+      const router = inject(Router);
+      if (!localStorage.getItem('loggedIn') || localStorage.getItem('userType') !== 'admin') {
+        return router.parseUrl('/login'); // Redirect to login if not authorized
+      }
+      return true;
+    }],
     children: [
       { path: '', component: AdminDashboardComponent },
       { path: 'users-list', component: UsersListComponent },
@@ -83,6 +125,13 @@ export const routes: Routes = [
   {
     path: 'consultant',
     component: ConsultantDashboardComponent,
+    canActivate: [() => {
+      const router = inject(Router);
+      if (!localStorage.getItem('loggedIn') || localStorage.getItem('userType') !== 'consultant') {
+        return router.parseUrl('/login'); // Redirect to login if not authorized
+      }
+      return true;
+    }],
     children: [
       {
         path: '',
