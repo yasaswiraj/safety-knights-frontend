@@ -20,7 +20,7 @@ import { environment } from '../../../../environments/environment';
 @Component({
   selector: 'app-consultant-forms-submission',
   standalone: true,
-  imports: [RouterModule, NavBarComponent,NavBarComponent,HttpClientModule],
+  imports: [RouterModule,HttpClientModule],
   templateUrl: './consultant-forms-submission.component.html',
   styleUrl: './consultant-forms-submission.component.css'
 })

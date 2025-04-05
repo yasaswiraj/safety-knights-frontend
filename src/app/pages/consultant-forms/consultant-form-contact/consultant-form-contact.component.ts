@@ -18,8 +18,7 @@ import { FormDataService } from '../../../services/form-data.service'; // Correc
     ReactiveFormsModule,
     MatFormFieldModule,  // ✅ Required for <mat-form-field>
     MatInputModule,      // ✅ Required for <input matInput>
-    MatIconModule,
-    NavBarComponent
+    MatIconModule
   ]
 })
 export class ConsultantFormContactComponent {

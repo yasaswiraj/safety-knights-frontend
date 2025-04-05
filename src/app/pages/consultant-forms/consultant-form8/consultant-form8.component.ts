@@ -25,8 +25,7 @@ import { FormDataService } from '../../../services/form-data.service';
     MatFormFieldModule,
     MatInputModule,
     MatButtonModule,
-    RouterModule,
-    NavBarComponent
+    RouterModule
     
   ],
   templateUrl: './consultant-form8.component.html',
