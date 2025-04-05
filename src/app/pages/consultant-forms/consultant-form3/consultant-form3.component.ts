@@ -27,8 +27,7 @@ import { environment } from '../../../../environments/environment';
     MatButtonModule,
     MatIconModule,
     RouterModule,
-    ReactiveFormsModule,
-    NavBarComponent
+    ReactiveFormsModule
   ]
 })
 export class ConsultantForm3Component implements OnInit {

@@ -5,7 +5,6 @@ import { CommonModule } from '@angular/common';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatIconModule } from '@angular/material/icon';
-import { NavBarComponent } from '../../../components/nav-bar/nav-bar.component';
 import { FormDataService } from '../../../services/form-data.service';
 
 @Component({
@@ -19,7 +18,7 @@ import { FormDataService } from '../../../services/form-data.service';
     MatFormFieldModule, // ✅ Required for <mat-form-field>
     MatInputModule, // ✅ Required for <input matInput>
     MatIconModule,
-    NavBarComponent // ✅ Required for <mat-error>
+ // ✅ Required for <mat-error>
 ]
 })
 export class ConsultantForm1Component {
