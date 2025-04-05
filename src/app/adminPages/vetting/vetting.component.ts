@@ -1,4 +1,4 @@
-import { Component, ViewChild, AfterViewInit } from '@angular/core';
+import { Component, ViewChild, AfterViewInit, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { MatTableModule, MatTableDataSource } from '@angular/material/table';
 import { MatButtonModule } from '@angular/material/button';
@@ -6,25 +6,8 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatSortModule, MatSort } from '@angular/material/sort';
 import { FormsModule } from '@angular/forms';
 import { VettingUserComponent } from "../../components/vetting-user/vetting-user.component";
+import { AdminService } from '../../services/admin.service'; // Import the new service
 
-// Define ConsultantDetails interface (must match the one in vetting-user.component)
-interface ConsultantDetails {
-  name: string;
-  email: string;
-  password: string;
-  confirm_password: string;
-  job_title: string;
-  company_name: string;
-  company_address?: string;
-  phone_number: string;
-  environmental_services: string[];
-  property_transactions: string[];
-  field_activities: string[];
-  hazardous_materials: string[];
-  safety_facility_compliance: string[];
-  industrial_hygiene: string[];
-  written_responses: Record<string, string>;
-}
 
 @Component({
   selector: 'app-vetting',
@@ -41,43 +24,49 @@ interface ConsultantDetails {
     VettingUserComponent
 ]
 })
-export class VettingComponent implements AfterViewInit {
+export class VettingComponent implements OnInit, AfterViewInit {
   @ViewChild(MatSort) sort!: MatSort;
-  dataSource: MatTableDataSource<any>;
-  displayedColumns: string[] = ['id', 'name', 'actions'];
+  dataSource: MatTableDataSource<{ 
+    user_id: number; 
+    name: string; 
+    email_id: string; 
+    job_title: string; 
+    company_name: string; 
+    contact: string; 
+  }>; // Explicitly define the type
+  displayedColumns: string[] = ['user_id', 'name', 'email_id', 'job_title', 'company_name', 'contact', 'actions'];
   expandedElement: any = null;
+  consultantDetails: any = null; // Store fetched consultant details
+  loading: boolean = false; // Add loading flag
 
-  consultants = [
-    { id: 1, name: 'Consultant One' },
-    { id: 2, name: 'Consultant Two' },
-    { id: 3, name: 'Consultant Three' },
-    { id: 4, name: 'Consultant Four' }
-  ];
+  constructor(private adminService: AdminService) {
+    this.dataSource = new MatTableDataSource<{ 
+      user_id: number; 
+      name: string; 
+      email_id: string; 
+      job_title: string; 
+      company_name: string; 
+      contact: string; 
+    }>([]); // Explicitly define the type
+  }
 
-  consultant: ConsultantDetails = {
-    name: "Jane Smith",
-    email: "jane.smith@example.com",
-    password: "dummyPassword",
-    confirm_password: "dummyPassword",
-    job_title: "Industrial Hygienist",
-    company_name: "Smith Consulting",
-    company_address: "456 Secondary St, Town, Country",
-    phone_number: "0987654321",
-    environmental_services: ["Service X"],
-    property_transactions: ["Transaction Y"],
-    field_activities: ["Activity Z"],
-    hazardous_materials: ["Hazard Inspection"],
-    safety_facility_compliance: ["Compliance Check"],
-    industrial_hygiene: ["Hygiene Assessment"],
-    written_responses: { "Q1": "Answer 1", "Q2": "Answer 2" }
-  };
-
-  constructor() {
-    this.dataSource = new MatTableDataSource(this.consultants);
+  ngOnInit() {
+    this.fetchVettedUsers();
   }
 
   ngAfterViewInit() {
     this.dataSource.sort = this.sort;
+  }
+
+  fetchVettedUsers() {
+    this.adminService.getVettedUsers().subscribe(
+      (data) => {
+        this.dataSource.data = data;
+      },
+      (error) => {
+        console.error('Error fetching vetted users:', error);
+      }
+    );
   }
 
   onSearch(event: Event) {
@@ -88,15 +77,36 @@ export class VettingComponent implements AfterViewInit {
   toggleRow(consultant: any) {
     if (this.expandedElement === consultant) {
       this.expandedElement = null;
-      // This will make app-vetting-user hidden and the table section visible
+      this.consultantDetails = null; // Clear details when collapsing
+      this.loading = false; // Reset loading flag
     } else {
       this.expandedElement = consultant;
-      // This will make app-vetting-user visible and the table section invisible
+      this.loading = true; // Set loading flag
+      this.adminService.getConsultantDetail(consultant.user_id).subscribe(
+        (data) => {
+          this.consultantDetails = data; // Store fetched details
+          this.loading = false; // Clear loading flag
+        },
+        (error) => {
+          console.error('Error fetching consultant details:', error);
+          this.loading = false; // Clear loading flag on error
+        }
+      );
     }
   }
 
   approve(consultant: any) {
-    console.log('Approved', consultant);
+    this.adminService.approveUser(consultant.user_id).subscribe(
+      () => {
+        console.log('User approved successfully:', consultant);
+        alert('User approved successfully!'); // Show success message
+        this.closeDetail(); // Close the expansion
+        this.fetchVettedUsers(); // Refresh the vetted users list
+      },
+      (error) => {
+        console.error('Error approving user:', error);
+      }
+    );
   }
 
   decline(consultant: any) {
@@ -117,6 +127,8 @@ export class VettingComponent implements AfterViewInit {
    * Closes the detailed view and resets the expanded element
    */
   closeDetail(): void {
-    this.expandedElement = false;
+    this.expandedElement = null; // Ensure expandedElement is reset
+    this.consultantDetails = null; // Clear consultant details
+    this.loading = false; // Reset loading flag
   }
 }

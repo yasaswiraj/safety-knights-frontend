@@ -1,48 +1,53 @@
-import { Component, Input } from '@angular/core';
-
-// Optionally, import ConsultantSignup from your models.
-// Here we define an inline interface for demonstration.
-// Renamed interface from ConsultantSignup to ConsultantDetails
-interface ConsultantDetails {
-  name: string;
-  email: string;
-  password: string;
-  confirm_password: string;
-  job_title: string;
-  company_name: string;
-  company_address?: string;
-  phone_number: string;
-  environmental_services: string[];
-  property_transactions: string[];
-  field_activities: string[];
-  hazardous_materials: string[];
-  safety_facility_compliance: string[];
-  industrial_hygiene: string[];
-  written_responses: Record<string, string>;
-}
+import { Component, Input, OnInit, OnChanges, SimpleChanges, Output, EventEmitter } from '@angular/core';
+import { CommonModule } from '@angular/common'; // Import CommonModule
+import { AdminService } from '../../services/admin.service'; // Import AdminService
 
 @Component({
   selector: 'app-vetting-user',
-  imports: [],
+  standalone: true,
+  imports: [CommonModule], // Add CommonModule to imports
   templateUrl: './vetting-user.component.html',
   styleUrls: ['./vetting-user.component.css']
 })
-export class VettingUserComponent {
-  // @Input() consultant: ConsultantDetails = {
-  //   name: "John Doe",
-  //   email: "johndoe@example.com",
-  //   password: "password123",
-  //   confirm_password: "password123",
-  //   job_title: "Environmental Consultant",
-  //   company_name: "Doe Consultancy",
-  //   company_address: "123 Main St, City, Country",
-  //   phone_number: "1234567890",
-  //   environmental_services: ["Service A", "Service B"],
-  //   property_transactions: ["Transaction A"],
-  //   field_activities: ["Activity A"],
-  //   hazardous_materials: ["Hazard Inspection"],
-  //   safety_facility_compliance: ["Compliance Check"],
-  //   industrial_hygiene: ["Hygiene Assessment"],
-  //   written_responses: { "Q1": "Default answer", "Q2": "Default answer" }
-  // };
+export class VettingUserComponent implements OnInit, OnChanges {
+  @Input() userID: number | null = null; 
+  @Input() consultantDetails: any = null;
+  @Output() closeExpansion = new EventEmitter<void>(); // Emit event to close expansion
+  @Output() refreshVettedUsers = new EventEmitter<void>(); // Emit event to refresh vetted users
+
+  constructor(private adminService: AdminService) {} // Inject AdminService
+
+  ngOnInit() {
+    console.log('User ID on init:', this.userID);
+  }
+
+  ngOnChanges(changes: SimpleChanges) {
+    if (changes['userID'] && !changes['userID'].isFirstChange()) {
+      console.log('User ID changed to:', changes['userID'].currentValue);
+    }
+    if (changes['consultantDetails'] && !changes['consultantDetails'].isFirstChange()) {
+      console.log('Consultant Details:', changes['consultantDetails'].currentValue);
+    }
+  }
+
+  approve() {
+    console.log('Approved', this.consultantDetails);
+    if (this.userID) {
+      this.adminService.approveUser(this.userID).subscribe(
+        () => {
+          console.log('User approved successfully:', this.consultantDetails);
+          alert('User approved successfully!'); // Show success message
+          this.closeExpansion.emit(); // Notify parent to close expansion
+          this.refreshVettedUsers.emit(); // Notify parent to refresh vetted users
+        },
+        (error) => {
+          console.error('Error approving user:', error);
+        }
+      );
+    }
+  }
+
+  decline() {
+    console.log('Declined', this.consultantDetails);
+  }
 }
