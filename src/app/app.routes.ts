@@ -61,6 +61,7 @@ export const routes: Routes = [
       { path: 'completed-jobs', component: CompletedJobsComponent },
       { path: 'track-jobs', component: TrackJobsComponent },
       { path: 'profile', component: ClientProfileComponent },
+      { path: 'update-profile', component: ClientProfileComponent, data: { editMode: true } },
       { path: 'feedback', component: FeedbackComponent },
     ],
   },

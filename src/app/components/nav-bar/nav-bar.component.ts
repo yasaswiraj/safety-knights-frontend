@@ -6,7 +6,7 @@ import {
   ElementRef,
   ViewChild
 } from '@angular/core';
-import { Router } from '@angular/router';
+import { Router, RouterModule } from '@angular/router'; 
 import { CommonModule } from '@angular/common';
 import { HttpClient } from '@angular/common/http';
 import { ApiService } from '../../services/api.service';
@@ -15,7 +15,7 @@ import { LoadingComponent } from '../loading/loading.component';
 @Component({
   selector: 'app-nav-bar',
   standalone: true,
-  imports: [CommonModule, LoadingComponent],
+  imports: [CommonModule, LoadingComponent, RouterModule],
   templateUrl: './nav-bar.component.html',
   styleUrl: './nav-bar.component.css',
 })

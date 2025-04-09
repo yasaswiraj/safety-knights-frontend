@@ -77,6 +77,15 @@ export interface CompletedJob {
 
 }
 
+export interface ClientProfileUpdate {
+  name: string;
+  job_title: string;
+  company_name: string;
+  company_address: string;
+  phone_number: string;
+}
+
+
 
 export interface ConsultantProfile {
   user_id: number;
@@ -215,7 +224,12 @@ export class ClientJobsService {
     });
   }
 
-
+  updateClientProfile(payload: ClientProfileUpdate): Observable<any> {
+    return this.http.post(`${environment.apiUrl}/client/update_profile`, payload, {
+      withCredentials: true
+    });
+  }
+  
 
   // Optional helper
   private fixDate(date: any): string | null {
