@@ -78,6 +78,8 @@ export class ClientAgreementComponent implements OnInit {
       commitment: formValue.commitment,
       no_commitment_reason: formValue.noCommitmentReason || null
     };
+
+    console.log('Form submitted:', payload);
   
     this.clientJobsService.acceptBid(this.jobId, this.consultantId, payload).subscribe({
       next: () => {
