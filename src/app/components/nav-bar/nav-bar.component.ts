@@ -41,6 +41,11 @@ export class NavBarComponent {
     this.apiService.logoutUser().subscribe({
       next: (res: any) => {
         console.log('✅ Logout successful:', res);
+
+        // Clear localStorage
+        localStorage.removeItem('loggedIn');
+        localStorage.removeItem('userType');
+
         this.router.navigate(['/login']);
         this.isLoading = false; // Reset loading state
       },

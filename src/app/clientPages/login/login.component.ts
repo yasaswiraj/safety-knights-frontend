@@ -35,16 +35,17 @@ export class LoginComponent {
         next: (response) => {
           console.log('Login Successful:', response);
   
-          // localStorage.setItem('access_token', response.access_token);
-          // localStorage.setItem('user_id', response.user_id);
+          // Set loggedIn flag and userType in localStorage
+          localStorage.setItem('loggedIn', 'true');
+          localStorage.setItem('userType', response.user_type);
   
-          // Redirect to Dashboard
-          if(response.user_type === 'client')
-          this.router.navigate(['/client/bids-in-progress']);
-          else if(response.user_type === 'consultant')
-          this.router.navigate(['/consultant/']);
+          // Redirect to Dashboard based on userType
+          if (response.user_type === 'client')
+            this.router.navigate(['/client/bids-in-progress']);
+          else if (response.user_type === 'consultant')
+            this.router.navigate(['/consultant/']);
           else 
-          this.router.navigate(['/admin']);
+            this.router.navigate(['/admin']);
           this.isLoading = false; // Reset loading state
         },
         error: (error) => {
