@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { Observable } from 'rxjs';
-import { map } from 'rxjs/operators';
+import { Observable, of } from 'rxjs';
+import { catchError, map } from 'rxjs/operators';
 import { environment } from '../../environments/environment';
 import { FormStructure } from '../interfaces/form.interface';
 
@@ -214,11 +214,12 @@ export class ClientJobsService {
     );
   }
 
-  acceptBid(jobId: number, consultantId: number, body: { commitment: string, no_commitment_reason?: string }): Observable<any> {
-    return this.http.post(`${environment.apiUrl}/client/accept_bid/${jobId}/${consultantId}`, body, {
+  acceptBid(jobId: number, consultantId: number, data: { commitment: string, no_commitment_reason?: string }) {
+    return this.http.post(`${environment.apiUrl}/client/accept_bid/${jobId}/${consultantId}`, data, {
       withCredentials: true
     });
   }
+  
   
 
   getClientProfile(): Observable<any> {
@@ -247,8 +248,15 @@ export class ClientJobsService {
   hasReview(jobId: number): Observable<boolean> {
     return this.http.get<{ has_review: boolean }>(`${environment.apiUrl}/client/has_review/${jobId}`, {
       withCredentials: true
-    }).pipe(map(res => res.has_review));
+    }).pipe(
+      map(res => res.has_review),
+      catchError((err) => {
+        console.warn(`Failed to check review for job ${jobId}:`, err);
+        return of(false); // Assume no review if not found or error
+      })
+    );
   }
+  
 
   getClientFormStructure(): Observable<any> {
     return this.http.get(`${environment.apiUrl}/client/get_client_form`, {

@@ -71,24 +71,24 @@ export class ClientAgreementComponent implements OnInit {
 
   submitForm() {
     if (this.agreementForm.invalid) return;
-
-    const formValue = this.agreementForm.getRawValue(); // includes disabled fields
-
-    console.log("Agreement Form Submitted:", formValue);
-
-    this.clientJobsService.acceptBid(this.jobId, this.consultantId, {
+  
+    const formValue = this.agreementForm.getRawValue();
+  
+    const payload = {
       commitment: formValue.commitment,
-      no_commitment_reason: formValue.noCommitmentReason || undefined
-    }).subscribe({
+      no_commitment_reason: formValue.noCommitmentReason || null
+    };
+  
+    this.clientJobsService.acceptBid(this.jobId, this.consultantId, payload).subscribe({
       next: () => {
-        console.log("Bid accepted, job marked as in_progress");
-        this.router.navigate(['client/pending-bids']);
+        this.router.navigate(['/client/job-in-progress']);
       },
       error: (err) => {
-        console.error("Error accepting bid:", err);
+        console.error('Error accepting bid:', err);
       }
     });
   }
+  
 
   navigateBack() {
     this.router.navigate(['client/received-bids']);
