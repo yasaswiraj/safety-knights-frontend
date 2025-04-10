@@ -1,0 +1,99 @@
+<div class="p-8 relative">
+    <div class="absolute top-10 right-12">
+      <button
+        (click)="toggleEditMode()"
+        class="bg-[#A15D3C] text-white px-4 py-2 rounded-lg shadow hover:bg-[#b17457] transition"
+        *ngIf="!editMode"
+      >
+        <i class="fas fa-edit mr-2"></i> Edit
+      </button>
+    </div>
+  
+    <div class="bg-white shadow-lg rounded-xl p-8 max-w-5xl mx-auto">
+      <h1 class="text-4xl font-extrabold text-gray-800 mb-8 flex items-center gap-3">
+         My Profile
+      </h1>
+  
+      <!-- View Mode -->
+      <div *ngIf="!editMode" class="grid grid-cols-1 md:grid-cols-2 gap-10 text-gray-700 text-base">
+        <!-- Personal Info -->
+        <div>
+          <h2 class="text-xl font-semibold mb-4 flex items-center gap-2">
+            <i class="fas fa-user"></i> Personal Info
+          </h2>
+          <p><strong>Name:</strong> {{ profile?.name }}</p>
+          <p><strong>Email:</strong> {{ profile?.email }}</p>
+          <p><strong>Contact:</strong> {{ profile?.contact }}</p>
+          <p><strong>Job Title:</strong> {{ profile?.job_title }}</p>
+        </div>
+  
+        <!-- Company Info -->
+        <div>
+          <h2 class="text-xl font-semibold mb-4 flex items-center gap-2">
+            <i class="fas fa-building"></i> Company Info
+          </h2>
+          <p><strong>Company Name:</strong> {{ profile?.company_name }}</p>
+          <p><strong>Address:</strong> {{ profile?.company_address }}</p>
+        </div>
+  
+        <!-- Job Stats -->
+        <div>
+          <h2 class="text-xl font-semibold mb-4 flex items-center gap-2">
+            <i class="fas fa-chart-line"></i> Job Statistics
+          </h2>
+          <p><strong>Total Jobs:</strong> {{ profile?.job_statistics.total_jobs }}</p>
+          <p><strong>Completed:</strong> {{ profile?.job_statistics.completed_jobs }}</p>
+          <p><strong>Active:</strong> {{ profile?.job_statistics.active_jobs }}</p>
+          <p><strong>In Progress:</strong> {{ profile?.job_statistics.in_progress_jobs }}</p>
+        </div>
+  
+        <!-- Ratings -->
+        <div>
+          <h2 class="text-xl font-semibold mb-4 flex items-center gap-2">
+            <i class="fas fa-star"></i> Ratings
+          </h2>
+          <p><strong>Average Rating:</strong> {{ profile?.rating.average_rating | number: '1.1-1' }}</p>
+          <p><strong>Total Reviews:</strong> {{ profile?.rating.total_reviews }}</p>
+        </div>
+      </div>
+  
+      <!-- Edit Mode -->
+      <form *ngIf="editMode" (ngSubmit)="saveProfile()" class="grid grid-cols-1 md:grid-cols-2 gap-10 text-gray-700 text-base">
+        <div>
+          <h2 class="text-xl font-semibold mb-4 flex items-center gap-2">
+            <i class="fas fa-user-edit"></i> Edit Personal Info
+          </h2>
+          <label>Name: <input class="input" [(ngModel)]="profile.name" name="name" required /></label>
+          <label>Email: <input class="input" [value]="profile.email" disabled /></label>
+          <label>Contact: <input class="input" [(ngModel)]="profile.contact" name="contact" /></label>
+          <label>Job Title: <input class="input" [(ngModel)]="profile.job_title" name="job_title" /></label>
+        </div>
+  
+        <div>
+          <h2 class="text-xl font-semibold mb-4 flex items-center gap-2">
+            <i class="fas fa-industry"></i> Edit Company Info
+          </h2>
+          <label>Company Name: <input class="input" [(ngModel)]="profile.company_name" name="company_name" /></label>
+          <label>Address: <input class="input" [(ngModel)]="profile.company_address" name="company_address" /></label>
+        </div>
+  
+        <div class="col-span-2 text-right mt-6 flex justify-end gap-4">
+          <!-- Save Button in brown -->
+          <button type="submit"
+            class="bg-[#A15D3C] text-white px-6 py-2 rounded-md shadow-sm hover:bg-[#b17457] transition">
+            <i class="fas fa-save mr-2"></i> Save
+          </button>
+        
+          <!-- Cancel Button in soft gray -->
+          <button type="button" (click)="cancelEdit()"
+            class="bg-gray-100 text-gray-700 px-6 py-2 rounded-md border border-gray-300 shadow-sm hover:bg-gray-200 transition">
+            <i class="fas fa-times mr-2"></i> Cancel
+          </button>
+        </div>
+        
+        
+        
+      </form>
+    </div>
+  </div>
+  

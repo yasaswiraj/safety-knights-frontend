@@ -63,7 +63,7 @@ export class ConsultantCompletedJobsComponent implements AfterViewInit {
 
   fetchCompletedJobs() {
     this.consultantMatchesService.getCompletedJobs().subscribe(response => {
-      console.log('Fetched bidded jobs:', response.pending_bids);
+      console.log('Fetched completed jobs:', response.completed_jobs);
       this.dataSource.data = response.completed_jobs;
     }, error => {
       console.error('Error fetching bidded jobs:', error);
@@ -72,13 +72,12 @@ export class ConsultantCompletedJobsComponent implements AfterViewInit {
  
 
   openFeedbackDialog(job: any) {
+    console.log('View detail clicked for job:', job);
     const dialogRef = this.dialog.open(ClientFeedbackComponent, {
       width: '500px', // Adjust size as needed
       data: {
-        jobId: job.id,
-        consultantId: job.consultantId,
-        consultantName: job.consultantName,
-        scope: job.scope
+        job_id: job.job_id,
+        client_user_id: job.client_id,
       }
     });
 

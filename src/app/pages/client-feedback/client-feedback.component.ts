@@ -1,87 +1,64 @@
-import { Component } from '@angular/core';
+import { Component, Inject } from '@angular/core';
+import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
+import { HttpClient } from '@angular/common/http';
+import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { FormsModule } from '@angular/forms'; 
-import { ActivatedRoute } from '@angular/router';
-import { ClientJobsService } from '../../services/client-jobs.service';
-import { Router } from '@angular/router';
+// Removed duplicate import of MatFormFieldModule
+import { MatInputModule } from '@angular/material/input';
+import { FormsModule } from '@angular/forms';
+import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms'; 
+import { Observable } from 'rxjs';
+import { environment } from '../../../environments/environment';
+import { MatDatepickerModule } from '@angular/material/datepicker';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatNativeDateModule } from '@angular/material/core';
 
 @Component({
-  selector: 'app-client-feedback',
+  selector: 'app-job-detail-dialog',
   standalone: true,
-  imports: [CommonModule, FormsModule], 
   templateUrl: './client-feedback.component.html',
-  styleUrls: ['./client-feedback.component.css']
+  styleUrls: ['./client-feedback.component.css'],
+  imports: [
+    CommonModule,
+    FormsModule
+  ]
 })
 export class ClientFeedbackComponent {
-  overallRating = 0;
-  consultantRating = 0;
-  feedbackText = '';
-  jobId: number = 0;
-  consultantId: number = 0;
+  overallRating: number = 0;
+  consultantRating: number = 0;
+  feedbackText: string = '';
 
   constructor(
-    private route: ActivatedRoute,
-    private clientJobsService: ClientJobsService,
-    private router: Router
+    @Inject(MAT_DIALOG_DATA) public data: { job_id: number; client_user_id: number },
+    private http: HttpClient,
+    private dialogRef: MatDialogRef<ClientFeedbackComponent>
   ) {}
 
-  consultantName: string = '';
-scope: string = '';
-
-ngOnInit() {
-  this.route.queryParams.subscribe(params => {
-    this.jobId = +params['jobId'];
-    this.consultantId = +params['consultantId'];
-    this.consultantName = params['consultantName'] || '';
-    this.scope = params['scope'] || '';
-
-    console.log('Job ID:', this.jobId);
-    console.log('Consultant ID:', this.consultantId); 
-  });
-}
-
-
-  setOverallRating(star: number) {
+  setOverallRating(star: number): void {
     this.overallRating = star;
   }
 
-  setConsultantRating(star: number) {
+  setConsultantRating(star: number): void {
     this.consultantRating = star;
   }
 
-  submitFeedback() {
-    if (!this.jobId || !this.consultantId || !this.feedbackText || !this.consultantRating || !this.overallRating) {
-      alert('Please fill all fields and ensure consultant ID is provided.');
-      return;
-    }
-  
+  submitFeedback(): void {
     const payload = {
-      job_id: this.jobId,
-      consultant_user_id: this.consultantId,
-      review: this.feedbackText,
-      rating: this.consultantRating,
-      overallRating: this.overallRating
+      job_id: this.data.job_id,
+      client_user_id: this.data.client_user_id,
+      rating: this.overallRating, // or this.consultantRating depending on your logic
+      review_text: this.feedbackText
     };
-  
-    console.log('Submitting feedback:', payload);
-  
-    this.clientJobsService.postReview(payload).subscribe({
+
+     console.log('Submitting feedback:', payload);
+    this.http.post(`${environment.apiUrl}/consultant/post_review`, payload,{ withCredentials: true }).subscribe({
       next: (res) => {
-        alert('Feedback submitted successfully!');
-  
-        // ✅ Clear the fields
-        this.feedbackText = '';
-        this.consultantRating = 0;
-        this.overallRating = 0;
-  
-        // ✅ Navigate to completed jobs page
-        this.router.navigate(['/client/completed-jobs']);
+        console.log('Feedback submitted successfully', res);
+        this.dialogRef.close(); // optionally close the dialog
       },
       error: (err) => {
-        console.error('Error submitting review:', err);
-        alert('Failed to submit review.');
+        console.error('Error submitting feedback', err);
       }
     });
   }
-
 }
