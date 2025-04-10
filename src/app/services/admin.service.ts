@@ -29,4 +29,28 @@ export class AdminService {
   getBids(): Observable<any[]> {
     return this.http.get<any[]>(`${environment.apiUrl}/admin/bids`, { withCredentials: true });
   }
+
+  getQuestions(): Observable<any> {
+    return this.http.get(`${environment.apiUrl}/admin/questions`, { withCredentials: true });
+  }
+
+  getOptionsByQuestionId(questionId: number): Observable<string[]> {
+    return this.http.get<string[]>(`${environment.apiUrl}/admin/questions/${questionId}/options`, { withCredentials: true });
+  }
+
+  editQuestion(questionId: number, questionData: any): Observable<any> {
+    return this.http.put(`${environment.apiUrl}/admin/questions/${questionId}`, questionData, { withCredentials: true });
+  }
+
+  updateOption(answerId: number, optionData: any): Observable<any> {
+    return this.http.put(`${environment.apiUrl}/admin/options/${answerId}`, optionData, { withCredentials: true });
+  }
+
+  deleteOption(answerId: number): Observable<any> {
+    return this.http.delete(`${environment.apiUrl}/admin/options/${answerId}`, { withCredentials: true });
+  }
+
+  createOption(optionData: any): Observable<any> {
+    return this.http.post(`${environment.apiUrl}/admin/options/create`, optionData, { withCredentials: true });
+  }
 }
