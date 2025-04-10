@@ -3,6 +3,8 @@ import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { SideBarComponent } from '../../components/side-bar/side-bar.component';
 import { NavBarComponent } from '../../components/nav-bar/nav-bar.component';
+import { FormDataService } from '../../services/form-data.service'; 
+
 
 interface MenuItem {
   label: string;
@@ -21,7 +23,6 @@ export class ClientLayoutComponent {
   isSidebarOpen = true;
   pageTitle = '';
 
-  // ✅ Updated Sidebar with "Create Job"
   menuItems: MenuItem[] = [
     { label: 'Create Job', route: '/client/client-form', icon: 'fa-solid fa-plus-circle' },
     { label: 'Pending Bids', route: '/client/pending-bids', icon: 'fa-solid fa-hourglass-half' },
@@ -34,7 +35,7 @@ export class ClientLayoutComponent {
 
   ];
 
-  constructor(private router: Router, private route: ActivatedRoute) {
+  constructor(private router: Router, private route: ActivatedRoute, private formDataService: FormDataService) {
     this.router.events.subscribe(() => {
       this.setTitle();
     });
@@ -50,6 +51,20 @@ export class ClientLayoutComponent {
     else if (routePath.includes('verify-completion')) this.pageTitle = 'Verify Completion';
     else if (routePath.includes('completed-jobs')) this.pageTitle = 'Completed Jobs';
     else this.pageTitle = '';
+  }
+
+  handleMenuClick(item: MenuItem) {
+    if (item.label === 'Create Job') {
+      this.goToCreateJob();
+    } else {
+      this.router.navigate([item.route]);
+    }
+  }
+  
+
+  goToCreateJob() {
+    this.formDataService.clearAll(); // Clear stale form state
+    this.router.navigate(['/client/client-form']); // Navigate with clean form
   }
 
   toggleSidebar() {

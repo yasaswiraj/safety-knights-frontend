@@ -30,7 +30,7 @@ export class PendingBidsComponent implements AfterViewInit, OnInit {
   @ViewChild(MatSort) sort!: MatSort;
   searchTerm = '';
 
-  dataSource: MatTableDataSource<PendingBid> = new MatTableDataSource<PendingBid>([]);  
+  dataSource: MatTableDataSource<PendingBid> = new MatTableDataSource<PendingBid>([]);
   displayedColumns: string[] = ['jobName', 'deadline', 'budget', 'actions'];
 
   constructor(private router: Router, private clientJobsService: ClientJobsService, private formDataService: FormDataService) { }
@@ -60,7 +60,7 @@ export class PendingBidsComponent implements AfterViewInit, OnInit {
           deadline: job.proposal_deadline,
           budget: job.budget,
         }));
-  
+
         this.dataSource.data = transformedJobs;
       },
       error: (err) => {
@@ -79,22 +79,29 @@ export class PendingBidsComponent implements AfterViewInit, OnInit {
   editJob(job: PendingBid) {
     const formattedDeadline = this.formatDateToYYYYMMDD(job.proposal_deadline);
     const formattedStartDate = this.formatDateToYYYYMMDD(job.expected_start_date);
-  
+
     this.clientJobsService.getFilledForm(job.client_job_id).subscribe((res) => {
-      console.log('[EDIT JOB] Getting filled form for jobId:', job);
+      console.log('[EDIT JOB] Getting filled form for jobId:', res);
 
       const jd = res?.filled_form?.job_details;
-    
+
       if (!jd) return;
-    
+      
+
       const responses = jd.responses || [];
-    
+
       // Map question -> response_value
       const responseMap: Record<string, string> = {};
       for (const entry of responses) {
         responseMap[entry.question] = entry.response_value;
       }
-    
+
+      const insuranceRaw = responseMap['Insurance Requirements for the Contractor'] || '';
+      const insuranceList = insuranceRaw ? insuranceRaw.split(', ').map(x => x.trim()) : [];
+      insuranceCoverageDetails: jd.insurance_coverage_details || {}
+
+
+
       const formData = {
         scopeOfService: jd.scope_of_service?.split(', ') || [],
         jobDescription: jd.work_in_detail,
@@ -102,45 +109,48 @@ export class PendingBidsComponent implements AfterViewInit, OnInit {
         deadline: jd.proposal_deadline,
         projectStartDate: jd.expected_start_date,
         budget: jd.budget,
-        selectedInsurances: [], // You could also extract this from responseMap if it's stored
+        selectedInsurances: insuranceList,
         payment_terms: responseMap['Payment Terms'] || '',
         payment_method: responseMap['Preferred Method of Payment to Contractor'] || '',
         contractor_preferences: responseMap['Do you have any preferences regarding which contractors should not be considered?'] || '',
         commitment_to_proceed: responseMap['If the proposal is within budget, would you commit to moving forward?'] || '',
       };
-    
+
+      console.log('[EDIT JOB] Extracted responses map:', responseMap);
+      console.log('[EDIT JOB] Extracted insurances:', insuranceList);
+
       this.formDataService.setFormData(formData, jd.client_job_id);
       this.router.navigate(['/client/client-form']);
     });
-    
-  }
-  
-  
-  
-  
 
-  
+  }
+
+
+
+
+
+
   formatDateToYYYYMMDD(dateInput: string | Date): string | null {
     try {
       const date = new Date(dateInput);
       if (isNaN(date.getTime())) return null;
-  
+
       const year = date.getFullYear();
       const month = String(date.getMonth() + 1).padStart(2, '0');
       const day = String(date.getDate()).padStart(2, '0');
-  
+
       return `${year}-${month}-${day}`;
     } catch (err) {
       console.error('Invalid date format:', dateInput);
       return null;
     }
   }
-  
-  
-  
+
+
+
 
   handleAction(bid: PendingBid) {
     this.editJob(bid);
   }
-  
+
 }

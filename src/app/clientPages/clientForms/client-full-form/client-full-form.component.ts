@@ -11,6 +11,9 @@ import { map } from 'rxjs/operators';
 import { ClientJobsService } from '../../../services/client-jobs.service';
 import { Router } from '@angular/router';
 import { FormDataService } from '../../../services/form-data.service';
+import { AbstractControl, ValidatorFn } from '@angular/forms';
+import { LoadingComponent } from "../../../components/loading/loading.component";
+
 @Component({
   selector: 'app-client-full-form',
   templateUrl: './client-full-form.component.html',
@@ -23,8 +26,9 @@ import { FormDataService } from '../../../services/form-data.service';
     MatFormFieldModule,
     MatInputModule,
     MatButtonModule,
-    MatIconModule
-  ]
+    MatIconModule,
+    LoadingComponent
+]
 })
 export class ClientFullFormComponent implements OnInit {
   clientForm!: FormGroup;
@@ -32,6 +36,8 @@ export class ClientFullFormComponent implements OnInit {
   formStructure: Record<string, Record<string, QuestionConfig>> = {};
   categories: string[] = [];
   question: any;
+  isSubmitting = false;
+
 
   jobIdToEdit: number | null = null;
 
@@ -44,7 +50,8 @@ export class ClientFullFormComponent implements OnInit {
 
   readonly categoryOrder = [
     'Project Scope and Requirements',
-    'Project Requirements'
+    'Project Requirements',
+    'Preferences and Commitments'
   ];
 
   readonly questionOrderMap: { [category: string]: string[] } = {
@@ -60,7 +67,11 @@ export class ClientFullFormComponent implements OnInit {
       'Insurance Requirements for the Contractor',
       'Payment Terms',
       'Preferred Method of Payment to Contractor'
+    ],
+    'Preferences and Commitments': [
+      'Do you have any preferences regarding which contractors should not be considered?'
     ]
+
   };
 
   showScopeOfServiceOther = false;
@@ -71,7 +82,6 @@ export class ClientFullFormComponent implements OnInit {
 
 
   readonly excludedQuestions = [
-    'Do you have any preferences regarding which contractors should not be considered?',
     'If the proposal is within budget, would you commit to moving forward?'
   ];
 
@@ -106,8 +116,8 @@ export class ClientFullFormComponent implements OnInit {
 
 
   prefillForm(data: any) {
-    setTimeout(() => {
-      if (this.clientForm) {
+    const checkFormReady = setInterval(() => {
+      if (this.clientForm && this.clientForm.contains('proposalDeadline') && this.clientForm.contains('whenDoYouNeedTheWorkConducted')) {
         this.clientForm.patchValue({
           scopeOfServiceNeeded: data.scopeOfService || [],
           pleaseDescribeTheWorkInDetail: data.jobDescription || '',
@@ -117,24 +127,34 @@ export class ClientFullFormComponent implements OnInit {
           budgetForService: data.budget || '',
           insuranceRequirementsForTheContractor: data.selectedInsurances || [],
           paymentTerms: data.payment_terms || '',
-          preferredMethodOfPaymentToContractor: data.payment_method || ''
+          preferredMethodOfPaymentToContractor: data.payment_method || '',
+          doYouHaveAnyPreferencesRegardingWhichContractorsShouldNotBeConsidered: data.contractor_preferences || '',
+
         });
-
-        // console.log('[PATCHED VALUES]', this.clientForm.value);
-
-
+  
         if (data.payment_terms === 'Other...') {
           this.showOtherInputs['paymentTerms'] = true;
           this.otherInputs['paymentTerms'] = '';
         }
 
+        if (data.insuranceCoverageDetails) {
+          this.insuranceCoverageMap = { ...data.insuranceCoverageDetails };
+        }
+        if (data.selectedInsurances?.length) {
+          this.selectedInsuranceOptions = data.selectedInsurances;
+        }
+        
+  
         if (data.payment_method === 'Other...') {
           this.showOtherInputs['preferredMethodOfPaymentToContractor'] = true;
           this.otherInputs['preferredMethodOfPaymentToContractor'] = '';
         }
+  
+        clearInterval(checkFormReady); // stop checking once form is patched
       }
-    });
+    }, 100);
   }
+  
 
 
 
@@ -181,19 +201,60 @@ export class ClientFullFormComponent implements OnInit {
         if (questionKey === 'Scope of Service Needed' || questionKey === 'Insurance Requirements for the Contractor') {
           controls[formKey] = [[], isRequired ? Validators.required : []];
         }
-        else if (['text', 'date', 'radio', 'checkbox'].includes(question.type)) {
+        else if (['text', 'radio', 'checkbox'].includes(question.type)) {
           controls[formKey] = [[], isRequired ? Validators.required : []];
+        } else if (question.type === 'date') {
+          controls[formKey] = [
+            '',
+            Validators.compose([
+              Validators.required,
+              this.noPastDateValidator()
+            ])
+          ];
         }
+        
       }
     }
 
-    this.clientForm = this.fb.group(controls);
+    this.clientForm = this.fb.group(controls, {
+      validators: this.dateOrderValidator()
+    });
+    
     console.log('Form controls:', Object.keys(this.clientForm.controls));
+    console.log('Questions in Preferences and Commitments:', this.formStructure['Preferences and Commitments']);
+
   }
 
   isFieldRequired(key: string): boolean {
-    return key !== 'Insurance Requirements for the Contractor';
+    return key !== 'Insurance Requirements for the Contractor'
   }
+
+  noPastDateValidator(): ValidatorFn {
+    return (control: AbstractControl): { [key: string]: any } | null => {
+      const selectedDate = new Date(control.value);
+      const today = new Date();
+      today.setHours(0, 0, 0, 0); // normalize
+  
+      if (selectedDate < today) {
+        return { pastDate: true };
+      }
+      return null;
+    };
+  }
+  
+  dateOrderValidator(): ValidatorFn {
+    return (group: AbstractControl): { [key: string]: any } | null => {
+      const proposal = group.get('proposalDeadline')?.value;
+      const start = group.get('whenDoYouNeedTheWorkConducted')?.value;
+  
+      if (proposal && start && new Date(proposal) < new Date(start)) {
+        return { proposalBeforeStart: true };
+      }
+      return null;
+    };
+  }
+  
+  
 
 
   onMultiSelectChange(selectedValues: string[], field: string) {
@@ -246,9 +307,13 @@ export class ClientFullFormComponent implements OnInit {
   }
 
   submitForm() {
-    if (this.clientForm.invalid) return;
+    if (this.clientForm.invalid || this.isSubmitting) return;
+
+    this.isSubmitting = true;
 
     const rawForm = this.clientForm.value;
+
+    console.log('Raw form data initial:', rawForm);
 
     const selectedServices = rawForm.scopeOfServiceNeeded || [];
     const scopeServices = selectedServices.includes('Other...') && this.scopeOfServiceOtherText
@@ -256,7 +321,7 @@ export class ClientFullFormComponent implements OnInit {
       : selectedServices;
 
     const insuranceReq = rawForm.insuranceRequirementsForTheContractor || [];
-
+    console.log('after Insurance requirements formdata:', rawForm);
 
     const paymentTerms = rawForm.paymentTerms === 'Other...'
       ? this.otherInputs['paymentTerms']
@@ -265,6 +330,8 @@ export class ClientFullFormComponent implements OnInit {
     const paymentMethod = rawForm.preferredMethodOfPaymentToContractor === 'Other...'
       ? this.otherInputs['preferredMethodOfPaymentToContractor']
       : rawForm.preferredMethodOfPaymentToContractor;
+
+    console.log('for pref formdata:', rawForm.doYouHaveAnyPreferencesRegardingWhichContractorsShouldNotBeConsidered);
 
     const payload: any = {
       scope_of_service: scopeServices.join(', '),
@@ -277,12 +344,20 @@ export class ClientFullFormComponent implements OnInit {
       insurance_coverage_details: this.insuranceCoverageMap,
       payment_terms: paymentTerms,
       payment_method: paymentMethod,
-      uploadedFileName: this.uploadedFile?.name || ''
+      uploadedFileName: this.uploadedFile?.name || '',
+      contractor_preferences: rawForm.doYouHaveAnyPreferencesRegardingWhichContractorsShouldNotBeConsidered,
+
+
     };
+
+    console.log('Yello', payload);
+
 
     // Only include these if editing (jobIdToEdit is set)
     if (this.jobIdToEdit) {
-      payload.contractor_preferences = this.otherInputs['contractorPreferences'] || '';
+      payload.contractor_preferences = this.otherInputs['contractorPreferences'] !== undefined
+        ? this.otherInputs['contractorPreferences']
+        : payload.contractor_preferences;
       payload.commitment_to_proceed = this.otherInputs['commitmentToProceed'] || '';
     }
 
@@ -294,10 +369,14 @@ export class ClientFullFormComponent implements OnInit {
 
     request$.subscribe({
       next: () => {
-        alert(this.jobIdToEdit ? 'Job updated successfully!' : 'Form submitted successfully!');
-        this.router.navigate(['/client/pending-bids']);
+        setTimeout(() => {
+          this.router.navigate(['/client/pending-bids']);
+        }, 300); 
       },
-      error: (err) => console.error('Submission failed:', err)
+      error: (err) => {
+        console.error('Submission failed:', err);
+        this.isSubmitting = false;
+      }
     });
   }
 

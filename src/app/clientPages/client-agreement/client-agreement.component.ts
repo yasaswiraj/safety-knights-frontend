@@ -29,46 +29,57 @@ import { ClientJobsService } from '../../services/client-jobs.service';
 })
 export class ClientAgreementComponent implements OnInit {
   agreementForm!: FormGroup;
-  progressPercentage = 60; // Set progress for UI consistency
+  progressPercentage = 60;
   currentStep = 2;
   totalSteps = 4;
+
+  jobId!: number;
+  consultantId!: number;
 
   constructor(
     private fb: FormBuilder,
     private router: Router,
     private route: ActivatedRoute,
     private clientJobsService: ClientJobsService
-  ) { }
-
-  jobId!: number;
-  consultantId!: number;
+  ) {}
 
   ngOnInit() {
     this.jobId = Number(this.route.snapshot.queryParamMap.get('jobId'));
     this.consultantId = Number(this.route.snapshot.queryParamMap.get('consultantId'));
-  
+
     this.agreementForm = this.fb.group({
-      preferences: [''],
       commitment: ['', Validators.required],
-      otherCommitment: ['']
+      noCommitmentReason: [{ value: '', disabled: true }] // Initially disabled
     });
-  
+
+    // Watch for changes to commitment
     this.agreementForm.get('commitment')?.valueChanges.subscribe(value => {
-      if (value !== 'other') {
-        this.agreementForm.get('otherCommitment')?.reset();
-        this.agreementForm.get('otherCommitment')?.disable();
+      const reasonControl = this.agreementForm.get('noCommitmentReason');
+
+      if (value === 'no') {
+        reasonControl?.enable();
+        reasonControl?.setValidators([Validators.required]);
       } else {
-        this.agreementForm.get('otherCommitment')?.enable();
+        reasonControl?.reset();
+        reasonControl?.disable();
+        reasonControl?.clearValidators();
       }
+
+      reasonControl?.updateValueAndValidity();
     });
   }
 
   submitForm() {
     if (this.agreementForm.invalid) return;
-  
-    console.log("Form Submitted:", this.agreementForm.value);
-  
-    this.clientJobsService.acceptBid(this.jobId, this.consultantId).subscribe({
+
+    const formValue = this.agreementForm.getRawValue(); // includes disabled fields
+
+    console.log("Agreement Form Submitted:", formValue);
+
+    this.clientJobsService.acceptBid(this.jobId, this.consultantId, {
+      commitment: formValue.commitment,
+      no_commitment_reason: formValue.noCommitmentReason || undefined
+    }).subscribe({
       next: () => {
         console.log("Bid accepted, job marked as in_progress");
         this.router.navigate(['client/pending-bids']);
@@ -78,7 +89,6 @@ export class ClientAgreementComponent implements OnInit {
       }
     });
   }
-  
 
   navigateBack() {
     this.router.navigate(['client/received-bids']);

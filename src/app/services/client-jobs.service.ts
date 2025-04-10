@@ -171,13 +171,15 @@ export class ClientJobsService {
 
 
   createJob(jobData: CreateJobRequest): Observable<any> {
+    console.log('Creating job with data:', jobData);
     return this.http.post(`${environment.apiUrl}/client/create-job`, jobData, {
       withCredentials: true
     });
   }
 
   // client-jobs.service.ts
-  updateJob(jobId: number, jobData: any): Observable<any> {
+  updateJob(jobId: number, jobData: CreateJobRequest): Observable<any> {
+    console.log('Updating job with ID:', jobId, 'and data:', jobData);
     return this.http.post(`${environment.apiUrl}/client/update-job/${jobId}`, jobData, {
       withCredentials: true
     });
@@ -212,11 +214,12 @@ export class ClientJobsService {
     );
   }
 
-  acceptBid(jobId: number, consultantId: number): Observable<any> {
-    return this.http.post(`${environment.apiUrl}/client/accept_bid/${jobId}/${consultantId}`, {}, {
+  acceptBid(jobId: number, consultantId: number, body: { commitment: string, no_commitment_reason?: string }): Observable<any> {
+    return this.http.post(`${environment.apiUrl}/client/accept_bid/${jobId}/${consultantId}`, body, {
       withCredentials: true
     });
   }
+  
 
   getClientProfile(): Observable<any> {
     return this.http.get(`${environment.apiUrl}/client/profile`, {
