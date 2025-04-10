@@ -13,6 +13,8 @@ import { HttpClient } from '@angular/common/http';
 import { ConsultantMatchesService } from '../../services/consultant-match.service';
 
 interface Job {
+  job_status: any;
+  work_in_detail: any;
   job_id: number;
   scope_of_service: string;
   project_location: string;
@@ -49,22 +51,13 @@ export class ConsultantActiveJobsComponent implements AfterViewInit {
     'expected_start_date',
     'days_remaining',
     'budget',
+    'status',
     'actions'
   ];
   dataSource: MatTableDataSource<any> = new MatTableDataSource();
   
   constructor(private consultantMatchesService: ConsultantMatchesService, private dialog: MatDialog) {
-    // this.jobs.forEach(job => {
-    //   job.days_remaining = this.calculateDaysRemaining(job.expected_start_date);
-    // });
-    // this.dataSource = new MatTableDataSource(this.jobs);
-    // this.dataSource.filterPredicate = (data: any, filter: string) => {
-    //   return Object.values(data).some(value => 
-    //     typeof value === 'string' && value.toLowerCase().includes(filter) ||
-    //     typeof value === 'number' && value.toString().includes(filter)
-    //   );
-    // };
-    
+  
   }
 
   ngOnInit() {
@@ -84,7 +77,7 @@ export class ConsultantActiveJobsComponent implements AfterViewInit {
 
   fetchActiveJobs() {
     this.consultantMatchesService.getActiveJobs().subscribe(response => {
-      console.log('Fetched matched jobs:', response.matched_jobs);
+      console.log('Fetched active jobs:', response.jobs_in_progress);
       this.dataSource.data = response.jobs_in_progress;
     }, error => {
       console.error('Error fetching matched jobs:', error);
@@ -104,6 +97,11 @@ export class ConsultantActiveJobsComponent implements AfterViewInit {
       data: { job_id: job.job_id,
               scope_of_service: job.scope_of_service, // Pass the necessary job fields to the dialog
               project_location: job.project_location, // Pass the necessary job fields to the dialog
+              work_in_detail: job.work_in_detail,
+              proposal_deadline: job.proposal_deadline ,
+              expected_start_date: job.expected_start_date,
+              budget: job.budget ,
+              job_status: job.job_status,
               
        }
     });

@@ -9,11 +9,12 @@ import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angula
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { environment } from '../../../environments/environment';
+import { MatIconModule } from '@angular/material/icon';
 
 @Component({
   selector: 'app-job-update-dialog',
   templateUrl: './job-update-dialog.component.html',
-  imports: [CommonModule, MatFormFieldModule, MatInputModule, FormsModule,ReactiveFormsModule],
+  imports: [CommonModule, MatFormFieldModule, MatInputModule, FormsModule,ReactiveFormsModule,MatIconModule],
   styleUrls: ['./job-update-dialog.component.css']
 })
 export class JobUpdateDialogComponent {

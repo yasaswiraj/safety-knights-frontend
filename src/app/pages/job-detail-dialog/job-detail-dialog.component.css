@@ -56,3 +56,23 @@
     text-decoration: underline !important;
   }
   
+  ::ng-deep .mat-form-field.custom-field {
+    background-color: white;
+    border-radius: 12px;
+    overflow: hidden;
+  }
+  
+  ::ng-deep .mat-form-field-appearance-fill .mat-form-field-flex {
+    background-color: white;
+    border-radius: 12px;
+    padding: 0 12px;
+  }
+  
+  ::ng-deep .mat-form-field-appearance-fill .mat-form-field-outline {
+    display: none;
+  }
+  
+  ::ng-deep .mat-input-element {
+    padding: 12px 0;
+  }
+  
