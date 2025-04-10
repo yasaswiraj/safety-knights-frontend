@@ -35,12 +35,19 @@
       <ng-container matColumnDef="feedback">
         <th mat-header-cell *matHeaderCellDef>Feedback</th>
         <td mat-cell *matCellDef="let job">
-          <button mat-icon-button color="primary" (click)="handleFeedback(job)" >
-            <i class="fa-solid fa-comment-dots"></i>
-          </button>
+          <button mat-icon-button color="primary"
+        [disabled]="job.hasReview === true"
+        (click)="handleFeedback(job)">
+  <i class="fa-solid fa-comment-dots"></i>
+</button>
+<span *ngIf="job.hasReview === true" class="text-xs text-gray-500 ml-2">Feedback given</span>
 
+      
+          <!-- Optional: show tooltip or icon if disabled -->
+          <span *ngIf="job.hasReview" class="text-xs text-gray-500 ml-2">Feedback given</span>
         </td>
       </ng-container>
+      
 
       <!-- Table structure -->
       <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>

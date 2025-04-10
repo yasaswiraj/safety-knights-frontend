@@ -8,6 +8,10 @@ import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
 import { CommonModule } from '@angular/common';  // ✅ Required for Angular pipes
 import { ClientJobsService } from '../../services/client-jobs.service';
+import { catchError, map } from 'rxjs/operators';
+import { of, forkJoin } from 'rxjs';
+
+
 
 interface CompletedJob {
   client_job_id: number;
@@ -17,6 +21,7 @@ interface CompletedJob {
   proposal_deadline: string;
   expected_start_date: string;
   consultant_user_id: number; 
+  hasReview?: boolean;
 }
 
 
@@ -42,24 +47,34 @@ export class CompletedJobsComponent implements AfterViewInit, OnInit {
 
   dataSource: MatTableDataSource<CompletedJob> = new MatTableDataSource<CompletedJob>();
   displayedColumns: string[] = ['jobName', 'consultant', 'budget', 'feedback'];
+job: any;
 
   constructor(private router: Router, private clientJobsService: ClientJobsService) {}
 
   ngOnInit() {
     this.clientJobsService.getCompletedJobs().subscribe({
       next: (response) => {
-        const jobs: CompletedJob[] = response.jobs.map((job) => ({
-          ...job,
-          feedbackGiven: false
-        }));
+        const jobs: CompletedJob[] = response.jobs;
   
-        this.dataSource.data = jobs;
+        const reviewChecks = jobs.map(job =>
+          this.clientJobsService.hasReview(job.client_job_id).pipe(
+            map(hasReview => ({ ...job, hasReview })), // <-- Make sure this is used
+            catchError(() => of({ ...job, hasReview: false }))
+          )
+        );
+  
+        forkJoin(reviewChecks).subscribe((jobsWithReviewStatus: CompletedJob[]) => {
+          this.dataSource.data = jobsWithReviewStatus;
+        });
       },
       error: (err) => {
         console.error('Error fetching completed jobs:', err);
       }
     });
   }
+  
+  
+  
   
   
   
