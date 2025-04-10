@@ -35,7 +35,7 @@ export class JobUpdateDialogComponent {
     switch (this.selectedStatus) {
       case 'in_progress':
         return `${environment.apiUrl}/consultant/update_active_to_in_progress/${jobId}`;
-      case 'completed':
+      case 'closed':
         return `${environment.apiUrl}/consultant/update_in_progress_to_closed/${jobId}`;
       case 'waiting':
         return `${environment.apiUrl}/consultant/update_in_progress_to_active/${jobId}`;
