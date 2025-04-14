@@ -35,6 +35,9 @@ export class ConsultantForm3Component implements OnInit {
   selectedPrimaryServices: Record<string, string[]> = {};  
   dependentServices: Record<string, string[]> = {};  
   categories: Record<string, Record<string, { type: string; option?: string[] }>> = {};  // Corrected to directly store category data
+  // selectedFile: File | null = null;
+  selectedFileName: string | null = null;
+  selectedFiles: File[] = [];
 
   constructor(
     private fb: FormBuilder,
@@ -104,11 +107,63 @@ export class ConsultantForm3Component implements OnInit {
     );
   }
 
-  onFileSelected(event: any) {
-    const file = event.target.files[0];
-    if (file) {
-      console.log('Selected file:', file.name);
-    }
+
+  // onFileSelected(event: any) {
+  //   const file = event.target.files[0];
+  //   if (file) {
+  //     this.selectedFile = file;
+  //     console.log("File selected:", file.name);
+  //   }
+  // }
+
+  // uploadFile(): void {
+  //   if (!this.selectedFile) {
+  //     alert('Please select a file first!');
+  //     return;
+  //   }
+
+  //   const formData = new FormData();
+  //   formData.append('file', this.selectedFile);
+
+  //   this.http.post(`${environment.apiUrl}/consultant/upload`, formData)
+  //     .subscribe({
+  //       next: (res) => {
+  //         console.log('File uploaded successfully:', res);
+  //         alert('Upload successful!');
+  //       },
+  //       error: (err) => {
+  //         console.error('Upload failed:', err);
+  //         alert('Upload failed. Please try again.');
+  //       },
+  //     });
+  // }
+
+  onFilesSelected(event: any) {
+    const files: FileList = event.target.files;
+    this.selectedFiles = Array.from(files);
+  }
+
+  removeFile(index: number) {
+    this.selectedFiles.splice(index, 1);
+  }
+
+  uploadFiles() {
+    const formData = new FormData();
+    this.selectedFiles.forEach((file) => {
+      formData.append('files', file); // backend must accept 'files' as a list
+    });
+
+    this.http.post(`${environment.apiUrl}/consultant/upload`, formData).subscribe({
+      next: (res) => {
+        console.log('Upload success', res);
+        alert('Files uploaded successfully!');
+        this.selectedFiles = [];
+      },
+      error: (err) => {
+        console.error('Upload failed', err);
+        alert('Upload failed. Please try again.');
+      },
+    });
   }
 
   navigateToNextForm() {
@@ -118,6 +173,6 @@ export class ConsultantForm3Component implements OnInit {
   }
 
   navigateToPreviousForm() {
-    this.router.navigate(['/consultant-form1']);
+    this.router.navigate(['/consultant-form-contact']);
   }
 }
