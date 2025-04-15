@@ -28,7 +28,7 @@ import { LoadingComponent } from "../../../components/loading/loading.component"
     MatButtonModule,
     MatIconModule,
     LoadingComponent
-]
+  ]
 })
 export class ClientFullFormComponent implements OnInit {
   clientForm!: FormGroup;
@@ -131,7 +131,7 @@ export class ClientFullFormComponent implements OnInit {
           doYouHaveAnyPreferencesRegardingWhichContractorsShouldNotBeConsidered: data.contractor_preferences || '',
 
         });
-  
+
         if (data.payment_terms === 'Other...') {
           this.showOtherInputs['paymentTerms'] = true;
           this.otherInputs['paymentTerms'] = '';
@@ -143,18 +143,18 @@ export class ClientFullFormComponent implements OnInit {
         if (data.selectedInsurances?.length) {
           this.selectedInsuranceOptions = data.selectedInsurances;
         }
-        
-  
+
+
         if (data.payment_method === 'Other...') {
           this.showOtherInputs['preferredMethodOfPaymentToContractor'] = true;
           this.otherInputs['preferredMethodOfPaymentToContractor'] = '';
         }
-  
+
         clearInterval(checkFormReady); // stop checking once form is patched
       }
     }, 100);
   }
-  
+
 
 
 
@@ -196,7 +196,9 @@ export class ClientFullFormComponent implements OnInit {
 
         // Mark as required unless it's one of the exceptions
         const isRequired = questionKey !== 'Insurance Requirements for the Contractor' &&
-          questionKey !== 'Please describe the work in detail';
+          questionKey !== 'Please describe the work in detail' &&
+          questionKey !== 'Do you have any preferences regarding which contractors should not be considered?';
+
 
         if (questionKey === 'Scope of Service Needed' || questionKey === 'Insurance Requirements for the Contractor') {
           controls[formKey] = [[], isRequired ? Validators.required : []];
@@ -212,49 +214,49 @@ export class ClientFullFormComponent implements OnInit {
             ])
           ];
         }
-        
+
       }
     }
 
     this.clientForm = this.fb.group(controls, {
       validators: this.dateOrderValidator()
     });
-    
+
     console.log('Form controls:', Object.keys(this.clientForm.controls));
     console.log('Questions in Preferences and Commitments:', this.formStructure['Preferences and Commitments']);
 
   }
 
   isFieldRequired(key: string): boolean {
-    return key !== 'Insurance Requirements for the Contractor'
+    return key !== 'Insurance Requirements for the Contractor' &&
+           key !== 'Do you have any preferences regarding which contractors should not be considered?';
   }
+  
 
   noPastDateValidator(): ValidatorFn {
     return (control: AbstractControl): { [key: string]: any } | null => {
       const selectedDate = new Date(control.value);
       const today = new Date();
       today.setHours(0, 0, 0, 0); // normalize
-  
+
       if (selectedDate < today) {
         return { pastDate: true };
       }
       return null;
     };
   }
-  
   dateOrderValidator(): ValidatorFn {
     return (group: AbstractControl): { [key: string]: any } | null => {
       const proposal = group.get('proposalDeadline')?.value;
       const start = group.get('whenDoYouNeedTheWorkConducted')?.value;
-  
-      if (proposal && start && new Date(proposal) < new Date(start)) {
+
+      if (proposal && start && new Date(proposal) > new Date(start)) {
         return { proposalBeforeStart: true };
       }
       return null;
     };
   }
-  
-  
+
 
 
   onMultiSelectChange(selectedValues: string[], field: string) {
@@ -310,10 +312,7 @@ export class ClientFullFormComponent implements OnInit {
     if (this.clientForm.invalid || this.isSubmitting) return;
 
     this.isSubmitting = true;
-
     const rawForm = this.clientForm.value;
-
-    console.log('Raw form data initial:', rawForm);
 
     const selectedServices = rawForm.scopeOfServiceNeeded || [];
     const scopeServices = selectedServices.includes('Other...') && this.scopeOfServiceOtherText
@@ -321,7 +320,6 @@ export class ClientFullFormComponent implements OnInit {
       : selectedServices;
 
     const insuranceReq = rawForm.insuranceRequirementsForTheContractor || [];
-    console.log('after Insurance requirements formdata:', rawForm);
 
     const paymentTerms = rawForm.paymentTerms === 'Other...'
       ? this.otherInputs['paymentTerms']
@@ -331,9 +329,7 @@ export class ClientFullFormComponent implements OnInit {
       ? this.otherInputs['preferredMethodOfPaymentToContractor']
       : rawForm.preferredMethodOfPaymentToContractor;
 
-    console.log('for pref formdata:', rawForm.doYouHaveAnyPreferencesRegardingWhichContractorsShouldNotBeConsidered);
-
-    const payload: any = {
+    const formPayload: any = {
       scope_of_service: scopeServices.join(', '),
       work_in_detail: rawForm.pleaseDescribeTheWorkInDetail,
       project_location: rawForm.projectLocation,
@@ -344,37 +340,35 @@ export class ClientFullFormComponent implements OnInit {
       insurance_coverage_details: this.insuranceCoverageMap,
       payment_terms: paymentTerms,
       payment_method: paymentMethod,
-      uploadedFileName: this.uploadedFile?.name || '',
-      contractor_preferences: rawForm.doYouHaveAnyPreferencesRegardingWhichContractorsShouldNotBeConsidered,
-
-
+      uploadedFileName: this.uploadedFile?.name || ''
     };
 
-    console.log('Yello', payload);
-
-
-    // Only include these if editing (jobIdToEdit is set)
-    if (this.jobIdToEdit) {
-      payload.contractor_preferences = this.otherInputs['contractorPreferences'] !== undefined
-        ? this.otherInputs['contractorPreferences']
-        : payload.contractor_preferences;
-      payload.commitment_to_proceed = this.otherInputs['commitmentToProceed'] || '';
+    const contractorPref = rawForm.doYouHaveAnyPreferencesRegardingWhichContractorsShouldNotBeConsidered;
+    if (typeof contractorPref === 'string' && contractorPref.trim()) {
+      formPayload.contractor_preferences = contractorPref.trim();
     }
 
 
+    // Add edit-specific fields
+    if (this.jobIdToEdit) {
+      formPayload.contractor_preferences = this.otherInputs['contractorPreferences'] !== undefined
+        ? this.otherInputs['contractorPreferences']
+        : formPayload.contractor_preferences;
+      formPayload.commitment_to_proceed = this.otherInputs['commitmentToProceed'] || '';
+    }
 
     const request$ = this.jobIdToEdit
-      ? this.clientJobsService.updateJob(this.jobIdToEdit, payload)
-      : this.clientJobsService.submitForm(payload);
+      ? this.clientJobsService.updateJob(this.jobIdToEdit, formPayload)
+      : this.clientJobsService.submitForm(formPayload);
 
     request$.subscribe({
       next: () => {
         setTimeout(() => {
           this.router.navigate(['/client/pending-bids']);
-        }, 300); 
+        }, 300);
       },
-      error: (err) => {
-        console.error('Submission failed:', err);
+      error: (error: any) => {
+        console.error('Submission failed:', error);
         this.isSubmitting = false;
       }
     });
@@ -385,18 +379,19 @@ export class ClientFullFormComponent implements OnInit {
     return isNaN(d.getTime()) ? '' : d.toISOString().split('T')[0];
   }
 
-  onInsuranceCheckboxChange(event: any, fieldName: string) {
+  onInsuranceCheckboxChange(event: Event, fieldName: string): void {
     const control = this.clientForm.get(fieldName);
     if (!control) return;
 
+    const target = event.target as HTMLInputElement;
     const currentValues = control.value || [];
-    const value = event.target.value;
+    const value = target.value;
 
-    if (event.target.checked) {
+    if (target.checked) {
       control.setValue([...currentValues, value]);
     } else {
       control.setValue(currentValues.filter((v: string) => v !== value));
-      delete this.insuranceCoverageMap[value]; // Clear the input when deselected
+      delete this.insuranceCoverageMap[value];
     }
   }
 
@@ -406,13 +401,12 @@ export class ClientFullFormComponent implements OnInit {
       RADIO_GROUP: 'radio'
     };
 
-    if (key === 'Insurance Requirements for the Contractor') return 'checkbox';
+    if (key === 'Insurance Requirements for the Contractor') {
+      return 'checkbox';
+    }
 
     return map[type] || type;
   }
-
-
-
 
 }
 

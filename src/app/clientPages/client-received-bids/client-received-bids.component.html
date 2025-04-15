@@ -7,17 +7,17 @@
     <!-- Job Header -->
     <div class="mb-6 border-b pb-4">
       <h2 class="text-2xl font-extrabold text-gray-800 tracking-tight">
-        Job #{{ job.jobId }} - {{ job.jobTitle }}
+        {{ job.jobTitle }}
       </h2>
       <p class="text-sm text-gray-500 mt-1">
         Proposal Deadline: <span class="font-medium">{{ job.deadline }}</span>
       </p>
     </div>
 
-    <!-- Bids Section -->
+    <!-- Proposals Section -->
     <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
       <div
-        *ngFor="let bid of job.bids"
+        *ngFor="let proposal of job.proposals"
         class="bg-gray-50 border border-gray-300 rounded-xl p-5 shadow-sm hover:shadow-lg transition duration-300"
       >
         <!-- Consultant Info -->
@@ -26,30 +26,30 @@
           <div>
             <h3
               class="text-lg font-semibold text-gray-800 hover:underline cursor-pointer"
-              (click)="openConsultantProfile(bid)"
+              (click)="openConsultantProfile(proposal)"
             >
-              {{ bid.consultantName }}
+              {{ proposal.consultantName }}
             </h3>
             <p
               class="text-yellow-500 text-sm flex items-center cursor-pointer"
-              (click)="openConsultantReviews(bid)"
+              (click)="openConsultantReviews(proposal)"
             >
               <ng-container *ngFor="let star of [0, 1, 2, 3, 4]; let i = index">
-                <span [class.text-yellow-500]="i < bid.rating" [class.text-gray-300]="i >= bid.rating">★</span>
+                <span [class.text-yellow-500]="i < proposal.rating" [class.text-gray-300]="i >= proposal.rating">★</span>
               </ng-container>
-              <span class="ml-2 text-gray-500">({{ bid.totalReviews }})</span>
+              <span class="ml-2 text-gray-500">({{ proposal.totalReviews }})</span>
             </p>
           </div>
         </div>
 
-        <!-- Bid Info -->
+        <!-- Proposal Info -->
         <p class="text-sm text-gray-600 mb-1">Bid Amount</p>
-        <p class="text-lg font-bold text-gray-900 mb-4">${{ bid.bidAmount }}</p>
+        <p class="text-lg font-bold text-gray-900 mb-4">${{ proposal.bidAmount }}</p>
 
         <!-- Actions -->
         <button
           class="w-full py-2 rounded-full text-white bg-gradient-to-r from-[#b68d5f] to-[#a4784c] hover:from-[#a4784c] hover:to-[#8d6640] shadow-md text-sm font-semibold uppercase tracking-wide"
-          (click)="acceptBid(job.jobId, bid.consultantId)"
+          (click)="acceptBid(job.jobId, proposal.consultantId)"
         >
           Accept
         </button>

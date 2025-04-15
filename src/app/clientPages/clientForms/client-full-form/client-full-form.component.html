@@ -72,7 +72,7 @@
                                             Proposal Deadline cannot be in the past.
                                         </div>
                                         <div *ngIf="clientForm.hasError('proposalBeforeStart')">
-                                            Proposal Deadline must be after Project Start Date.
+                                            Proposal Deadline must be before Project Start Date.
                                         </div>
                                     </div>
 
@@ -175,13 +175,17 @@
             </div>
 
             <!-- Submit Button -->
-            <button
-                class="mt-6 bg-[var(--elements-color)] text-black px-6 py-2 rounded-full shadow-md font-bold hover:bg-opacity-80 transition"
-                type="button" (click)="submitForm()" [disabled]="clientForm.invalid || isSubmitting">
-                <span *ngIf="!isSubmitting">Submit</span>
-                <span *ngIf="isSubmitting">Submitting...</span>
-            </button>
-
+            <div class="flex justify-center">
+                <button
+                  class="mt-6 bg-[var(--elements-color)] text-black px-6 py-2 rounded-full shadow-md font-bold hover:bg-opacity-80 transition"
+                  type="button"
+                  (click)="submitForm()"
+                  [disabled]="clientForm.invalid || isSubmitting">
+                  <span *ngIf="!isSubmitting">Submit</span>
+                  <span *ngIf="isSubmitting">Submitting...</span>
+                </button>
+              </div>
+              
         </form>
     </div>
 </div>

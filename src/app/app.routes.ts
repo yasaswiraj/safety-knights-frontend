@@ -1,6 +1,5 @@
 import { Routes } from '@angular/router';
 import { LoginComponent } from './clientPages/login/login.component';
-import { SignUpComponent } from './clientPages/sign-up/sign-up.component';
 import { LandingPageComponent } from './clientPages/landing-page/landing-page.component';
 import { ClientReceivedBidsComponent } from './clientPages/client-received-bids/client-received-bids.component';
 import { AdminDashboardComponent } from './adminPages/dashboard/dashboard.component';
@@ -13,7 +12,6 @@ import { SiteSettingsComponent } from './adminPages/site-settings/site-settings.
 import { AdminLayoutComponent } from './adminPages/admin-layout/admin-layout.component';
 import { ClientLayoutComponent } from './clientPages/client-layout/client-layout.component';
 import { PageNotFoundComponent } from './page-not-found/page-not-found.component';
-import { ClientAgreementComponent } from './clientPages/client-agreement/client-agreement.component';
 import { ConsultantDashboardComponent } from './pages/consultant-dashboard/consultant-dashboard.component';
 import { ConsultantForm1Component } from './pages/consultant-forms/consultant-form1/consultant-form1.component';
 import { ConsultantFormContactComponent } from './pages/consultant-forms/consultant-form-contact/consultant-form-contact.component';
@@ -70,7 +68,6 @@ export const routes: Routes = [
       return true; // Allow access to login page if not logged in
     }],
   },
-  { path: 'sign-up', component: SignUpComponent },
   { path: 'onboarding', component: OnboardingComponent }, // New combined form route
   { path: 'consultant-login', component: ConsultantLoginComponent }, // Consultant login route
 
@@ -88,7 +85,6 @@ export const routes: Routes = [
     children: [
       { path: 'received-bids', component: ClientReceivedBidsComponent },
       { path: 'client-form', component: ClientFullFormComponent },
-      { path: 'agreement', component: ClientAgreementComponent },
       { path: 'bids-in-progress', component: BidsInProgressComponent },
       { path: 'pending-bids', component: PendingBidsComponent },
       { path: 'job-in-progress', component: JobInProgressComponent },

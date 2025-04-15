@@ -52,20 +52,16 @@ job: any;
   constructor(private router: Router, private clientJobsService: ClientJobsService) {}
 
   ngOnInit() {
+    const reviewedJobs = JSON.parse(localStorage.getItem('reviewedJobs') || '[]');
+  
     this.clientJobsService.getCompletedJobs().subscribe({
       next: (response) => {
-        const jobs: CompletedJob[] = response.jobs;
+        const jobs: CompletedJob[] = response.jobs.map(job => ({
+          ...job,
+          hasReview: reviewedJobs.includes(job.client_job_id)
+        }));
   
-        const reviewChecks = jobs.map(job =>
-          this.clientJobsService.hasReview(job.client_job_id).pipe(
-            map(hasReview => ({ ...job, hasReview })), // <-- Make sure this is used
-            catchError(() => of({ ...job, hasReview: false }))
-          )
-        );
-  
-        forkJoin(reviewChecks).subscribe((jobsWithReviewStatus: CompletedJob[]) => {
-          this.dataSource.data = jobsWithReviewStatus;
-        });
+        this.dataSource.data = jobs;
       },
       error: (err) => {
         console.error('Error fetching completed jobs:', err);
@@ -74,11 +70,6 @@ job: any;
   }
   
   
-  
-  
-  
-  
-
 
   ngAfterViewInit() {
     this.dataSource.sort = this.sort;
@@ -90,6 +81,15 @@ job: any;
   }
 
   handleFeedback(job: CompletedJob) {
+    const reviewedKey = `reviewed_job_${job.client_job_id}`;
+    const isReviewed = localStorage.getItem(reviewedKey) === 'true';
+  
+    if (isReviewed || job.hasReview) {
+      alert('You have already submitted feedback for this job.');
+      job.hasReview = true; // Disable immediately in UI
+      return;
+    }
+  
     this.router.navigate(['/client/feedback'], {
       queryParams: {
         jobId: job.client_job_id,
@@ -99,5 +99,8 @@ job: any;
       }
     });
   }
+  
+  
+  
   
 }

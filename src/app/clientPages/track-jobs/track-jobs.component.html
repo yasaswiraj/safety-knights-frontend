@@ -1,26 +1,44 @@
 <!-- Page Content -->
-<div class="flex justify-center px-6 w-full mt-24">
-    <div class="track-jobs-grid w-full max-w-6xl grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 mt-6">
-      <div class="job-card p-6 rounded-xl shadow-lg bg-white border border-gray-200 hover:shadow-xl transition transform hover:-translate-y-2 relative"
-           *ngFor="let job of ongoingJobs">
-  
-          <!-- Consultant Info -->
-          <div class="flex items-center gap-2">
-              <img src="/user.png" alt="Consultant Image" class="w-10 h-10 rounded-full">
-              <h2 class="consultant-name">
-                  {{ job.consultantName }}
-              </h2>
-          </div>
-
-          <!-- Job Title -->
-          <p class="job-title">{{ job.jobTitle }}</p>
-          <p class="text-gray-600 mt-2 text-sm">Days Left: <strong>{{ job.daysLeft }}</strong></p>
-          <p class="text-gray-900 font-bold text-lg">Budget: ${{ job.budget }}</p>
-          <p class="text-gray-700 text-sm mt-2">Start Date: <strong>{{ job.startDate }}</strong></p>
-
-          <button class="message-icon absolute bottom-2 right-2" (click)="messageConsultant(job.consultantId)">
-            <i class="fa-solid fa-message"></i> 
-          </button>
-      </div>
+<div class="flex flex-col items-center px-6 w-full mt-24 space-y-12">
+  <div
+    *ngFor="let job of ongoingJobs"
+    class="w-full max-w-6xl bg-white border border-gray-200 rounded-2xl p-6 shadow-md"
+  >
+    <!-- Job Header -->
+    <div class="mb-6 border-b pb-4">
+      <h2 class="text-2xl font-extrabold text-gray-800 tracking-tight">
+        {{ job.jobTitle }}
+      </h2>
+      <p class="text-sm text-gray-500 mt-1">
+        Start Date: <span class="font-medium">{{ job.startDate }}</span>
+      </p>
     </div>
+
+    <!-- Consultant Info Card -->
+    <div
+      class="bg-gray-50 border border-gray-300 rounded-xl p-5 shadow-sm hover:shadow-lg transition duration-300 max-w-sm"
+    >
+      <div class="flex items-center gap-4 mb-4">
+        <img src="/user.png" alt="Consultant" class="w-12 h-12 rounded-full shadow-sm" />
+        <div>
+          <h3 class="text-lg font-semibold text-gray-800">{{ job.consultantName }}</h3>
+        </div>
+      </div>
+
+      <!-- Job Summary Info -->
+      <p class="text-sm text-gray-600 mb-1">Days Left</p>
+      <p class="text-lg font-bold text-gray-900 mb-3">{{ job.daysLeft }}</p>
+
+      <p class="text-sm text-gray-600 mb-1">Budget</p>
+      <p class="text-lg font-bold text-gray-900 mb-4">${{ job.budget }}</p>
+
+      <!-- Action Button -->
+      <button
+        class="w-full py-2 rounded-full text-white bg-gradient-to-r from-[#b68d5f] to-[#a4784c] hover:from-[#a4784c] hover:to-[#8d6640] shadow-md text-sm font-semibold uppercase tracking-wide"
+        (click)="messageConsultant(job.consultantId)"
+      >
+        Message
+      </button>
+    </div>
+  </div>
 </div>

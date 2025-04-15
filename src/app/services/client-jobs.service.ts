@@ -243,20 +243,7 @@ export class ClientJobsService {
     } catch {
       return null;
     }
-  }
-
-  hasReview(jobId: number): Observable<boolean> {
-    return this.http.get<{ has_review: boolean }>(`${environment.apiUrl}/client/has_review/${jobId}`, {
-      withCredentials: true
-    }).pipe(
-      map(res => res.has_review),
-      catchError((err) => {
-        console.warn(`Failed to check review for job ${jobId}:`, err);
-        return of(false); // Assume no review if not found or error
-      })
-    );
-  }
-  
+  }  
 
   getClientFormStructure(): Observable<any> {
     return this.http.get(`${environment.apiUrl}/client/get_client_form`, {

@@ -1,6 +1,6 @@
 import { Component } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
-import { Router } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { CommonModule, NgFor } from '@angular/common';
 import { ConsultantProfileComponent } from '../consultant-profile/consultant-profile.component';
 import { ConsultantReviewComponent } from '../consultant-review/consultant-review.component';
@@ -16,61 +16,94 @@ import { firstValueFrom } from 'rxjs';
   styleUrls: ['./client-received-bids.component.css']
 })
 export class ClientReceivedBidsComponent {
-  bids: any[] = [];
+  bids: {
+    jobId: number;
+    jobTitle: string;
+    deadline: string;
+    proposals: {
+      bidAmount: number;
+      consultantId: number;
+      consultantName: string;
+      rating: number;
+      totalReviews: number;
+    }[];
+  }[] = [];
+  
+  jobId: number = 0;
 
 
-  constructor(private router: Router, private dialog: MatDialog, private clientJobsService: ClientJobsService) {}
-
+  constructor(
+    private router: Router,
+    private route: ActivatedRoute,
+    private dialog: MatDialog,
+    private clientJobsService: ClientJobsService
+  ) {}
   ngOnInit() {
-    this.clientJobsService.getBidsInProgress().subscribe({
-      next: async (response) => {
-        const rawBids: BidInProgress[] = response.jobs;
-  
-        // Group by job_id
-        const jobMap: Map<number, any> = new Map();
-  
-        for (const bid of rawBids) {
-          if (!jobMap.has(bid.client_job_id)) {
-            jobMap.set(bid.client_job_id, {
-              jobId: bid.client_job_id,
-              jobTitle: bid.scope_of_service,
-              deadline: bid.proposal_deadline,
-              bids: []
-            });
+    this.route.queryParams.subscribe(async params => {
+      this.jobId = +params['jobId']; // Get jobId from URL
+
+      if (!this.jobId) return;
+
+      this.clientJobsService.getBidsInProgress().subscribe({
+        next: async (response) => {
+          const rawBids: BidInProgress[] = response.jobs;
+
+          // Filter only bids for selected jobId
+          const filteredBids = rawBids.filter(bid => bid.client_job_id === this.jobId);
+
+          if (filteredBids.length === 0) {
+            this.bids = [];
+            return;
           }
-  
-          // Fetch consultant profile
-          const consultant = await firstValueFrom(
-            this.clientJobsService.getConsultantProfile(bid.consultant_user_id)
+
+          const job = {
+            jobId: this.jobId,
+            jobTitle: filteredBids[0].scope_of_service,
+            deadline: filteredBids[0].proposal_deadline,
+            proposals: [] as {
+              bidAmount: number;
+              consultantId: number;
+              consultantName: string;
+              rating: number;
+              totalReviews: number;
+            }[]
+          };
+
+          // Use Promise.all to fetch consultant profiles concurrently
+          const consultantPromises = filteredBids.map(bid =>
+            firstValueFrom(this.clientJobsService.getConsultantProfile(bid.consultant_user_id))
+              .then(consultant => ({
+                bidAmount: bid.bid_amount,
+                consultantId: consultant.user_id,
+                consultantName: consultant.name,
+                rating: consultant.statistics.average_rating,
+                totalReviews: consultant.statistics.total_reviews
+              }))
           );
-  
-          jobMap.get(bid.client_job_id).bids.push({
-            bidAmount: bid.bid_amount,
-            consultantId: consultant.user_id,
-            consultantName: consultant.name,
-            rating: consultant.statistics.average_rating,
-            totalReviews: consultant.statistics.total_reviews
-          });
+
+          job.proposals = await Promise.all(consultantPromises);
+
+          this.bids = [job]; // Only one job group
+        },
+        error: (err) => {
+          console.error('Error fetching bids:', err);
         }
-  
-        this.bids = Array.from(jobMap.values());
-        console.log("📦 Enriched Jobs with Bids:", this.bids);
-      },
-      error: (err) => {
-        console.error('❌ Error fetching bids in progress:', err);
-      }
+      });
     });
   }
   
 
   acceptBid(jobId: number, consultantId: number) {
-    this.router.navigate(['/client/agreement'], {
-      queryParams: {
-        jobId,
-        consultantId
+    this.clientJobsService.acceptBid(jobId, consultantId, { commitment: 'yes' }).subscribe({
+      next: () => {
+        this.router.navigate(['/client/bids-in-progress']);
+      },
+      error: (err) => {
+        console.error('Failed to accept bid:', err);
       }
     });
   }
+  
   
 
   openConsultantProfile(bid: any) {
@@ -96,7 +129,7 @@ export class ClientReceivedBidsComponent {
         });
       },
       error: (err) => {
-        console.error('❌ Error fetching consultant profile:', err);
+        console.error(' Error fetching consultant profile:', err);
       }
     });
   }

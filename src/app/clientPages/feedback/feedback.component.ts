@@ -63,25 +63,29 @@ ngOnInit() {
       overallRating: this.overallRating
     };
   
-    console.log('Submitting feedback:', payload);
-  
     this.clientJobsService.postReview(payload).subscribe({
       next: (res) => {
         alert('Feedback submitted successfully!');
   
-        // ✅ Clear the fields
+        // ✅ Store job ID locally
+        const reviewedJobs = JSON.parse(localStorage.getItem('reviewedJobs') || '[]');
+        if (!reviewedJobs.includes(this.jobId)) {
+          reviewedJobs.push(this.jobId);
+          localStorage.setItem('reviewedJobs', JSON.stringify(reviewedJobs));
+        }
+  
         this.feedbackText = '';
         this.consultantRating = 0;
         this.overallRating = 0;
   
-        // ✅ Navigate to completed jobs page
         this.router.navigate(['/client/completed-jobs']);
       },
       error: (err) => {
         console.error('Error submitting review:', err);
-        alert('Failed to submit review.');
+        alert(err.error?.detail || 'Failed to submit review.');
       }
     });
   }
+  
 
 }
