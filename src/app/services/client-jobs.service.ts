@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { Observable } from 'rxjs';
-import { map } from 'rxjs/operators';
+import { Observable, of } from 'rxjs';
+import { catchError, map } from 'rxjs/operators';
 import { environment } from '../../environments/environment';
 import { FormStructure } from '../interfaces/form.interface';
 
@@ -76,6 +76,15 @@ export interface CompletedJob {
   consultant_user_id: number;
 
 }
+
+export interface ClientProfileUpdate {
+  name: string;
+  job_title: string;
+  company_name: string;
+  company_address: string;
+  phone_number: string;
+}
+
 
 
 export interface ConsultantProfile {
@@ -162,13 +171,15 @@ export class ClientJobsService {
 
 
   createJob(jobData: CreateJobRequest): Observable<any> {
+    console.log('Creating job with data:', jobData);
     return this.http.post(`${environment.apiUrl}/client/create-job`, jobData, {
       withCredentials: true
     });
   }
 
   // client-jobs.service.ts
-  updateJob(jobId: number, jobData: any): Observable<any> {
+  updateJob(jobId: number, jobData: CreateJobRequest): Observable<any> {
+    console.log('Updating job with ID:', jobId, 'and data:', jobData);
     return this.http.post(`${environment.apiUrl}/client/update-job/${jobId}`, jobData, {
       withCredentials: true
     });
@@ -203,11 +214,13 @@ export class ClientJobsService {
     );
   }
 
-  acceptBid(jobId: number, consultantId: number): Observable<any> {
-    return this.http.post(`${environment.apiUrl}/client/accept_bid/${jobId}/${consultantId}`, {}, {
+  acceptBid(jobId: number, consultantId: number, data: { commitment: string, no_commitment_reason?: string }) {
+    return this.http.post(`${environment.apiUrl}/client/accept_bid/${jobId}/${consultantId}`, data, {
       withCredentials: true
     });
   }
+  
+  
 
   getClientProfile(): Observable<any> {
     return this.http.get(`${environment.apiUrl}/client/profile`, {
@@ -215,7 +228,12 @@ export class ClientJobsService {
     });
   }
 
-
+  updateClientProfile(payload: ClientProfileUpdate): Observable<any> {
+    return this.http.post(`${environment.apiUrl}/client/update_profile`, payload, {
+      withCredentials: true
+    });
+  }
+  
 
   // Optional helper
   private fixDate(date: any): string | null {
@@ -225,13 +243,7 @@ export class ClientJobsService {
     } catch {
       return null;
     }
-  }
-
-  hasReview(jobId: number): Observable<boolean> {
-    return this.http.get<{ has_review: boolean }>(`${environment.apiUrl}/client/has_review/${jobId}`, {
-      withCredentials: true
-    }).pipe(map(res => res.has_review));
-  }
+  }  
 
   getClientFormStructure(): Observable<any> {
     return this.http.get(`${environment.apiUrl}/client/get_client_form`, {

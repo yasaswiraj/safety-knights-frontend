@@ -10,8 +10,8 @@ import { ActivatedRoute } from '@angular/router';
   selector: 'app-client-profile',
   standalone: true,
   imports: [CommonModule, FormsModule, HttpClientModule],
-  templateUrl: './client-profile.component.html',
-  styleUrls: ['./client-profile.component.css']
+  templateUrl: './update-profile-consultant.component.html',
+  styleUrls: ['./update-profile-consultant.component.css']
 })
 export class ClientProfileComponent implements OnInit {
   profile: any = null;

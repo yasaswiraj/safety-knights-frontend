@@ -15,8 +15,9 @@ import { MatNativeDateModule } from '@angular/material/core';
 import { MatIconModule } from '@angular/material/icon';
 
 @Component({
-  selector: 'app-job-detail-dialog',
-  templateUrl: './job-detail-dialog.component.html',
+  selector: 'app-bid-detail-dialog',
+  templateUrl: './update-bid.component.html',
+  styleUrls: ['./update-bid.component.css'],
   standalone: true, 
   imports: [CommonModule, MatFormFieldModule, MatInputModule, FormsModule,ReactiveFormsModule,
     MatDatepickerModule,
@@ -26,17 +27,16 @@ import { MatIconModule } from '@angular/material/icon';
   ],
   providers: [
     MatNativeDateModule, // ✅ Correctly provides DateAdapter
-  ],
-  styleUrls: ['./job-detail-dialog.component.css']
+  ]
 })
-export class JobDetailDialogComponent {
+export class UpdateBidComponent {
   bidAmount!: number;
   availability!: string;
 startDate: any;
  
 
   constructor(
-    public dialogRef: MatDialogRef<JobDetailDialogComponent>,
+    public dialogRef: MatDialogRef<UpdateBidComponent>,
     @Inject(MAT_DIALOG_DATA) public data: any,
     private http: HttpClient
   ) {}
@@ -53,9 +53,9 @@ startDate: any;
     console.log('Bid Amount:', this.bidAmount);
     const bidData = { "bid_amount" : this.bidAmount };
   
-    console.log(`Submitting Bid for Job ID ${jobId}:`, bidData);
+    console.log(`Updating Bid for Job ID ${jobId}:`, bidData);
   
-    this.http.post(`${environment.apiUrl}/consultant/${jobId}/place_bid`, bidData,{ withCredentials: true }).subscribe({
+    this.http.post(`${environment.apiUrl}/consultant/${jobId}/update_bid`, bidData,{ withCredentials: true }).subscribe({
       next: (response) => {
         console.log('Bid submitted successfully:', response);
   

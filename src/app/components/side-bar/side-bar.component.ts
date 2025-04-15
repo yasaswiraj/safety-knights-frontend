@@ -1,4 +1,4 @@
-import { Component, Input, signal } from '@angular/core';
+import { Component, EventEmitter, Input, Output, signal } from '@angular/core';
 import { RouterModule } from '@angular/router';
 import { CommonModule } from '@angular/common';
 
@@ -27,4 +27,11 @@ export class SideBarComponent {
   }
 
   @Input() menuItems: MenuItem[] = [];
+  @Output() menuClick = new EventEmitter<MenuItem>();
+
+  handleMenuClick(item: MenuItem) {
+    this.menuClick.emit(item);
+    this.setActiveLabel(item.label);
+  }
+
 }

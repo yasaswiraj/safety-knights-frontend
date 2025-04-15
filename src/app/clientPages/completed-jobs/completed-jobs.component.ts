@@ -8,6 +8,10 @@ import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
 import { CommonModule } from '@angular/common';  // ✅ Required for Angular pipes
 import { ClientJobsService } from '../../services/client-jobs.service';
+import { catchError, map } from 'rxjs/operators';
+import { of, forkJoin } from 'rxjs';
+
+
 
 interface CompletedJob {
   client_job_id: number;
@@ -17,6 +21,7 @@ interface CompletedJob {
   proposal_deadline: string;
   expected_start_date: string;
   consultant_user_id: number; 
+  hasReview?: boolean;
 }
 
 
@@ -42,15 +47,18 @@ export class CompletedJobsComponent implements AfterViewInit, OnInit {
 
   dataSource: MatTableDataSource<CompletedJob> = new MatTableDataSource<CompletedJob>();
   displayedColumns: string[] = ['jobName', 'consultant', 'budget', 'feedback'];
+job: any;
 
   constructor(private router: Router, private clientJobsService: ClientJobsService) {}
 
   ngOnInit() {
+    const reviewedJobs = JSON.parse(localStorage.getItem('reviewedJobs') || '[]');
+  
     this.clientJobsService.getCompletedJobs().subscribe({
       next: (response) => {
-        const jobs: CompletedJob[] = response.jobs.map((job) => ({
+        const jobs: CompletedJob[] = response.jobs.map(job => ({
           ...job,
-          feedbackGiven: false
+          hasReview: reviewedJobs.includes(job.client_job_id)
         }));
   
         this.dataSource.data = jobs;
@@ -62,8 +70,6 @@ export class CompletedJobsComponent implements AfterViewInit, OnInit {
   }
   
   
-  
-
 
   ngAfterViewInit() {
     this.dataSource.sort = this.sort;
@@ -75,6 +81,15 @@ export class CompletedJobsComponent implements AfterViewInit, OnInit {
   }
 
   handleFeedback(job: CompletedJob) {
+    const reviewedKey = `reviewed_job_${job.client_job_id}`;
+    const isReviewed = localStorage.getItem(reviewedKey) === 'true';
+  
+    if (isReviewed || job.hasReview) {
+      alert('You have already submitted feedback for this job.');
+      job.hasReview = true; // Disable immediately in UI
+      return;
+    }
+  
     this.router.navigate(['/client/feedback'], {
       queryParams: {
         jobId: job.client_job_id,
@@ -84,5 +99,8 @@ export class CompletedJobsComponent implements AfterViewInit, OnInit {
       }
     });
   }
+  
+  
+  
   
 }

@@ -1,21 +1,8 @@
 <div
   class="h-screen flex flex-col"
   style="background-color: var(--background-color)">
-  <!-- Navigation Bar -->
-  <!-- <nav
-    class="flex justify-between items-center px-6 py-4 shadow-md"
-    style="background-color: var(--elements-color)">
-    <img 
-      src="/company_logo.png" 
-      alt="Company Logo" 
-      class="w-20 h-15 cursor-pointer"
-      (click)="navigateToLanding()"
-    />
-    <div class="flex items-center gap-4">
-      <img src="/user.png" alt="User Profile" class="h-7 w-7 cursor-pointer rounded-full border-2 border-[var(--accent-color)] hover:shadow-md transition">
-    </div>
-  </nav> -->
-  <app-nav-bar></app-nav-bar>
+  
+
 
   <!-- Main Content -->
   <div class="flex-grow flex justify-center items-center p-6">
@@ -31,19 +18,7 @@
 
       <!-- Form -->
       <form [formGroup]="consultantForm" (ngSubmit)="onSubmit()" class="pb-16">
-        <!-- Added padding-bottom -->
-        <!-- <input
-          class="bg-gray-200 rounded-full w-full py-3 px-5 mb-5 text-gray-700 focus:outline-none"
-          type="text"
-          formControlName="specifics"
-          placeholder="Please state any specifics about availability that you may have:" />
-
-          <input
-          class="bg-gray-200 rounded-full w-full py-3 px-5 mb-5 text-gray-700 focus:outline-none"
-          type="email"
-          formControlName="comments"
-          placeholder="Additional Information, Comments or Clarifications:" />
-           -->
+       
        
         <div class="mb-6">
           <!-- <label class="block font-semibold mb-2">Other</label> -->

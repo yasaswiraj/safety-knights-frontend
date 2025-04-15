@@ -1,4 +1,5 @@
 <div class="flex-grow flex justify-center items-center px-6 pt-28">
+    <app-loading *ngIf="isSubmitting"></app-loading>
     <div class="w-full max-w-2xl bg-white p-10 rounded-2xl shadow-lg relative border border-[var(--elements-color)]">
         <h2 class="text-2xl font-bold text-[var(--accent-color)] text-center mb-6">
             EHS Consulting Network - Client Information Form
@@ -32,7 +33,7 @@
                             <div *ngIf="showScopeOfServiceOther">
                                 <input class="border border-gray-300 rounded-lg p-2 w-full mt-2"
                                     placeholder="Please specify other service" [(ngModel)]="scopeOfServiceOtherText"
-                                    name="scopeOfServiceOtherText" />
+                                    [ngModelOptions]="{ standalone: true }" name="scopeOfServiceOtherText" />
                             </div>
                         </ng-container>
 
@@ -60,9 +61,31 @@
                                         {{ question.label || questionEntry.key }}
                                         <span *ngIf="isFieldRequired(questionEntry.key)" class="text-black-500">*</span>
                                     </label>
+
                                     <input type="date" class="border border-gray-300 rounded-lg p-2 w-full"
                                         [formControlName]="camelCase(questionEntry.key)" />
+
+                                    <!-- Validation Errors -->
+                                    <div class="text-sm text-red-500 mt-1"
+                                        *ngIf="camelCase(questionEntry.key) === 'proposalDeadline'">
+                                        <div *ngIf="clientForm.get('proposalDeadline')?.hasError('pastDate')">
+                                            Proposal Deadline cannot be in the past.
+                                        </div>
+                                        <div *ngIf="clientForm.hasError('proposalBeforeStart')">
+                                            Proposal Deadline must be before Project Start Date.
+                                        </div>
+                                    </div>
+
+                                    <div class="text-sm text-red-500 mt-1"
+                                        *ngIf="camelCase(questionEntry.key) === 'whenDoYouNeedTheWorkConducted'">
+                                        <div
+                                            *ngIf="clientForm.get('whenDoYouNeedTheWorkConducted')?.hasError('pastDate')">
+                                            Project Start Date cannot be in the past.
+                                        </div>
+                                    </div>
                                 </div>
+
+
 
                                 <!-- Checkbox -->
                                 <!-- Multi-select for Insurance Requirements -->
@@ -121,6 +144,7 @@
                                         <input class="border border-gray-300 rounded-lg p-2 w-full mt-2"
                                             placeholder="Please specify"
                                             [(ngModel)]="otherInputs[camelCase(questionEntry.key)]"
+                                            [ngModelOptions]="{ standalone: true }"
                                             name="{{ camelCase(questionEntry.key) }}_other" />
                                     </div>
                                 </div>
@@ -151,11 +175,17 @@
             </div>
 
             <!-- Submit Button -->
-            <button
-                class="mt-6 bg-[var(--elements-color)] text-black px-6 py-2 rounded-full shadow-md font-bold hover:bg-opacity-80 transition"
-                type="button" (click)="submitForm()" [disabled]="clientForm.invalid">
-                Submit
-            </button>
+            <div class="flex justify-center">
+                <button
+                  class="mt-6 bg-[var(--elements-color)] text-black px-6 py-2 rounded-full shadow-md font-bold hover:bg-opacity-80 transition"
+                  type="button"
+                  (click)="submitForm()"
+                  [disabled]="clientForm.invalid || isSubmitting">
+                  <span *ngIf="!isSubmitting">Submit</span>
+                  <span *ngIf="isSubmitting">Submitting...</span>
+                </button>
+              </div>
+              
         </form>
     </div>
 </div>

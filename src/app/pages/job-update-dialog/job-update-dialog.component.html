@@ -1,25 +1,40 @@
 <h2 class="dialog-title">Update Status</h2>
 <div class="dialog-content">
-  <h3>Job {{ data.job_id }}</h3>
-  <p><strong>Description:</strong> {{ data.description }}</p>
-  <p><strong>Created on:</strong> {{ data.createdOn }}</p>
-  <p><strong>Deadline:</strong> {{ data.deadline }}</p>
 
-  <textarea placeholder="Add Comments" [(ngModel)]="comment"></textarea>
+      <!-- Close Icon Button -->
+      <button mat-icon-button class="absolute top-2 right-2" (click)="closeDialog()">
+        <mat-icon>close</mat-icon>
+      </button>
+        
+ 
+    <!-- Job Description Section -->
+    <div class="description">
+      <p><strong>Description: </strong> {{ data.work_in_detail }}</p> 
+      <p><strong>Scope of Service:</strong> {{ data.scope_of_service }}</p>
+      <p><strong>Created on:</strong> {{ data.expected_start_date }}</p>
+      <p><strong>Deadline:</strong> {{ data.deadline }}</p>  
+      <p><strong>Location:</strong> {{ data.location }}</p>
+      <p><strong>Budget:</strong> {{ data.budget }} </p>
+ 
+        
+    </div>
+  
+
+  <textarea placeholder="Add Comments" [(ngModel)]="comment"  class="w-full h-32 p-2 border border-black rounded-md resize-none"></textarea>
 
   <h4>Update Job Status:</h4>
   <label>
     <input type="radio" name="status" value="in_progress" [(ngModel)]="selectedStatus"> In Progress
   </label><br>
   <label>
-    <input type="radio" name="status" value="waiting" [(ngModel)]="selectedStatus"> Change to Pending
+    <input type="radio" name="status" value="waiting" [(ngModel)]="selectedStatus"> Active
   </label><br>
   <label>
-    <input type="radio" name="status" value="completed" [(ngModel)]="selectedStatus"> Mark as Completed
+    <input type="radio" name="status" value="closed" [(ngModel)]="selectedStatus"> Closed
   </label><br>
 
   <div class="dialog-actions">
-    <button class="update-button" (click)="updateJobStatus()">Update</button>
-    <button class="close-button" (click)="closeDialog()">Close</button>
+    <button class="mt-5 bg-gradient-to-r from-[#b68d5f] to-[#a4784c] text-white font-semibold text-sm py-2 px-6 rounded-full shadow-md hover:from-[#a4784c] hover:to-[#8d6640] transition" (click)="updateJobStatus()">Update</button>
+   
   </div>
 </div>

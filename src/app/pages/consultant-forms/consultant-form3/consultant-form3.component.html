@@ -1,6 +1,6 @@
 <div class="h-screen flex flex-col bg-[var(--background-color)]">
-    <app-nav-bar></app-nav-bar>
-    <div class="flex-grow flex items-center justify-center px-6 pt-0">
+    <!-- <app-nav-bar></app-nav-bar> -->
+    <div class="flex-grow flex items-center justify-center px-6 pt-0 card">
         <div class="w-full max-w-2xl bg-white p-10 rounded-2xl shadow-lg relative border border-[var(--elements-color)] card-container">
             <h2 class="text-2xl font-bold text-[var(--accent-color)] text-center mb-6">
                 EHS Consulting Network - Consultant Information Form
@@ -31,30 +31,107 @@
                         placeholder="Describe the work in detail"></textarea>
                 </div>
 
-                <div class="mb-2">
-                    <label class="block font-semibold text-[var(--text-color)] mb-3">Upload Job Description</label>
+              
+                <!-- <div class="mb-2">
+                    <label class="block font-semibold text-[var(--text-color)] mb-3">
+                      Upload Job Description
+                    </label>
                     <div class="relative w-full flex items-center">
-                        <input type="file" id="fileInput" class="hidden" (change)="onFileSelected($event)" accept=".pdf,.doc,.docx">
-                        <label for="fileInput"
-                            class="cursor-pointer bg-[var(--elements-color)] text-black px-5 py-3 rounded-full shadow-md font-bold flex items-center gap-3 hover:bg-opacity-80 hover:shadow-lg transition">
-                            <mat-icon class="text-[var(--accent-color)]">attach_file</mat-icon> Choose File
-                        </label>
+                      <input
+                        type="file"
+                        id="fileInput"
+                        class="hidden"
+                        (change)="onFileSelected($event)"
+                        
+                      />
+                      <label
+                        for="fileInput"
+                        class="cursor-pointer bg-[var(--elements-color)] text-black px-5 py-3 rounded-full shadow-md font-bold flex items-center gap-3 hover:bg-opacity-80 hover:shadow-lg transition"
+                      >
+                        <mat-icon class="text-[var(--accent-color)]">attach_file</mat-icon>
+                        Choose File
+                      </label>
+                      <span *ngIf="selectedFileName" class="ml-4 text-sm text-gray-600">
+                        {{ selectedFileName }}
+                      </span>
                     </div>
-                </div>
-
-                <div class="flex justify-between mt-6">
-                    <!-- Back Button -->
-                    <button type="button" (click)="navigateToPreviousForm()"
-                        class="bg-gray-400 text-white py-3 px-6 rounded-lg font-bold shadow-md hover:bg-gray-500 transition">
-                        Back
+                  
+                    <button
+                      (click)="uploadFile()"
+                  
+                      class="mt-4 px-6 py-2 rounded-full bg-brown-600 text-white font-semibold hover:bg-brown-700 transition"
+                    >
+                      Upload
                     </button>
+                  </div> -->
 
-                    <!-- Next Button -->
-                    <button type="button" (click)="navigateToNextForm()"
-                        class="bg-[var(--accent-color)] text-white py-3 px-6 rounded-lg font-bold shadow-md hover:bg-opacity-80 transition">
-                        Next
+
+                  <div class="mb-4">
+                    <label class="block font-semibold text-[var(--text-color)] mb-3">
+                      Upload Job Description
+                    </label>
+                  
+                    <div class="relative w-full flex flex-col gap-2">
+                      <input
+                        type="file"
+                        id="fileInput"
+                        multiple
+                        class="hidden"
+                        (change)="onFilesSelected($event)"
+                        accept=".pdf,.doc,.docx"
+                      />
+                  
+                      <label
+                        for="fileInput"
+                        class="cursor-pointer bg-[var(--elements-color)] text-black px-5 py-3 rounded-full shadow-md font-bold flex items-center gap-3 hover:bg-opacity-80 hover:shadow-lg transition w-fit"
+                      >
+                        <mat-icon class="text-[var(--accent-color)]">attach_file</mat-icon>
+                        Choose Files
+                      </label>
+                  
+                      <div *ngIf="selectedFiles.length > 0" class="mt-2 space-y-1">
+                        <div
+                          *ngFor="let file of selectedFiles; let i = index"
+                          class="flex items-center justify-between bg-white p-2 rounded-md shadow-sm text-sm text-gray-800"
+                        >
+                          <span>{{ file.name }}</span>
+                          <button
+                            (click)="removeFile(i)"
+                            class="text-[var(--accent-color)] hover:text-red-500 transition text-xs font-semibold"
+                          >
+                            Remove
+                          </button>
+                        </div>
+                      </div>
+                    </div>
+                  
+                    <button
+                      (click)="uploadFiles()"
+                      [disabled]="selectedFiles.length === 0"
+                      class="mt-4 px-6 py-2 rounded-full bg-[var(--accent-color)] text-white font-semibold hover:bg-opacity-90 transition"
+                    >
+                      Upload
                     </button>
-                </div>
+                  </div>
+                  
+                  
+
+                 <!-- ✅ Navigation Buttons -->
+        <div class="flex justify-between items-center">
+            <!-- Back Button -->
+            <button class="absolute bottom-4 left-10 w-[50px] h-[50px] cursor-pointer hover:bg-opacity-80" type="button" (click)="navigateToPreviousForm()">
+              <img src="/back_button.png" alt="Back" class="w-full h-full object-contain" />
+            </button>
+  
+            <button
+            class="absolute bottom-4 right-10 w-[50px] h-[50px] cursor-pointer hover:bg-opacity-80"
+            type="button"
+            (click)="navigateToNextForm()"
+            >
+            <img src="/next_button.png" alt="Next" class="w-full h-full object-contain" />
+        </button>
+          </div>
+              
             </form>
         </div>
     </div>

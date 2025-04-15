@@ -1,3 +1,4 @@
+
 <div class="dialog-container">
     <h2>Job {{ data.jobid }}</h2>
 
@@ -32,19 +33,11 @@
       <form #bidForm="ngForm" (ngSubmit)="onSubmit()" class="bid-form" novalidate>
 
         <mat-form-field appearance="fill" class="w-full custom-field">
-          <mat-label>Enter Bid Amount</mat-label>
-          <input matInput type="number" min="0" [(ngModel)]="bidAmount" name="amount" required #amount="ngModel">
-          <mat-error *ngIf="amount.invalid && amount.touched">Amount is required and must be a number.</mat-error>
+          <mat-label>Update Bid Amount</mat-label>
+          <input matInput type="number" min="0" [(ngModel)]="bidAmount" name="amount"  #amount="ngModel">
+         
         </mat-form-field>
-      
-        <mat-form-field appearance="fill" class="w-full custom-field">
-          <mat-label>Enter Start Date</mat-label>
-          <input matInput [matDatepicker]="picker" [(ngModel)]="availability" name="availability" required #availabilityField="ngModel">
-          <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
-          <mat-datepicker #picker></mat-datepicker>
-          <mat-error *ngIf="availabilityField.invalid && availabilityField.touched">Start date is required.</mat-error>
-        </mat-form-field>
-      
+     
         <button  class="mt-5 bg-gradient-to-r from-[#b68d5f] to-[#a4784c] text-white font-semibold text-sm py-2 px-6 rounded-full shadow-md hover:from-[#a4784c] hover:to-[#8d6640] transition" type="submit" [disabled]="bidForm.invalid">Submit Request</button>
       </form>
       
