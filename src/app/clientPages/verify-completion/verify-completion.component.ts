@@ -11,7 +11,7 @@ import { FormsModule } from '@angular/forms';
 interface Job extends CompletedJob {
   consultant?: string;
   jobName?: string;
-  bid_amount: number ;
+  bid_amount: number;
 }
 
 @Component({
@@ -22,16 +22,19 @@ interface Job extends CompletedJob {
   imports: [CommonModule, MatTableModule, MatButtonModule, MatIconModule, FormsModule,]
 })
 export class VerifyCompletionComponent implements OnInit {
-applyFilter() {
-throw new Error('Method not implemented.');
-}
+  applyFilter() {
+    throw new Error('Method not implemented.');
+  }
   dataSource: MatTableDataSource<Job> = new MatTableDataSource<Job>([]);
   displayedColumns: string[] = ['jobName', 'consultant', 'bidAmount', 'actions'];
   jobs: Job[] = [];
   @ViewChild(MatSort) sort!: MatSort;
-    searchTerm = '';
+  searchTerm = '';
 
-  constructor(private clientJobsService: ClientJobsService) {}
+  showReasonBox: { [jobId: number]: boolean } = {};
+  rejectionReasons: { [jobId: number]: string } = {};
+
+  constructor(private clientJobsService: ClientJobsService) { }
 
   ngOnInit() {
     this.fetchClosedJobs();
@@ -46,7 +49,7 @@ throw new Error('Method not implemented.');
           consultant: 'N/A',
           bid_amount: job.bid_amount ?? 0 // Ensure bid_amount is always a number
         }));
-  
+
         // Update consultant names
         this.jobs.forEach((job) => {
           if (job.consultant_user_id) {
@@ -86,6 +89,24 @@ throw new Error('Method not implemented.');
       }
     });
   }
+
+  submitRejection(jobId: number) {
+    const reason = this.rejectionReasons[jobId]?.trim();
+    if (!reason) {
+      alert('Please provide a reason before submitting.');
+      return;
+    }
+  
+    // Here, call an API if needed or handle it internally
+    console.log(`Job ${jobId} rejected for reason: ${reason}`);
+  
+    // Optionally hide the box again
+    this.showReasonBox[jobId] = false;
+  
+    // Optionally send this reason to backend
+    // this.clientJobsService.rejectJob(jobId, reason).subscribe(...);
+  }
+  
 
   moveToInProgress(jobId: number) {
     this.clientJobsService.updateClosedJobToInProgress(jobId).subscribe({

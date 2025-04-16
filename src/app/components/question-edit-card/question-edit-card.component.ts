@@ -18,6 +18,8 @@ export class QuestionEditCardComponent {
   editingQuestion: string = '';
   showAddOptionPopup: boolean = false;
   newOptionValue: string = '';
+  showDeleteConfirmation: boolean = false;
+  deleteOptionTarget: any = null;
 
   constructor(private adminService: AdminService) {}
 
@@ -163,5 +165,23 @@ export class QuestionEditCardComponent {
   closeAddOptionPopup(): void {
     this.showAddOptionPopup = false;
     this.newOptionValue = '';
+  }
+
+  showDeleteConfirmationPopup(option: any) {
+    this.deleteOptionTarget = option;
+    this.showDeleteConfirmation = true;
+  }
+
+  confirmDeleteOption() {
+    if (this.deleteOptionTarget) {
+      this.deleteOption(this.deleteOptionTarget);
+      this.deleteOptionTarget = null;
+    }
+    this.showDeleteConfirmation = false;
+  }
+
+  cancelDeleteOption() {
+    this.deleteOptionTarget = null;
+    this.showDeleteConfirmation = false;
   }
 }

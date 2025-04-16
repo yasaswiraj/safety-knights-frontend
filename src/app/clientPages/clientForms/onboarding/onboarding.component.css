@@ -42,7 +42,7 @@
 
 .button-container {
     display: flex;
-    justify-content: space-between; /* ✅ This ensures left + right alignment */
+    justify-content: space-between; 
     align-items: center;
     width: 100%;
     padding: 10px 0;
@@ -57,16 +57,16 @@
   
 
 .button-container button {
-    margin-left: 10px; /* ✅ Adds spacing between buttons */
+    margin-left: 10px;
 }
 
 
 .button-container .back-button {
-    margin-right: auto; /* ✅ Moves the back button to the left */
+    margin-right: auto; 
 }
 
 .button-container .submit-button {
-    margin-left: auto; /* ✅ Moves the submit button to the right */
+    margin-left: auto; 
 }
 .button-icon {
     width: 40px;
@@ -87,5 +87,10 @@
     text-align: center;
     margin-top: 10px;
 }
+::ng-deep mat-error {
+  color: #ef4444 !important; 
+  font-size: 0.875rem;
+}
+
 
   

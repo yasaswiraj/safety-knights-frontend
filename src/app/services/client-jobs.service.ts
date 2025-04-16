@@ -214,13 +214,12 @@ export class ClientJobsService {
     );
   }
 
-  acceptBid(jobId: number, consultantId: number, data: { commitment: string, no_commitment_reason?: string }) {
-    return this.http.post(`${environment.apiUrl}/client/accept_bid/${jobId}/${consultantId}`, data, {
+  acceptBid(jobId: number, consultantId: number) {
+    return this.http.post(`${environment.apiUrl}/client/accept_bid/${jobId}/${consultantId}`, {}, {
       withCredentials: true
     });
   }
-  
-  
+
 
   getClientProfile(): Observable<any> {
     return this.http.get(`${environment.apiUrl}/client/profile`, {
@@ -233,7 +232,7 @@ export class ClientJobsService {
       withCredentials: true
     });
   }
-  
+
 
   // Optional helper
   private fixDate(date: any): string | null {
@@ -244,19 +243,6 @@ export class ClientJobsService {
       return null;
     }
   }
-
-  hasReview(jobId: number): Observable<boolean> {
-    return this.http.get<{ has_review: boolean }>(`${environment.apiUrl}/client/has_review/${jobId}`, {
-      withCredentials: true
-    }).pipe(
-      map(res => res.has_review),
-      catchError((err) => {
-        console.warn(`Failed to check review for job ${jobId}:`, err);
-        return of(false); // Assume no review if not found or error
-      })
-    );
-  }
-  
 
   getClientFormStructure(): Observable<any> {
     return this.http.get(`${environment.apiUrl}/client/get_client_form`, {

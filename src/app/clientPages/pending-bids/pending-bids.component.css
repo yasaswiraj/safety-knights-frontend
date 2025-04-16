@@ -17,3 +17,18 @@ table tbody tr:nth-child(even) {
 table tbody tr:hover {
     background-color: #e6f7ff !important; /* Light blue on hover */
 }
+
+.mat-header-row {
+    position: sticky !important;
+    top: 0;
+    background-color: #d4cfc9 !important;
+    z-index: 10;
+}
+
+table th {
+    position: sticky;
+    top: 0;
+    z-index: 10; /* Ensure it stays above other elements */
+    background-color: #b17457 !important; /* Match the header background color */
+    box-shadow: 0 2px 2px rgba(0, 0, 0, 0.1); /* Optional: Add shadow for better visibility */
+}
