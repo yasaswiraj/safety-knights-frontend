@@ -11,6 +11,7 @@ import { CommonModule } from '@angular/common';
 import { HttpClient } from '@angular/common/http';
 import { ApiService } from '../../services/api.service';
 import { LoadingComponent } from '../loading/loading.component';
+import { ChatService } from '../../services/chat.service';
 
 @Component({
   selector: 'app-nav-bar',
@@ -26,7 +27,7 @@ export class NavBarComponent {
 
   @ViewChild('menuWrapper') menuWrapper!: ElementRef;
 
-  constructor(private router: Router, private http: HttpClient, private apiService: ApiService) { }
+  constructor(private router: Router, private http: HttpClient, private apiService: ApiService, private chatService: ChatService) { }
 
   onToggleSidebar() {
     this.toggleSidebar.emit();
@@ -41,6 +42,9 @@ export class NavBarComponent {
     this.apiService.logoutUser().subscribe({
       next: (res: any) => {
         console.log('✅ Logout successful:', res);
+
+        // Disconnect WebSocket connection on logout
+        this.chatService.closeWebSocket();
 
         // Clear localStorage
         localStorage.removeItem('loggedIn');

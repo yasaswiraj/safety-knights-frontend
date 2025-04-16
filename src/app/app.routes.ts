@@ -94,6 +94,7 @@ export const routes: Routes = [
       { path: 'profile', component: ClientProfileComponent },
       { path: 'update-profile', component: ClientProfileComponent, data: { editMode: true } },
       { path: 'feedback', component: FeedbackComponent },
+      { path: 'inbox', component: ChatComponent },
     ],
   },
 

@@ -12,7 +12,7 @@
       @for (chat of chats; track chat.id) {
         <li
           (click)="onChatSelect(chat)"
-          class="flex items-center p-3 flex-1 justify-between hover:bg-gray-100 rounded-lg cursor-pointer transition"
+            class="flex h-[4rem] items-center p-3 justify-between hover:bg-gray-100 rounded-lg cursor-pointer transition"
           [ngClass]="{ 'bg-gray-100': activeChat === chat.id }">
           <img
             src="{{ chat.user.avatar }}"
