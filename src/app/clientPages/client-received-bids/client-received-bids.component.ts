@@ -94,7 +94,7 @@ export class ClientReceivedBidsComponent {
   
 
   acceptBid(jobId: number, consultantId: number) {
-    this.clientJobsService.acceptBid(jobId, consultantId, { commitment: 'yes' }).subscribe({
+    this.clientJobsService.acceptBid(jobId, consultantId).subscribe({
       next: () => {
         this.router.navigate(['/client/bids-in-progress']);
       },
