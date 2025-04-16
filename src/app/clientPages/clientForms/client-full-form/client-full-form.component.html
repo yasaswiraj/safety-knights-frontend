@@ -50,7 +50,6 @@
                   </div>
                 </div>
 
-
                 <!-- Date -->
                 <div *ngSwitchCase="'date'">
                   <label class="block font-semibold mb-1">
@@ -98,36 +97,45 @@
                   </div>
                 </div>
 
-                <!-- Checkbox (including Scope of Service & Insurance Requirements) -->
+                <!-- Checkbox (Scope of Service & Insurance Requirements) -->
                 <div *ngSwitchCase="'checkbox'">
                   <label class="block font-semibold mb-1">
                     {{ question.label || questionEntry.key }}
                     <span *ngIf="isFieldRequired(questionEntry.key)" class="text-black-500">*</span>
                   </label>
 
-                  <!-- Insurance-specific help text -->
-                  <p *ngIf="camelCase(questionEntry.key) === 'insuranceRequirementsForTheContractor'"
+                  <!-- Help text for insurance -->
+                  <p *ngIf="questionEntry.key === 'insurance_requirements'"
                     class="text-sm text-gray-600 mb-2">
                     For each option checked, list the coverage minimum below. eg: $1M policy
                   </p>
 
+                  <!-- Multi-select -->
                   <mat-form-field appearance="fill" class="w-full">
                     <mat-select [formControlName]="camelCase(questionEntry.key)" multiple
-                      (selectionChange)="camelCase(questionEntry.key) === 'insuranceRequirementsForTheContractor' ? onInsuranceSelectChange($event.value) : null">
-                      <mat-option *ngFor="let opt of question.options || []" [value]="opt">{{ opt }}</mat-option>
+                      (selectionChange)="questionEntry.key === 'insurance_requirements' ? onInsuranceSelectChange($event.value) : onScopeOfServiceChange($event.value)">
+                      <mat-option *ngFor="let opt of question.options || []" [value]="opt">
+                        {{ opt }}
+                      </mat-option>
                     </mat-select>
                   </mat-form-field>
 
-                  <!-- Show extra fields for insurance -->
-                  <div *ngIf="camelCase(questionEntry.key) === 'insuranceRequirementsForTheContractor'">
+                  <!-- Extra fields for Insurance -->
+                  <div *ngIf="questionEntry.key === 'insurance_requirements'">
                     <div *ngFor="let opt of clientForm.get(camelCase(questionEntry.key))?.value || []">
                       <input class="border border-gray-300 rounded-lg p-2 w-full mt-2"
                         [placeholder]="'Minimum coverage for ' + opt" [(ngModel)]="insuranceCoverageMap[opt]"
                         [ngModelOptions]="{ standalone: true }" name="{{ camelCase(opt) }}_coverage" />
                     </div>
                   </div>
-                </div>
 
+                  <!-- Extra field for Scope of Service -->
+                  <div *ngIf="questionEntry.key === 'scope_of_service' && showScopeOtherInput">
+                    <input class="border border-gray-300 rounded-lg p-2 w-full mt-2"
+                      placeholder="Please specify other service" [(ngModel)]="scopeOtherText"
+                      [ngModelOptions]="{ standalone: true }" name="scopeOtherText" />
+                  </div>
+                </div>
 
               </ng-container>
 

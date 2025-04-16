@@ -33,10 +33,7 @@ export class ClientFullFormComponent implements OnInit {
     const normalized = type.toLowerCase();
     if (normalized === 'radio_group') return 'radio';
     if (normalized === 'checkbox_group') return 'checkbox';
-
-    // Special case for known fields that should be checkboxes
     if (key.toLowerCase().includes('insurance')) return 'checkbox';
-
     return normalized;
   }
 
@@ -53,11 +50,6 @@ export class ClientFullFormComponent implements OnInit {
   showScopeOtherInput: boolean = false;
   scopeOtherText: string = '';
 
-  onScopeOfServiceChange(selectedOptions: string[]) {
-    this.showScopeOtherInput = selectedOptions.includes('Other...');
-  }
-
-
   showOtherInputs: { [key: string]: boolean } = {};
   otherInputs: { [key: string]: string } = {};
 
@@ -69,7 +61,6 @@ export class ClientFullFormComponent implements OnInit {
     return item.key;
   }
 
-
   constructor(
     private fb: FormBuilder,
     private clientJobsService: ClientJobsService,
@@ -79,7 +70,6 @@ export class ClientFullFormComponent implements OnInit {
 
   ngOnInit() {
     const jobId = this.formDataService.getJobId();
-    const formData = this.formDataService.getFormData();
 
     this.clientJobsService.getFormStructure().subscribe({
       next: (response) => {
@@ -87,12 +77,21 @@ export class ClientFullFormComponent implements OnInit {
         this.categories = Object.keys(this.formStructure);
         this.buildForm();
 
-        if (formData && jobId) {
+        if (jobId) {
           this.jobIdToEdit = jobId;
-          this.prefillForm(formData);
+          this.clientJobsService.getFilledForm(jobId).subscribe({
+            next: (filledData) => {
+              this.prefillForm(filledData?.filled_form);
+              this.isLoading = false;
+            },
+            error: (err) => {
+              console.error('Failed to fetch filled form', err);
+              this.isLoading = false;
+            }
+          });
+        } else {
+          this.isLoading = false;
         }
-
-        this.isLoading = false;
       },
       error: () => {
         console.error('Failed to fetch form structure');
@@ -100,6 +99,7 @@ export class ClientFullFormComponent implements OnInit {
       }
     });
   }
+
   buildForm() {
     const controls: { [key: string]: any } = {};
 
@@ -111,7 +111,6 @@ export class ClientFullFormComponent implements OnInit {
 
         let validators = [];
 
-        // Apply required validator for all except the 2 optional fields
         if (!['insurance_requirements', 'contractor_preferences'].includes(questionKey)) {
           validators.push(Validators.required);
         }
@@ -137,16 +136,55 @@ export class ClientFullFormComponent implements OnInit {
     });
   }
 
-
   prefillForm(data: any) {
-    const checkFormReady = setInterval(() => {
-      if (this.clientForm) {
-        this.clientForm.patchValue({
-          ...data
-        });
-        clearInterval(checkFormReady);
+    if (!data?.job_details) return;
+
+    const patchObj: any = {
+      work_in_detail: data.job_details.work_in_detail,
+      project_location: data.job_details.project_location,
+      proposal_deadline: data.job_details.proposal_deadline,
+      expected_start_date: data.job_details.expected_start_date,
+      budget: data.job_details.budget,
+    };
+    console.log('Prefilling form with data:', data);
+
+    if (typeof data.job_details.scope_of_service === 'string') {
+      patchObj.scope_of_service = data.job_details.scope_of_service
+        .split(',')
+        .map((s: string) => s.trim());
+    }
+
+    this.clientForm.patchValue(patchObj);
+
+    if (data.job_details.responses?.length) {
+      data.job_details.responses.forEach((resp: any) => {
+        const key = this.camelCase(resp.question_key);
+        const control = this.clientForm.get(key);
+        if (!control) return;
+
+        let value = resp.response_value;
+        const questionConfig = this.getQuestionConfigByKey(key);
+        const isMultiSelect = questionConfig?.type?.toLowerCase().includes('checkbox');
+
+        if (typeof value === 'string' && isMultiSelect) {
+          value = value.split(',').map((v: string) => v.trim());
+        }
+
+        control.setValue(value);
+      });
+    }
+  }
+
+  getQuestionConfigByKey(key: string): QuestionConfig | undefined {
+    for (const category of this.categories) {
+      const questions = this.formStructure[category];
+      for (const questionKey in questions) {
+        if (this.camelCase(questionKey) === key) {
+          return questions[questionKey];
+        }
       }
-    }, 100);
+    }
+    return undefined;
   }
 
   getQuestionEntries(category: string): { key: string; value: QuestionConfig }[] {
@@ -154,13 +192,9 @@ export class ClientFullFormComponent implements OnInit {
     return Object.entries(entries).map(([key, value]) => ({ key, value }));
   }
 
-
-
-
   isFieldRequired(key: string): boolean {
     return !['insurance_requirements', 'contractor_preferences'].includes(key);
   }
-
 
   noPastDateValidator(): ValidatorFn {
     return (control: AbstractControl): { [key: string]: any } | null => {
@@ -199,6 +233,11 @@ export class ClientFullFormComponent implements OnInit {
     }
   }
 
+  onScopeOfServiceChange(selectedOptions: string[]) {
+    this.showScopeOtherInput = selectedOptions.includes('Other...');
+  }
+
+
   onFileSelected(event: Event) {
     const input = event.target as HTMLInputElement;
     if (input.files?.length) {
@@ -218,7 +257,6 @@ export class ClientFullFormComponent implements OnInit {
       const snakeKey = this.camelToSnakeCase(camelKey);
       let value = rawForm[camelKey];
 
-      //Convert array (checkbox) to comma-separated string
       if (Array.isArray(value)) {
         value = value.join(', ');
       }
@@ -230,7 +268,33 @@ export class ClientFullFormComponent implements OnInit {
       formPayload[snakeKey] = value;
     });
 
+    formPayload.responses = [];
 
+    for (const category of this.categories) {
+      const questions = this.formStructure[category];
+      for (const questionKey of Object.keys(questions)) {
+        const camelKey = this.camelCase(questionKey);
+        const control = this.clientForm.get(camelKey);
+    
+        if (control && control.value !== undefined && control.value !== null) {
+          let value = control.value;
+    
+          // Convert arrays to comma-separated strings
+          if (Array.isArray(value)) {
+            value = value.join(', ');
+          }
+    
+          // Convert all values to string explicitly
+          value = String(value);
+    
+          formPayload.responses.push({
+            question_key: questionKey,
+            response_value: value
+          });
+        }
+      }
+    }
+    
 
 
     const request$ = this.jobIdToEdit
@@ -261,7 +325,6 @@ export class ClientFullFormComponent implements OnInit {
   camelToSnakeCase(input: string): string {
     return input.replace(/[A-Z]/g, letter => `_${letter.toLowerCase()}`);
   }
-
 }
 
 export interface QuestionConfig {
