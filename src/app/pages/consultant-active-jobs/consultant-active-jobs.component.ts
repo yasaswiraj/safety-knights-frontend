@@ -106,7 +106,21 @@ export class ConsultantActiveJobsComponent implements AfterViewInit {
        }
     });
 
-    
+    dialogRef.afterClosed().subscribe((updatedJob: Job | undefined) => {
+      if (updatedJob) {
+        const index = this.dataSource.data.findIndex(j => j.job_id === updatedJob.job_id);
+        if (index !== -1) {
+          this.dataSource.data[index] = {
+            ...this.dataSource.data[index],
+            ...updatedJob,
+            days_remaining: this.calculateDaysRemaining(updatedJob.expected_start_date)
+          };
+          // Trigger table refresh
+          this.dataSource.data = [...this.dataSource.data];
+        }
+      }
+    });
   }
+     
 
 }

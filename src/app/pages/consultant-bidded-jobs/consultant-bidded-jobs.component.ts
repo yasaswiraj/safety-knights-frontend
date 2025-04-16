@@ -85,4 +85,12 @@ export class ConsultantBiddedJobsComponent implements OnInit, AfterViewInit {
         }
         
       });
+
+      // 👇 This is the important part
+  dialogRef.afterClosed().subscribe(result => {
+    if (result?.jobId) {
+      // 🔁 Refresh job data
+      this.fetchBiddedJobs();
+    }
+  });
 }}

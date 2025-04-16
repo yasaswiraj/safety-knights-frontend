@@ -13,6 +13,7 @@ import { MatDatepickerModule } from '@angular/material/datepicker';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatNativeDateModule } from '@angular/material/core';
 import { MatIconModule } from '@angular/material/icon';
+import { MatSnackBar } from '@angular/material/snack-bar';
 
 @Component({
   selector: 'app-job-detail-dialog',
@@ -38,7 +39,8 @@ startDate: any;
   constructor(
     public dialogRef: MatDialogRef<JobDetailDialogComponent>,
     @Inject(MAT_DIALOG_DATA) public data: any,
-    private http: HttpClient
+    private http: HttpClient,
+    private snackBar: MatSnackBar
   ) {}
 
   onClose(): void {
@@ -58,6 +60,11 @@ startDate: any;
     this.http.post(`${environment.apiUrl}/consultant/${jobId}/place_bid`, bidData,{ withCredentials: true }).subscribe({
       next: (response) => {
         console.log('Bid submitted successfully:', response);
+
+        this.snackBar.open('Your bid has been submitted successfully!', 'Close', {
+          duration: 5000, // Show for 5 seconds (or longer)
+          panelClass: ['snackbar-success']
+        });
   
         // Close dialog and send jobId back
         this.dialogRef.close({ jobId });

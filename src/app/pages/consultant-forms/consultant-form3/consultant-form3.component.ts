@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { FormBuilder, FormGroup, Validators, FormArray, ReactiveFormsModule, FormControl } from '@angular/forms';
+import { FormBuilder, FormGroup, FormArray, ReactiveFormsModule, FormControl } from '@angular/forms';
 import { MatSelectModule } from '@angular/material/select';
 import { CommonModule } from '@angular/common';
 import { MatFormFieldModule } from '@angular/material/form-field';
@@ -8,7 +8,6 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { ViewEncapsulation } from '@angular/core';
 import { RouterModule, Router } from '@angular/router';
-import { NavBarComponent } from '../../../components/nav-bar/nav-bar.component';
 import { FormDataService } from '../../../services/form-data.service';
 import { HttpClient } from '@angular/common/http';
 import { environment } from '../../../../environments/environment';
@@ -31,12 +30,8 @@ import { environment } from '../../../../environments/environment';
   ]
 })
 export class ConsultantForm3Component implements OnInit {
-  signUpForm!: FormGroup;  
-  selectedPrimaryServices: Record<string, string[]> = {};  
-  dependentServices: Record<string, string[]> = {};  
-  categories: Record<string, Record<string, { type: string; option?: string[] }>> = {};  // Corrected to directly store category data
-  // selectedFile: File | null = null;
-  selectedFileName: string | null = null;
+  signUpForm!: FormGroup;
+  categories: Record<string, Record<string, { type: string; option?: string[] }>> = {};
   selectedFiles: File[] = [];
 
   constructor(
@@ -46,11 +41,8 @@ export class ConsultantForm3Component implements OnInit {
     private http: HttpClient
   ) {
     this.signUpForm = this.fb.group({
-      
-      scopeOfService: [[]],  
-      dependentService: [[]], 
       jobDescription: [''],
-      categories: this.fb.group({})  
+      categories: this.fb.group({})
     });
   }
 
@@ -61,87 +53,41 @@ export class ConsultantForm3Component implements OnInit {
   fetchCategories() {
     this.http.get(`${environment.apiUrl}/consultant/get-form`).subscribe((response: any) => {
       const filteredCategories = { ...response.categories };
-    delete filteredCategories["Availability & Additional Comments"];
-
-    this.categories = filteredCategories;
-    this.initializeForm();
+      delete filteredCategories["Availability & Additional Comments"];
+      this.categories = filteredCategories;
+      this.initializeForm();
     });
   }
 
   initializeForm() {
     const categoryGroup = this.signUpForm.get('categories') as FormGroup;
-    if (!categoryGroup) {
-      console.error('Category group is undefined');
-      return;
-    }
-
-    Object.keys(this.categories).forEach(category => {  // ✅ Fixed reference
+    Object.keys(this.categories).forEach(category => {
       const subcategories = this.categories[category];
-
-      categoryGroup.addControl(category, this.fb.group({}));
+      const categorySubGroup = this.fb.group({});
 
       Object.keys(subcategories).forEach(subcategory => {
-        const subcategoryControl = categoryGroup.get(category) as FormGroup;
-
-        if (subcategoryControl) {
-          const subcategoryData = subcategories[subcategory];
-          
-          if (subcategoryData.type === 'checkbox') {
-            subcategoryControl.addControl(subcategory, this.fb.array([]));
-          } else {
-            subcategoryControl.addControl(subcategory, this.fb.control(''));
-          }
+        const subcategoryData = subcategories[subcategory];
+        if (subcategoryData.type === 'checkbox') {
+          categorySubGroup.addControl(subcategory, this.fb.array([]));
+        } else {
+          categorySubGroup.addControl(subcategory, this.fb.control(''));
         }
       });
+
+      categoryGroup.addControl(category, categorySubGroup);
     });
   }
 
-  onPrimaryServiceChange(category: string, subcategory: string, selectedServices: string[]) {
-    this.selectedPrimaryServices[subcategory] = selectedServices;
+ 
+onFilesSelected(event: Event) {
+  const input = event.target as HTMLInputElement;
 
-    const categoryData = this.categories[category];  // ✅ Fixed reference
-    const availableOptions = categoryData[subcategory]?.option || [];
-
-    this.dependentServices[subcategory] = availableOptions.filter((option: string) =>
-      selectedServices.includes(option)
-    );
+  if (input.files && input.files.length > 0) {
+    // Convert FileList to an array and merge with existing selected files
+    this.selectedFiles = [...this.selectedFiles, ...Array.from(input.files)];
+    
   }
-
-
-  // onFileSelected(event: any) {
-  //   const file = event.target.files[0];
-  //   if (file) {
-  //     this.selectedFile = file;
-  //     console.log("File selected:", file.name);
-  //   }
-  // }
-
-  // uploadFile(): void {
-  //   if (!this.selectedFile) {
-  //     alert('Please select a file first!');
-  //     return;
-  //   }
-
-  //   const formData = new FormData();
-  //   formData.append('file', this.selectedFile);
-
-  //   this.http.post(`${environment.apiUrl}/consultant/upload`, formData)
-  //     .subscribe({
-  //       next: (res) => {
-  //         console.log('File uploaded successfully:', res);
-  //         alert('Upload successful!');
-  //       },
-  //       error: (err) => {
-  //         console.error('Upload failed:', err);
-  //         alert('Upload failed. Please try again.');
-  //       },
-  //     });
-  // }
-
-  onFilesSelected(event: any) {
-    const files: FileList = event.target.files;
-    this.selectedFiles = Array.from(files);
-  }
+}
 
   removeFile(index: number) {
     this.selectedFiles.splice(index, 1);
@@ -150,10 +96,13 @@ export class ConsultantForm3Component implements OnInit {
   uploadFiles() {
     const formData = new FormData();
     this.selectedFiles.forEach((file) => {
-      formData.append('files', file); // backend must accept 'files' as a list
+      formData.append('files', file);
+
     });
 
-    this.http.post(`${environment.apiUrl}/consultant/upload`, formData).subscribe({
+    this.formDataService.setFormData({ files: this.selectedFiles });
+
+    this.http.post(`${environment.apiUrl}/upload-multiple-files`, formData).subscribe({
       next: (res) => {
         console.log('Upload success', res);
         alert('Files uploaded successfully!');
@@ -167,9 +116,51 @@ export class ConsultantForm3Component implements OnInit {
   }
 
   navigateToNextForm() {
-    this.formDataService.setFormData(this.signUpForm.value);
-      this.router.navigate(['/consultant-form8']);
-    
+    const formData = this.processFormData();
+    this.formDataService.setFormData(formData);
+    this.router.navigate(['/consultant-form8']);
+  }
+
+  private processFormData(): any {
+    const rawData = this.signUpForm.value;
+    const processedData: any = {
+      jobDescription: rawData.jobDescription,
+      files: this.selectedFiles.map(f => f.name)
+    };
+
+    Object.keys(this.categories).forEach(categoryName => {
+      const snakeKey = this.toSnakeCase(categoryName);
+      const categoryValues = this.getCategoryValues(categoryName);
+      
+      if (categoryValues.length > 0) {
+        processedData[snakeKey] = categoryValues;
+      }
+    });
+
+    return processedData;
+  }
+
+  private getCategoryValues(categoryName: string): string[] {
+    const categoryGroup = this.signUpForm.get(`categories.${categoryName}`) as FormGroup;
+    const values: string[] = [];
+
+    Object.keys(categoryGroup.controls).forEach(controlName => {
+      const control = categoryGroup.get(controlName);
+      if (control instanceof FormArray) {
+        values.push(...control.value);
+      } else if (control?.value) {
+        values.push(control.value);
+      }
+    });
+
+    return values;
+  }
+
+  private toSnakeCase(str: string): string {
+    return str
+      .toLowerCase()
+      .replace(/\s+/g, '_')
+      .replace(/[^\w_]+/g, '');
   }
 
   navigateToPreviousForm() {
