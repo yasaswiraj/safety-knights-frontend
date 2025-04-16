@@ -114,7 +114,30 @@ export class VettingComponent implements OnInit, AfterViewInit {
   }
 
   requestChanges(consultant: any): void {
-    this.router.navigate(['/admin/chat'], { state: { chatWith: consultant } });
+    // Convert consultant to the required format
+    const chat = {
+      id: consultant.user_id,
+      user: {
+        name: consultant.name,
+        avatar: this.getRandomAvatar(consultant.user_id),
+      },
+      lastMessage: '',  // Empty for new chat
+      time: this.formatTime(new Date().toISOString()),
+      isOnline: false,  // Default value
+    };
+    
+    // Navigate to chat with the formatted consultant data
+    this.router.navigate(['/admin/chat'], { state: { chatWith: chat } });
+  }
+
+  formatTime(isoTime: string): string {
+    const date = new Date(isoTime);
+    return date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+  }
+
+  getRandomAvatar(seed: number): string {
+    // Just for demo purposes — use a real avatar field if you have it
+    return `https://randomuser.me/api/portraits/men/${seed % 100}.jpg`;
   }
 
   addFile(consultant: any) {

@@ -53,17 +53,7 @@ export class MessagesListComponent implements OnInit {
 
         if (history.state && history.state.chatWith) {
           const chatWith = history.state.chatWith;
-          const consultantChat = {
-            id: chatWith.user_id,
-            user: {
-              name: chatWith.name,
-              avatar: this.getRandomAvatar(chatWith.user_id),
-            },
-            lastMessage: '',  // Empty for new chat
-            time: this.formatTime(new Date().toISOString()),
-            isOnline: false,  // Default value
-          };
-          this.onChatSelect(consultantChat);
+          this.onChatSelect(chatWith);
         } else if (this.chats.length > 0) {
           this.onChatSelect(this.chats[0]);
         }

@@ -11,6 +11,7 @@ import { MatDialog, MatDialogModule } from '@angular/material/dialog';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { BanUserComponent } from '../../components/ban-user/ban-user.component';
 import { AdminService } from '../../services/admin.service';
+import { Router } from '@angular/router';  // <-- New import
 
 // Define an interface for user data
 interface User {
@@ -57,7 +58,7 @@ export class UsersListComponent implements AfterViewInit, OnInit {
 
   users: User[] = []; // Explicitly type the users array
 
-  constructor(private dialog: MatDialog, private adminService: AdminService) {
+  constructor(private dialog: MatDialog, private adminService: AdminService, private router: Router) { // <-- Inject Router
     this.dataSource = new MatTableDataSource<User>([]); // Use the User interface here
   }
 
@@ -87,6 +88,31 @@ export class UsersListComponent implements AfterViewInit, OnInit {
   onSearch(event: Event) {
     const filterValue = (event.target as HTMLInputElement).value;
     this.dataSource.filter = filterValue.trim().toLowerCase();
+  }
+
+  sendMessage(user: User): void {
+    // Convert user to chat object and navigate
+    const chat = {
+      id: user.id,
+      user: {
+        name: user.name,
+        avatar: this.getRandomAvatar(user.id ?? 0),
+      },
+      lastMessage: '',
+      time: this.formatTime(new Date().toISOString()),
+      isOnline: false,
+    };
+    this.router.navigate(['/admin/chat'], { state: { chatWith: chat } });
+  }
+
+  formatTime(isoTime: string): string {
+    const date = new Date(isoTime);
+    return date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+  }
+
+  getRandomAvatar(seed: number): string {
+    // Just for demo purposes — use a real avatar field if you have it
+    return `https://randomuser.me/api/portraits/men/${seed % 100}.jpg`;
   }
 
   openBanDialog(user: User): void { // Use the User interface here
