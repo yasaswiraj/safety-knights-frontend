@@ -36,6 +36,10 @@ export class ChatBoxComponent implements OnInit, OnChanges {
 
   ngOnInit(): void {
     // Wait until the WebSocket connection is established
+    const token = localStorage.getItem('access_token');
+    if (token && !this.chatService.isSocketOpen()) {
+      this.chatService.initWebSocket(token);
+    }
     console.log('Initializing chat box');
     this.chatService.onConnectionEstablished().subscribe(() => {
       this.socketReady = true;

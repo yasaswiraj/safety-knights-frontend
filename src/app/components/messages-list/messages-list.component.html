@@ -14,10 +14,6 @@
           (click)="onChatSelect(chat)"
             class="flex h-[4rem] items-center p-3 justify-between hover:bg-gray-100 rounded-lg cursor-pointer transition"
           [ngClass]="{ 'bg-gray-100': activeChat === chat.id }">
-          <img
-            src="{{ chat.user.avatar }}"
-            alt="avatar"
-            class="w-12 h-12 rounded-full" />
           <div class="flex flex-1 flex-col pl-3">
             <div class="flex justify-between items-center">
               <div class="text-sm font-bold">{{ chat.user.name }}</div>
@@ -25,8 +21,8 @@
             </div>
             <div class="text-sm text-(--text-color)/50">
               {{
-                chat.lastMessage.trim().length > 25
-                  ? chat.lastMessage.trim().substring(0, 25) + '...'
+                chat.lastMessage.trim().length > 15
+                  ? chat.lastMessage.trim().substring(0, 15) + '...'
                   : chat.lastMessage
               }}
             </div>

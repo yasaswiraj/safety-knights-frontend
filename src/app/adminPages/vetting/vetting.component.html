@@ -70,17 +70,6 @@
       <tr mat-header-row *matHeaderRowDef="['name', 'email_id', 'job_title', 'company_name', 'contact', 'actions']" sticky></tr>
       <!-- Main Data Row -->
       <tr mat-row *matRowDef="let consultant; columns: ['name', 'email_id', 'job_title', 'company_name', 'contact', 'actions'];"></tr>
-      <!-- Expanded Detail Row with when predicate -->
-      <tr mat-row 
-          *matRowDef="let consultant; columns: ['detail']; when: isExpansionDetailRow" 
-          class="detail-row">
-        <td [attr.colspan]="displayedColumns.length">
-          <div class="p-3 border-t border-gray-300">
-            <p><strong>Profile Details:</strong> Full profile info and attached files go here.</p>
-            <button mat-raised-button color="primary" (click)="addFile(consultant)">Add File</button>
-          </div>
-        </td>
-      </tr>
     </table>
   </div>
   </div>
