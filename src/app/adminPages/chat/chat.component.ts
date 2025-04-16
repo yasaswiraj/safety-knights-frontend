@@ -21,6 +21,12 @@ export class ChatComponent implements OnInit {
     }
   }
   
+  ngOnDestroy(): void {
+    if (this.chatService.isSocketOpen()) {
+      this.chatService.closeWebSocket();
+    }
+  }
+  
   onChatSelected(chat: any) {
     this.selectedChat = chat;
   }

@@ -20,18 +20,25 @@ export class MessagesListComponent implements OnInit {
     if (token && !this.chatService.isSocketOpen()) {
       this.chatService.initWebSocket(token);
     } else if (!token) {
-      console.error("Access token not found in localStorage");
+      console.error('Access token not found in localStorage');
     }
     this.loadChats();
     // Listen to new messages in real-time
     this.chatService.onNewMessage().subscribe((message: Message) => {
       this.updateChatPreview(message);
     });
+
+    console.log('Navigation state:', history.state);
+
+    // If you specifically want to access the chatWith property:
+    if (history.state && history.state.chatWith) {
+      console.log('Chat with consultant:', history.state.chatWith);
+    }
   }
 
   loadChats() {
     this.chatService.getConversationList().subscribe({
-      next: (conversations) => {
+      next: conversations => {
         console.log('Conversations:', conversations);
         this.chats = conversations.map(chat => ({
           id: chat.user_id,
@@ -41,16 +48,29 @@ export class MessagesListComponent implements OnInit {
           },
           lastMessage: chat.last_message,
           time: this.formatTime(chat.last_message_time),
-          isOnline: chat.is_online
+          isOnline: chat.is_online,
         }));
 
-        if (this.chats.length > 0) {
+        if (history.state && history.state.chatWith) {
+          const chatWith = history.state.chatWith;
+          const consultantChat = {
+            id: chatWith.user_id,
+            user: {
+              name: chatWith.name,
+              avatar: this.getRandomAvatar(chatWith.user_id),
+            },
+            lastMessage: '',  // Empty for new chat
+            time: this.formatTime(new Date().toISOString()),
+            isOnline: false,  // Default value
+          };
+          this.onChatSelect(consultantChat);
+        } else if (this.chats.length > 0) {
           this.onChatSelect(this.chats[0]);
         }
       },
-      error: (err) => {
+      error: err => {
         console.error('Failed to load chats:', err);
-      }
+      },
     });
   }
 
@@ -70,13 +90,15 @@ export class MessagesListComponent implements OnInit {
   }
 
   updateChatPreview(message: Message) {
-    const chatIndex = this.chats.findIndex(chat =>
-      chat.id === message.sender_id || chat.id === message.receiver_id
+    const chatIndex = this.chats.findIndex(
+      chat => chat.id === message.sender_id || chat.id === message.receiver_id
     );
     if (chatIndex > -1) {
       const chat = this.chats[chatIndex];
       chat.lastMessage = message.message;
-      chat.time = this.formatTime(message.created_at || new Date().toISOString());
+      chat.time = this.formatTime(
+        message.created_at || new Date().toISOString()
+      );
       // Move chat to the top of the list
       this.chats.splice(chatIndex, 1);
       this.chats.unshift(chat);

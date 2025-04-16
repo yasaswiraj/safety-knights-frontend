@@ -7,7 +7,7 @@ import { MatSortModule, MatSort } from '@angular/material/sort';
 import { FormsModule } from '@angular/forms';
 import { VettingUserComponent } from "../../components/vetting-user/vetting-user.component";
 import { AdminService } from '../../services/admin.service'; // Import the new service
-
+import { Router } from '@angular/router'; // Import Router for navigation
 
 @Component({
   selector: 'app-vetting',
@@ -39,7 +39,7 @@ export class VettingComponent implements OnInit, AfterViewInit {
   consultantDetails: any = null; // Store fetched consultant details
   loading: boolean = false; // Add loading flag
 
-  constructor(private adminService: AdminService) {
+  constructor(private adminService: AdminService, private router: Router) { // Add Router to constructor
     this.dataSource = new MatTableDataSource<{ 
       user_id: number; 
       name: string; 
@@ -113,8 +113,8 @@ export class VettingComponent implements OnInit, AfterViewInit {
     console.log('Declined', consultant);
   }
 
-  requestChanges(consultant: any) {
-    console.log('Requested changes for', consultant);
+  requestChanges(consultant: any): void {
+    this.router.navigate(['/admin/chat'], { state: { chatWith: consultant } });
   }
 
   addFile(consultant: any) {
