@@ -94,7 +94,7 @@ export class ClientReceivedBidsComponent {
   
 
   acceptBid(jobId: number, consultantId: number) {
-    this.clientJobsService.acceptBid(jobId, consultantId, { commitment: 'yes' }).subscribe({
+    this.clientJobsService.acceptBid(jobId, consultantId).subscribe({
       next: () => {
         this.router.navigate(['/client/bids-in-progress']);
       },
@@ -117,6 +117,7 @@ export class ClientReceivedBidsComponent {
           maxHeight: '90vh',
           panelClass: 'full-screen-dialog',
           data: {
+            user_id: consultant.user_id, 
             name: consultant.name,
             rating: consultant.statistics.average_rating,
             reviews: consultant.statistics.total_reviews,
@@ -126,6 +127,7 @@ export class ClientReceivedBidsComponent {
             job_title: consultant.job_title,
             email: consultant.email,
           }
+          
         });
       },
       error: (err) => {

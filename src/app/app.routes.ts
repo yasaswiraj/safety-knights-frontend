@@ -143,10 +143,9 @@ export const routes: Routes = [
       { path: 'consultant-matches', component: ConsultantMatchesComponent },
       { path: 'consultant-bidded', component: ConsultantBiddedJobsComponent },
       { path: 'consultant-active', component: ConsultantActiveJobsComponent },
-      {
-        path: 'consultant-completed',
-        component: ConsultantCompletedJobsComponent,
-      },
+      {path: 'consultant-completed',component: ConsultantCompletedJobsComponent },
+      {path: 'update-profile-consultant',component: ClientProfileComponent  },
+      { path: 'consultant-inbox', component: ChatComponent },
     ],
   },
   { path: 'consultant-form1', component: ConsultantForm1Component },

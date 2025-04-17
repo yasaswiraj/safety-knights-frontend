@@ -80,6 +80,9 @@ fetchConsultantMatches() {
         startDate : job.expected_start_date,
         deadline: job.proposal_deadline || 'No deadline provided', // Fallback in case of undefined
         location: job.project_location || 'No location provided', // Fallback in case of undefined 
+        budget: job.budget || 'No budget provided', // Fallback in case of undefined
+        name : job.client_name || 'No company name provided', // Fallback in case of undefined
+        // average_rating : job.client.average_rating || 'No rating provided', // Fallback in case of undefined
       }
       
     });

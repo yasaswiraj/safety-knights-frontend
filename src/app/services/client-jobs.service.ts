@@ -214,13 +214,12 @@ export class ClientJobsService {
     );
   }
 
-  acceptBid(jobId: number, consultantId: number, data: { commitment: string, no_commitment_reason?: string }) {
-    return this.http.post(`${environment.apiUrl}/client/accept_bid/${jobId}/${consultantId}`, data, {
+  acceptBid(jobId: number, consultantId: number) {
+    return this.http.post(`${environment.apiUrl}/client/accept_bid/${jobId}/${consultantId}`, {}, {
       withCredentials: true
     });
   }
-  
-  
+
 
   getClientProfile(): Observable<any> {
     return this.http.get(`${environment.apiUrl}/client/profile`, {
@@ -233,7 +232,7 @@ export class ClientJobsService {
       withCredentials: true
     });
   }
-  
+
 
   // Optional helper
   private fixDate(date: any): string | null {
@@ -243,7 +242,7 @@ export class ClientJobsService {
     } catch {
       return null;
     }
-  }  
+  }
 
   getClientFormStructure(): Observable<any> {
     return this.http.get(`${environment.apiUrl}/client/get_client_form`, {
@@ -273,11 +272,14 @@ export class ClientJobsService {
     });
   }
 
-  updateClosedJobToInProgress(jobId: number): Observable<any> {
-    return this.http.post(`${environment.apiUrl}/client/update_closed_job_in_progress/${jobId}`, {}, {
-      withCredentials: true
-    });
+  updateClosedJobToInProgress(jobId: number, comment: string): Observable<any> {
+    return this.http.post(
+      `${environment.apiUrl}/client/update_closed_job_in_progress/${jobId}`,
+      { comment },
+      { withCredentials: true }
+    );
   }
+  
 
 
 

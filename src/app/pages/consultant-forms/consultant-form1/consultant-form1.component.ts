@@ -23,6 +23,8 @@ import { FormDataService } from '../../../services/form-data.service';
 })
 export class ConsultantForm1Component {
   clientForm: FormGroup;
+  formSubmitted = false;
+
 
   constructor(private fb: FormBuilder, private router: Router, private formDataService: FormDataService) {
     this.clientForm = this.fb.group({
@@ -41,6 +43,8 @@ export class ConsultantForm1Component {
     }
 
   navigateToNextForm() {
+    this.formSubmitted = true;
+  this.clientForm.markAllAsTouched(); // Trigger validation
     if (this.clientForm.valid) {
       this.formDataService.setFormData(this.clientForm.value);
       this.router.navigate(['/consultant-form-contact']);

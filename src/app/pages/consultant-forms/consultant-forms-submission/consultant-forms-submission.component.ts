@@ -27,8 +27,11 @@ import { environment } from '../../../../environments/environment';
 
 export class ConsultantFormsSubmissionComponent {
   finalPayload: any = {};
+  selectedFiles: any;
   constructor(private router: Router, private formDataService: FormDataService, private http: HttpClient) {
     this.finalPayload = this.formDataService.getFormData();
+    this.selectedFiles = this.finalPayload.files;
+    console.log('Form Data from Service:', this.finalPayload);
     this.finalPayload= {
       name : this.finalPayload.name || " ", // Fallback to default if undefined, for demo purposes
       email : this.finalPayload.email  ,
@@ -67,8 +70,8 @@ export class ConsultantFormsSubmissionComponent {
           "Company / Site-Specific Health & Safety Plans"
       ],
       written_responses : {
-          "Please state any specifics about availability that you may have": "I have 10+ years of experience in environmental audits.",
-          "Additional Information, Comments or Clarifications": "Certified in ISO 14001 and OSHA safety standards."
+          "Please state any specifics about availability that you may have": this.finalPayload.jobDescription1,
+          "Additional Information, Comments or Clarifications": this.finalPayload.jobDescription2
       }
   }
     console.log('Final Payload before submission:', this.finalPayload);
@@ -80,20 +83,76 @@ export class ConsultantFormsSubmissionComponent {
   }
 
 
+  // onGetStarted() {
+  //   console.log("Button Clicked!");
+  //   // Navigate to another page if needed
+    
+  //   console.log('Final JSON Payload:', this.finalPayload);
+
+  //   this.http.post(`${environment.apiUrl}/consultant/signup`, this.finalPayload,{ withCredentials: true })
+  //     .subscribe(response => {
+  //       console.log('Form submitted successfully', response);
+
+  //        this.formDataService.setFormData({}); // Clear after submission
+  //     }, error => {
+  //       console.error('Error submitting form', error);
+  //     });
+
+  //     //
+  //    this.router.navigate(['/login']);
+  // }
+
   onGetStarted() {
     console.log("Button Clicked!");
-    // Navigate to another page if needed
-    
     console.log('Final JSON Payload:', this.finalPayload);
+  
+    // First call: Signup
+    this.http.post<any>(`${environment.apiUrl}/consultant/signup`, this.finalPayload, { withCredentials: true })
+      .subscribe({
+        next: (response) => {
+          console.log('Form submitted successfully', response);
+  
+          const userId = response?.user_id;
+          const fileToUpload = this.selectedFiles; // assuming 'files' is a File or FormData object
+          
+          console.log('User ID:', userId);
+          console.log('File to Upload:', fileToUpload);
+          if (userId && fileToUpload) {
+            const uploadPayload = new FormData();
 
-    this.http.post(`${environment.apiUrl}/consultant/signup`, this.finalPayload,{ withCredentials: true })
-      .subscribe(response => {
-        console.log('Form submitted successfully', response);
-        this.formDataService.setFormData({}); // Clear after submission
-      }, error => {
-        console.error('Error submitting form', error);
+                      // ✅ Append each file with the correct key: 'files'
+            fileToUpload.forEach((file: File) => {
+              uploadPayload.append('files', file);
+            });
+
+            
+            uploadPayload.append('user_id', userId);
+
+            console.log('Upload Payload:', uploadPayload);
+  
+            // Second call: Upload file
+            this.http.post(`${environment.apiUrl}/upload-multiple-files`, uploadPayload)
+              .subscribe({
+                next: (uploadResponse) => {
+                  console.log('File uploaded successfully', uploadResponse);
+                },
+                error: (uploadError) => {
+                  console.error('Error uploading file:', uploadError);
+                }
+              });
+          }
+  
+          // Optional: clear form after both steps
+          this.formDataService.setFormData({});
+          this.router.navigate(['/login']);
+        },
+        error: (error) => {
+          console.error('Error submitting form', error);
+        }
       });
-     this.router.navigate(['/login']);
   }
+  
 
 }
+
+// files : this.finalPayload.files,

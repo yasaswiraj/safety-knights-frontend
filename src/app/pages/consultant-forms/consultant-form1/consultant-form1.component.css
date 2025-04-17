@@ -27,4 +27,9 @@
 }
 
 
+::ng-deep mat-error {
+  color: #dc2626 !important; /* Tailwind red-600 */
+  font-size: 0.875rem; /* text-sm */
+  margin-bottom: 1rem;
+}
 

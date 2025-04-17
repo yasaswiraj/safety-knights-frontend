@@ -23,6 +23,8 @@ import { FormDataService } from '../../../services/form-data.service'; // Correc
 })
 export class ConsultantFormContactComponent {
   clientForm: FormGroup;
+  formSubmitted = false;
+
 
   constructor(private fb: FormBuilder, private router: Router,private formDataService: FormDataService, ) {
     this.clientForm = this.fb.group({
@@ -45,6 +47,9 @@ export class ConsultantFormContactComponent {
 
   //  Navigate to Next Form
   navigateToNextForm() {
+    this.formSubmitted = true;
+    this.clientForm.markAllAsTouched(); 
+
     console.log("Button Clicked!");
     if (this.clientForm.valid) {
       console.log('Form is valid, navigating to consultant-form3');

@@ -26,7 +26,7 @@
               <mat-form-field class="w-full mb-6">
                   <mat-label>Email </mat-label>
                   <input matInput type="email" formControlName="email" placeholder="Enter your email">
-                  <mat-error *ngIf="clientForm.get('email')?.invalid && clientForm.get('email')?.touched">
+                  <mat-error *ngIf="clientForm.get('email')?.invalid && formSubmitted">
                       Please enter a valid email.
                   </mat-error>
               </mat-form-field>
@@ -36,8 +36,8 @@
               <!-- Password Field -->
               <mat-form-field class="w-1/2 mb-6">
                   <mat-label>Password</mat-label>
-                  <input matInput type="password" formControlName="password" placeholder="Enter your password">
-                  <mat-error *ngIf="clientForm.get('password')?.invalid && clientForm.get('password')?.touched">
+                  <input matInput type="password" formControlName="password" placeholder="Enter password(min 6 characters)">
+                  <mat-error *ngIf="clientForm.get('password')?.invalid && formSubmitted"  >
                       Password is required.
                   </mat-error>
               </mat-form-field>
@@ -46,9 +46,10 @@
               <mat-form-field class="w-1/2 mb-6">
                   <mat-label>Confirm Password</mat-label>
                   <input matInput type="password" formControlName="confirmPassword" placeholder="Re-enter your password">
-                  <mat-error *ngIf="clientForm.get('confirmPassword')?.invalid && clientForm.get('confirmPassword')?.touched">
-                      Passwords must match.
+                  <mat-error *ngIf="(clientForm.hasError('mismatch') || clientForm.get('confirmPassword')?.invalid) && formSubmitted">
+                    Passwords must match.
                   </mat-error>
+                  
               </mat-form-field>
               </div>
 
@@ -64,14 +65,11 @@
                     class="absolute bottom-4 right-10 w-[50px] h-[50px] cursor-pointer hover:bg-opacity-80"
                     type="button"
                     (click)="navigateToNextForm()"
-                    [disabled]="clientForm.invalid">
+                    >
                     <img src="/next_button.png" alt="Next" class="w-full h-full object-contain" />
                 </button>
           </form>
-          <button
-    class="fixed bottom-6 right-6 w-14 h-14 text-white rounded-full flex items-center justify-center shadow-lg cursor-pointer">
-    <img src="/chat.png" alt="Chat" class="w-8 h-8" />
-  </button>
+          
       </div>
   </div>
 </div>
