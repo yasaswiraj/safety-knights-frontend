@@ -1,3 +1,3 @@
 export const environment = {
-    apiUrl: 'http://localhost:8000',
+    apiUrl: 'https://safetyknights-6zzro.ondigitalocean.app',
 };
