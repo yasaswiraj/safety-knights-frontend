@@ -81,7 +81,12 @@ export class ConsultantBiddedJobsComponent implements OnInit, AfterViewInit {
           scope_of_service: job.scope_of_service || 'No scope provided', // Fallback in case of undefined,
           startDate : job.expected_start_date,
           deadline: job.proposal_deadline || 'No deadline provided', // Fallback in case of undefined
-          location: job.project_location || 'No location provided', // Fallback in case of undefined 
+          location: job.project_location || 'No location provided', // Fallback in case of undefined
+          bid_amount: job.bid_amount, // ✅ Pass existing bid amount 
+          budget : job.budget || 'No budget provided', // Fallback in case of undefined
+          email : job.client.email,
+          phone : job.client.contact,
+          rating : job.client.average_rating , // Fallback in case of undefined
         }
         
       });

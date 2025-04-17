@@ -77,7 +77,7 @@ export class ConsultantCompletedJobsComponent implements AfterViewInit {
       width: '500px', // Adjust size as needed
       data: {
         job_id: job.job_id,
-        client_user_id: job.client_id,
+        client_user_id: job.client.client_id,
       }
     });
 

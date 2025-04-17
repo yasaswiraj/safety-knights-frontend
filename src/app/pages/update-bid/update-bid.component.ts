@@ -14,6 +14,17 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatNativeDateModule } from '@angular/material/core';
 import { MatIconModule } from '@angular/material/icon';
 import { MatSnackBar } from '@angular/material/snack-bar';
+import { Router } from '@angular/router';
+
+
+// Define an interface for user data
+interface User {
+  client_id: any;
+  name: string;
+  email: string;
+  phone: string;
+
+}
 
 @Component({
   selector: 'app-bid-detail-dialog',
@@ -24,7 +35,8 @@ import { MatSnackBar } from '@angular/material/snack-bar';
     MatDatepickerModule,
     MatInputModule,
     MatNativeDateModule,
-    MatIconModule
+    MatIconModule,
+     
   ],
   providers: [
     MatNativeDateModule, // ✅ Correctly provides DateAdapter
@@ -35,18 +47,70 @@ export class UpdateBidComponent {
   availability!: string;
 startDate: any;
  
+users: User[] = []; // Explicitly type the users array
 
   constructor(
     public dialogRef: MatDialogRef<UpdateBidComponent>,
     @Inject(MAT_DIALOG_DATA) public data: any,
     private http: HttpClient,
-    private snackBar: MatSnackBar
+    private snackBar: MatSnackBar,
+    private router: Router
   ) {}
 
   onClose(): void {
     this.dialogRef.close();
   }
 
+  getUserDetailsByJobId(jobId: number): void {
+    this.http.get<any>(`${environment.apiUrl}/consultant/jobs/${jobId}`, { withCredentials: true }).subscribe({
+      next: (response) => {
+        console.log('User details fetched:', response.client);
+         // Call message function with fetched user
+
+         // Close dialog first
+      this.dialogRef.close();
+
+      // Then navigate (with a slight delay to ensure dialog cleanup if needed)
+      setTimeout(() => {
+        this.messageClient(response.client);
+      }, 0);
+      },
+      error: (error) => {
+        console.error('Failed to fetch user details:', error);
+        this.snackBar.open('Failed to fetch user details.', 'Close', {
+          duration: 4000,
+          panelClass: ['snackbar-error']
+        });
+      }
+    });
+  }
+
+  messageClient(user: User): void {
+    // Convert user to chat object and navigate
+    console.log('User for chat:', user);
+    const chat = {
+      id: user.client_id,
+      user: {
+        name: user.name,
+        avatar: this.getRandomAvatar(user.client_id ?? 0),
+      },
+      lastMessage: '',
+      time: this.formatTime(new Date().toISOString()),
+      isOnline: false,
+    };
+    console.log('Chat object:', chat);
+    this.router.navigate(['/consultant/consultant-inbox'], { state: { chatWith: chat } });
+  }
+
+  formatTime(isoTime: string): string {
+    const date = new Date(isoTime);
+    return date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+  }
+
+  getRandomAvatar(seed: number): string {
+    // Just for demo purposes — use a real avatar field if you have it
+    return `https://randomuser.me/api/portraits/men/${seed % 100}.jpg`;
+  }
 
   onSubmit(): void {
     console.log(this.data);
@@ -71,7 +135,8 @@ startDate: any;
         this.dialogRef.close({ jobId });
       },
       error: (error) => {
-        console.error('Error submitting bid:', error);
+        console.error('No bid amount entered:', error);
+        this.dialogRef.close({ jobId });
       }
     });
   }

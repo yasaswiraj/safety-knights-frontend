@@ -24,7 +24,13 @@
       <h3>Client Contact Information:</h3>
       <p><strong>Phone:</strong> {{ data.phone }}</p>
       <p><strong>Email:</strong> {{ data.email }}</p>
-      <button mat-button>Message Client</button>
+      <p><strong>Client Rating:</strong> {{ data.rating }}</p>
+      <button
+      type="button"
+      class="mt-3 ml-3 bg-gradient-to-r from-[#b68d5f] to-[#a4784c] text-white font-semibold text-sm py-2 px-6 rounded-full shadow-md hover:from-[#a4784c] hover:to-[#8d6640] transition"
+      (click)="getUserDetailsByJobId(data.jobid)">
+      Message Client
+    </button>
     </div>
   
     <!-- Bid Form Section -->
@@ -32,13 +38,20 @@
       <h3>Bid for the Job</h3>
       <form #bidForm="ngForm" (ngSubmit)="onSubmit()" class="bid-form" novalidate>
 
+    
         <mat-form-field appearance="fill" class="w-full custom-field">
           <mat-label>Update Bid Amount</mat-label>
-          <input matInput type="number" min="0" [(ngModel)]="bidAmount" name="amount"  #amount="ngModel">
-         
+          <input
+            matInput
+            type="number"
+            min="0"
+            [(ngModel)]="bidAmount"
+            name="amount"
+            #amount="ngModel"
+            [placeholder]="data.bid_amount ? ('$' + data.bid_amount) : 'Enter bid amount'" />
         </mat-form-field>
      
-        <button  class="mt-5 bg-gradient-to-r from-[#b68d5f] to-[#a4784c] text-white font-semibold text-sm py-2 px-6 rounded-full shadow-md hover:from-[#a4784c] hover:to-[#8d6640] transition" type="submit" [disabled]="bidForm.invalid">Submit Request</button>
+        <button  class="mt-5 bg-gradient-to-r from-[#b68d5f] to-[#a4784c] text-white font-semibold text-sm py-2 px-6 rounded-full shadow-md hover:from-[#a4784c] hover:to-[#8d6640] transition" type="submit" >Submit Request</button>
       </form>
       
     </div>

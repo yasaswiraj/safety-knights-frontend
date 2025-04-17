@@ -13,6 +13,7 @@ import { HttpClient } from '@angular/common/http';
 import { ConsultantMatchesService } from '../../services/consultant-match.service';
 
 interface Job {
+  client: any;
   job_status: any;
   work_in_detail: any;
   job_id: number;
@@ -102,24 +103,37 @@ export class ConsultantActiveJobsComponent implements AfterViewInit {
               expected_start_date: job.expected_start_date,
               budget: job.budget ,
               job_status: job.job_status,
+              email : job.client.email,
+              phone : job.client.contact,
+              rating : job.client.average_rating,
+              name : job.client.name
               
        }
     });
 
-    dialogRef.afterClosed().subscribe((updatedJob: Job | undefined) => {
-      if (updatedJob) {
-        const index = this.dataSource.data.findIndex(j => j.job_id === updatedJob.job_id);
-        if (index !== -1) {
-          this.dataSource.data[index] = {
-            ...this.dataSource.data[index],
-            ...updatedJob,
-            days_remaining: this.calculateDaysRemaining(updatedJob.expected_start_date)
-          };
-          // Trigger table refresh
-          this.dataSource.data = [...this.dataSource.data];
-        }
+    dialogRef.afterClosed().subscribe((updatedStatus: string | null) => {
+      if (updatedStatus) {
+        console.log('New status:', updatedStatus);
+        job.job_status = updatedStatus; // 🟢 update local data
       }
     });
+
+    // dialogRef.afterClosed().subscribe((updatedJob: Job | undefined) => {
+    //   if (updatedJob) {
+    //     const index = this.dataSource.data.findIndex(j => j.job_id === updatedJob.job_id);
+    //     if (index !== -1) {
+    //       this.dataSource.data[index] = {
+    //         ...this.dataSource.data[index],
+    //         ...updatedJob,
+    //         days_remaining: this.calculateDaysRemaining(updatedJob.expected_start_date)
+    //       };
+    //       // Trigger table refresh
+    //       this.dataSource.data = [...this.dataSource.data];
+    //     }
+    //   }
+    // });
+
+
   }
      
 
