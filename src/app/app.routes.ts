@@ -143,6 +143,7 @@ export const routes: Routes = [
         path: 'consultant-completed',
         component: ConsultantCompletedJobsComponent,
       },
+      { path: 'inbox', component: ChatComponent },
     ],
   },
   { path: 'consultant-form1', component: ConsultantForm1Component },

@@ -4,6 +4,11 @@ import { CommonModule } from '@angular/common';
 import { ClientJobsService, JobInProgress, ConsultantProfile } from '../../services/client-jobs.service';
 import { ActivatedRoute } from '@angular/router';
 
+// Add this interface before your component class
+interface User {
+  id: number;
+  name: string;
+}
 
 @Component({
   selector: 'app-track-jobs',
@@ -27,7 +32,7 @@ export class TrackJobsComponent implements OnInit {
     private route: ActivatedRoute,
     private clientJobsService: ClientJobsService
   ) {}
-  ngOnInit() {
+ngOnInit() {
     const jobId = Number(this.route.snapshot.queryParamMap.get('jobId'));
     const today = new Date();
 
@@ -74,7 +79,27 @@ export class TrackJobsComponent implements OnInit {
     });
   }
 
-  messageConsultant(consultantId: number) {
-    this.router.navigate(['/client/chat'], { queryParams: { consultantId } });
+  messageConsultant(consultantId: number, consultantName: string): void {
+    // Convert consultant to chat object and navigate
+    const chat = {
+      id: consultantId,
+      user: {
+        name: consultantName,
+        avatar: this.getRandomAvatar(consultantId),
+      },
+      lastMessage: '',
+      time: this.formatTime(new Date().toISOString()),
+      isOnline: false,
+    };
+    this.router.navigate(['/client/inbox'], { state: { chatWith: chat } });
+  }
+
+  formatTime(isoTime: string): string {
+    const date = new Date(isoTime);
+    return date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+  }
+
+  getRandomAvatar(seed: number): string {
+    return `https://randomuser.me/api/portraits/men/${seed % 100}.jpg`;
   }
 }

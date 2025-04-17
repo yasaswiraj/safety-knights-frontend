@@ -97,25 +97,18 @@ export class VerifyCompletionComponent implements OnInit {
       return;
     }
   
-    // Here, call an API if needed or handle it internally
-    console.log(`Job ${jobId} rejected for reason: ${reason}`);
-  
-    // Optionally hide the box again
-    this.showReasonBox[jobId] = false;
-  
-    // Optionally send this reason to backend
-    // this.clientJobsService.rejectJob(jobId, reason).subscribe(...);
-  }
-  
-
-  moveToInProgress(jobId: number) {
-    this.clientJobsService.updateClosedJobToInProgress(jobId).subscribe({
+    this.clientJobsService.updateClosedJobToInProgress(jobId, reason).subscribe({
       next: () => {
+        console.log(`Job ${jobId} moved to in-progress with comment:`, reason);
+        this.showReasonBox[jobId] = false;
+        this.rejectionReasons[jobId] = '';
         this.fetchClosedJobs(); // refresh list
       },
       error: (err) => {
-        console.error('Failed to move job to in progress:', err);
+        console.error('Failed to move job to in progress with comment:', err);
+        alert('Failed to submit your reason. Please try again.');
       }
     });
   }
+
 }

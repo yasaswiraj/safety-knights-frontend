@@ -272,11 +272,14 @@ export class ClientJobsService {
     });
   }
 
-  updateClosedJobToInProgress(jobId: number): Observable<any> {
-    return this.http.post(`${environment.apiUrl}/client/update_closed_job_in_progress/${jobId}`, {}, {
-      withCredentials: true
-    });
+  updateClosedJobToInProgress(jobId: number, comment: string): Observable<any> {
+    return this.http.post(
+      `${environment.apiUrl}/client/update_closed_job_in_progress/${jobId}`,
+      { comment },
+      { withCredentials: true }
+    );
   }
+  
 
 
 
