@@ -27,8 +27,10 @@ import { environment } from '../../../../environments/environment';
 
 export class ConsultantFormsSubmissionComponent {
   finalPayload: any = {};
+  selectedFiles: any;
   constructor(private router: Router, private formDataService: FormDataService, private http: HttpClient) {
     this.finalPayload = this.formDataService.getFormData();
+    this.selectedFiles = this.finalPayload.files;
     console.log('Form Data from Service:', this.finalPayload);
     this.finalPayload= {
       name : this.finalPayload.name || " ", // Fallback to default if undefined, for demo purposes
@@ -111,15 +113,25 @@ export class ConsultantFormsSubmissionComponent {
           console.log('Form submitted successfully', response);
   
           const userId = response?.user_id;
-          const fileToUpload = this.finalPayload.files; // assuming 'files' is a File or FormData object
-  
+          const fileToUpload = this.selectedFiles; // assuming 'files' is a File or FormData object
+          
+          console.log('User ID:', userId);
+          console.log('File to Upload:', fileToUpload);
           if (userId && fileToUpload) {
             const uploadPayload = new FormData();
-            uploadPayload.append('file', fileToUpload);
+
+                      // ✅ Append each file with the correct key: 'files'
+            fileToUpload.forEach((file: File) => {
+              uploadPayload.append('files', file);
+            });
+
+            
             uploadPayload.append('user_id', userId);
+
+            console.log('Upload Payload:', uploadPayload);
   
             // Second call: Upload file
-            this.http.post(`${environment.apiUrl}/consultant/upload_multiple_files`, uploadPayload)
+            this.http.post(`${environment.apiUrl}/upload-multiple-files`, uploadPayload)
               .subscribe({
                 next: (uploadResponse) => {
                   console.log('File uploaded successfully', uploadResponse);

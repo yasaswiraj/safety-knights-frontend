@@ -39,7 +39,8 @@
 
         <mat-form-field appearance="fill" class="w-full custom-field">
           <mat-label>Enter Bid Amount</mat-label>
-          <input matInput type="number" min="0" [(ngModel)]="bidAmount" name="amount" required #amount="ngModel">
+          <input matInput type="number" min="0" [(ngModel)]="bidAmount" name="amount" required #amount="ngModel"
+          [placeholder]="data.budget ? ('$' + data.budget) : 'Enter bid amount'">
           <mat-error *ngIf="amount.invalid && amount.touched">Amount is required and must be a number.</mat-error>
         </mat-form-field>
       
