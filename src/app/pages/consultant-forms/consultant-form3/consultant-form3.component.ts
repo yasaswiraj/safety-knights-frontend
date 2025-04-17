@@ -102,17 +102,17 @@ onFilesSelected(event: Event) {
 
     this.formDataService.setFormData({ files: this.selectedFiles });
 
-    this.http.post(`${environment.apiUrl}/upload-multiple-files`, formData).subscribe({
-      next: (res) => {
-        console.log('Upload success', res);
-        alert('Files uploaded successfully!');
-        this.selectedFiles = [];
-      },
-      error: (err) => {
-        console.error('Upload failed', err);
-        alert('Upload failed. Please try again.');
-      },
-    });
+    // this.http.post(`${environment.apiUrl}/upload-multiple-files`, formData).subscribe({
+    //   next: (res) => {
+    //     console.log('Upload success', res);
+    //     alert('Files uploaded successfully!');
+    //     this.selectedFiles = [];
+    //   },
+    //   error: (err) => {
+    //     console.error('Upload failed', err);
+    //     alert('Upload failed. Please try again.');
+    //   },
+    // });
   }
 
   navigateToNextForm() {

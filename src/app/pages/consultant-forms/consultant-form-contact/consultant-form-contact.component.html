@@ -18,7 +18,7 @@
         <mat-form-field class="w-full mb-2">
           <mat-label>Name </mat-label>
           <input matInput type="text" formControlName="name" placeholder="Enter your name">
-          <mat-error *ngIf="clientForm.get('name')?.invalid && clientForm.get('name')?.touched">
+          <mat-error *ngIf="clientForm.get('name')?.invalid && formSubmitted">
             Name is required.
           </mat-error>
         </mat-form-field>
@@ -69,8 +69,5 @@
     </div>
   </div>
 
-  <!-- ✅ Chat Button -->
-  <button class="fixed bottom-6 right-6 w-14 h-14 text-white rounded-full flex items-center justify-center shadow-lg cursor-pointer">
-    <img src="/chat.png" alt="Chat" class="w-8 h-8" />
-  </button>
+
 </div>
