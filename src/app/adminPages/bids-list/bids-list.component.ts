@@ -41,8 +41,7 @@ export class BidsListComponent implements OnInit, AfterViewInit {
     'clientName',
     'consultantName',
     'bid',
-    'status',
-    'actions',
+    'status'
   ];
 
   constructor(private adminService: AdminService) {

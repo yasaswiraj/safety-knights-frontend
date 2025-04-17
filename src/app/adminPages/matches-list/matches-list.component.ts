@@ -39,8 +39,7 @@ export class MatchesListComponent implements OnInit, AfterViewInit {
     'id',
     'clientName',
     'consultantName',
-    'bid',
-    'actions',
+    'bid'
   ];
 
   constructor(private adminService: AdminService) {
