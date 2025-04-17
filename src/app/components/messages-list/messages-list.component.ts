@@ -54,8 +54,6 @@ export class MessagesListComponent implements OnInit {
         if (history.state && history.state.chatWith) {
           const chatWith = history.state.chatWith;
           this.onChatSelect(chatWith);
-        } else if (this.chats.length > 0) {
-          this.onChatSelect(this.chats[0]);
         }
       },
       error: err => {
