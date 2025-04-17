@@ -38,6 +38,8 @@ import { VerifyCompletionComponent } from './clientPages/verify-completion/verif
 import { ClientProfileComponent } from './clientPages/client-profile/client-profile.component';
 import { inject } from '@angular/core';
 import { Router } from '@angular/router';
+import { CreateJobComponent } from './clientPages/create-job/create-job.component';
+import { UpdateJobComponent } from './clientPages/update-job/update-job.component';
 
 export const routes: Routes = [
   {
@@ -95,6 +97,8 @@ export const routes: Routes = [
       { path: 'update-profile', component: ClientProfileComponent, data: { editMode: true } },
       { path: 'feedback', component: FeedbackComponent },
       { path: 'inbox', component: ChatComponent },
+      {path: 'create-job', component: CreateJobComponent},
+      {path: 'update-job', component: UpdateJobComponent},
     ],
   },
 
