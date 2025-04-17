@@ -34,8 +34,8 @@
 
       <!-- Action Button -->
       <button
+        (click)="messageConsultant(job.consultantId, job.consultantName)"
         class="w-full py-2 rounded-full text-white bg-gradient-to-r from-[#b68d5f] to-[#a4784c] hover:from-[#a4784c] hover:to-[#8d6640] shadow-md text-sm font-semibold uppercase tracking-wide"
-        (click)="messageConsultant(job.consultantId)"
       >
         Message
       </button>
