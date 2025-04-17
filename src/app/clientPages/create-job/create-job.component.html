@@ -1,0 +1,59 @@
+<div *ngIf="formStructure" class="bg-white p-4 rounded-lg shadow-md">
+  <form>
+    <!-- Iterate over categories -->
+    <div *ngFor="let category of formStructure.categories" class="mb-6">
+      <h3 class="text-2xl font-bold mb-2">{{ category.category_name }}</h3>
+      <!-- Iterate over questions within the category -->
+      <div *ngFor="let question of category.questions" class="mb-4">
+        <label class="block font-medium mb-1 text-gray-700">{{ question.question }}</label>
+        <div [ngSwitch]="question.answer_type">
+          <div *ngSwitchCase="'text'">
+            <input
+              type="text"
+              name="question{{ question.question_id }}"
+              class="w-full p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500" />
+          </div>
+          <div *ngSwitchCase="'date'">
+            <input
+              type="date"
+              name="question{{ question.question_id }}"
+              class="w-full p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500" />
+          </div>
+          <div *ngSwitchCase="'radio'">
+            <ng-container *ngIf="getOptions(question.question_id) | async as options">
+              <div *ngFor="let option of options" class="flex items-center space-x-2">
+                <input
+                  type="radio"
+                  name="question{{ question.question_id }}"
+                  [value]="option"
+                  class="form-radio text-blue-600" />
+                <label class="text-gray-700">{{ option }}</label>
+              </div>
+            </ng-container>
+          </div>
+          <div *ngSwitchCase="'CHECKBOX_GROUP'">
+            <ng-container *ngIf="getOptions(question.question_id) | async as options">
+              <div *ngFor="let option of options" class="flex items-center space-x-2">
+                <input
+                  type="checkbox"
+                  name="question{{ question.question_id }}[]"
+                  [value]="option"
+                  class="form-checkbox text-blue-600" />
+                <label class="text-gray-700">{{ option }}</label>
+              </div>
+            </ng-container>
+          </div>
+          <div *ngSwitchDefault>
+            <input
+              type="text"
+              name="question{{ question.question_id }}"
+              class="w-full p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500" />
+          </div>
+        </div>
+      </div>
+    </div>
+    <button type="submit" class="w-full py-3 bg-blue-600 text-white rounded-lg font-semibold hover:bg-blue-700 transition">
+      Submit
+    </button>
+  </form>
+</div>

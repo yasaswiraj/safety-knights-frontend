@@ -1,56 +1,64 @@
-<div class="bg-white flex flex-1 flex-col h-full rounded-[1em]">
-  <!-- Chat Header -->
-  <div
-    class="flex items-center h-18 justify-between w-full border-b border-gray-200 px-3">
-    <div class="flex items-center">
-      <img
-        src="{{ chatUser.avatar }}"
-        alt="avatar"
-        class="w-12 h-12 rounded-full mr-3" />
-      <div class="text-2xl font-bold">{{ chatUser.name }}</div>
-    </div>
-  </div>
-
-  <!-- Scrollable Chat Messages -->
-  <div
-    class="overflow-y-auto p-3 flex flex-col-reverse space-y-2 h-[calc(100vh-19rem)]">
-    @for (message of messages; track message.id) {
-      <div
-        class="p-3 max-w-[70%] text-sm rounded-t-xl mb-3"
-        [ngClass]="{
-          'bg-(--accent-color) text-white self-end rounded-bl-xl rounded-br-0':
-            message.isMe,
-          'bg-gray-100 self-start text-black rounded-bl-0 rounded-br-xl':
-            !message.isMe,
-        }">
-        @if (!message.isMe) {
-          <span class="block font-semibold text-xs text-gray-600">
-            {{ message.sender }}
-          </span>
-        }
-        {{ message.message }}
-        <span
-          class="block text-right text-xs text-gray-500 mt-1"
-          [ngClass]="{ 'text-white': message.isMe }">
-          {{ message.time }}
-        </span>
+<ng-container *ngIf="selectedChat; else noChat">
+  <div class="bg-white flex flex-1 flex-col h-full rounded-[1em]">
+    <!-- Chat Header -->
+    <div
+      class="flex items-center h-18 justify-between w-full border-b border-gray-200 px-3">
+      <div class="flex items-center">
+        <img
+          src="{{ chatUser.avatar }}"
+          alt="avatar"
+          class="w-12 h-12 rounded-full mr-3" />
+        <div class="text-2xl font-bold">{{ chatUser.name }}</div>
       </div>
-    }
-  </div>
+    </div>
 
-  <div class="p-3 flex items-center">
-    <div class="flex flex-1 border border-gray-200 rounded-full">
-      <input
-        type="text"
-        placeholder="Write a message..."
-        class="flex-1 p-2 px-4 outline-none"
-        [(ngModel)]="messageText"
-        (keydown.enter)="sendMessage()" />
-      <button
-        class="ml-2 w-10 bg-(--accent-color) hover:bg-(--accent-color)/80 text-white rounded-full cursor-pointer"
-        (click)="sendMessage()">
-        <i class="fas fa-paper-plane"></i>
-      </button>
+    <!-- Scrollable Chat Messages -->
+    <div
+      class="overflow-y-auto p-3 flex flex-col-reverse space-y-2 h-[calc(100vh-19rem)]">
+      @for (message of messages; track message.id) {
+        <div
+          class="p-3 max-w-[70%] text-sm rounded-t-xl mb-3"
+          [ngClass]="{
+            'bg-(--accent-color) text-white self-end rounded-bl-xl rounded-br-0':
+              message.isMe,
+            'bg-gray-100 self-start text-black rounded-bl-0 rounded-br-xl':
+              !message.isMe,
+          }">
+          @if (!message.isMe) {
+            <span class="block font-semibold text-xs text-gray-600">
+              {{ message.sender }}
+            </span>
+          }
+          {{ message.message }}
+          <span
+            class="block text-right text-xs text-gray-500 mt-1"
+            [ngClass]="{ 'text-white': message.isMe }">
+            {{ message.time }}
+          </span>
+        </div>
+      }
+    </div>
+
+    <div class="p-3 flex items-center">
+      <div class="flex flex-1 border border-gray-200 rounded-full">
+        <input
+          type="text"
+          placeholder="Write a message..."
+          class="flex-1 p-2 px-4 outline-none"
+          [(ngModel)]="messageText"
+          (keydown.enter)="sendMessage()" />
+        <button
+          class="ml-2 w-10 bg-(--accent-color) hover:bg-(--accent-color)/80 text-white rounded-full cursor-pointer"
+          (click)="sendMessage()">
+          <i class="fas fa-paper-plane"></i>
+        </button>
+      </div>
     </div>
   </div>
-</div>
+</ng-container>
+
+<ng-template #noChat>
+  <div class="bg-white flex flex-1 flex-col h-full rounded-[1em] items-center justify-center">
+    <p class="text-xl text-gray-500">No chat selected</p>
+  </div>
+</ng-template>
