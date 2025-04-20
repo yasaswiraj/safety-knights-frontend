@@ -7,6 +7,8 @@ import { FormsService } from '../../services/forms.service';
 import { ReactiveFormsModule, FormBuilder, FormGroup, FormArray, FormControl } from '@angular/forms';
 import { Router } from '@angular/router';
 import { ClientService } from '../../services/client.service';
+import { AbstractControl, ValidatorFn } from '@angular/forms';
+
 
 @Component({
   selector: 'app-create-job',
@@ -21,6 +23,8 @@ export class CreateJobComponent implements OnInit {
   optionsCache: { [questionId: number]: Observable<string[]> } = {};
   private textGroupId!: number;
   private insuranceQuestionId = 7;
+  uploadedFile: File | null = null;
+
 
   constructor(
     private fb: FormBuilder,
@@ -28,7 +32,7 @@ export class CreateJobComponent implements OnInit {
     public formsService: FormsService,
     private router: Router,
     private clientService: ClientService
-  ) {}
+  ) { }
 
   ngOnInit() {
     this.formsService.getFormStructure(1).subscribe(struct => {
@@ -39,22 +43,32 @@ export class CreateJobComponent implements OnInit {
 
   private buildJobForm(structure: any) {
     const group: { [controlName: string]: FormControl | FormArray<any> } = {};
-
+  
     structure.categories.forEach((cat: any) => {
       cat.questions.forEach((q: any) => {
+        const validators = [];
+  
         if (q.answer_type === 'CHECKBOX_GROUP') {
           group[q.question_id] = this.fb.array<FormControl<string>>([]);
         } else if (q.answer_type === 'TEXT_GROUP') {
           this.textGroupId = q.question_id;
           group[q.question_id] = this.fb.array<FormControl<string>>([]);
         } else {
-          group[q.question_id] = this.fb.control('');
+          // Apply past-date validator
+          if (q.question_id === '4'|| q.question_id === '5') {
+            validators.push(this.noPastDateValidator());
+          }
+  
+          group[q.question_id] = this.fb.control('', validators);
         }
       });
     });
-
-    this.jobForm = this.fb.group(group);
+  
+    this.jobForm = this.fb.group(group, {
+      validators: this.dateOrderValidator()
+    });
   }
+  
 
   getOptions(questionId: number): Observable<string[]> {
     if (!this.optionsCache[questionId]) {
@@ -65,6 +79,59 @@ export class CreateJobComponent implements OnInit {
     }
     return this.optionsCache[questionId];
   }
+
+  onFileSelected(event: Event): void {
+    const input = event.target as HTMLInputElement;
+    if (input.files && input.files.length > 0) {
+      this.uploadedFile = input.files[0];
+    }
+  }
+
+  uploadJobDescriptionFile(jobId: number) {
+    const formData = new FormData();
+
+    formData.append('job_id', jobId.toString());
+    formData.append('files', this.uploadedFile!);
+
+    this.clientService.uploadJobFile(formData).subscribe({
+      next: () => {
+        console.log('File uploaded successfully');
+        this.router.navigate(['/client/pending-bids']);
+      },
+      error: (err) => {
+        console.error('File upload failed:', err);
+      }
+    });
+  }
+
+  noPastDateValidator(): ValidatorFn {
+    return (control: AbstractControl): { [key: string]: any } | null => {
+      if (!control.value) return null;
+      const selected = new Date(control.value);
+      const today = new Date();
+      today.setHours(0, 0, 0, 0);
+      return selected < today ? { pastDate: true } : null;
+    };
+  }
+  
+
+  dateOrderValidator(): ValidatorFn {
+    return (group: AbstractControl): { [key: string]: any } | null => {
+      const proposalControl = group.get('4');
+      const workControl = group.get('5');
+  
+  
+      if (!proposalControl || !workControl || !proposalControl.value || !workControl.value) return null;
+  
+      const proposalDate = new Date(proposalControl.value);
+      const workDate = new Date(workControl.value);
+  
+      return proposalDate > workDate ? { proposalAfterWork: true } : null;
+    };
+  }
+  
+
+
 
   onSubmit() {
     if (this.jobForm.invalid) {
@@ -84,13 +151,21 @@ export class CreateJobComponent implements OnInit {
       responses
     };
 
-    console.log('Job Form Payload:', payload);
-
-    this.clientService.createJobWithResponses(payload).subscribe(response => {
-      console.log('Job created successfully:', response);
-      this.router.navigate(['/client/pending-bids']);
+    this.clientService.createJobWithResponses(payload).subscribe({
+      next: (response) => {
+        const jobId = response.job_id;
+        if (this.uploadedFile) {
+          this.uploadJobDescriptionFile(jobId);
+        } else {
+          this.router.navigate(['/client/pending-bids']);
+        }
+      },
+      error: (err) => {
+        console.error('Job creation failed:', err);
+      }
     });
   }
+
 
   toggleCheckbox(qId: number, option: string, checked: boolean) {
     const boxArray = this.jobForm.get(qId.toString()) as FormArray<FormControl>;

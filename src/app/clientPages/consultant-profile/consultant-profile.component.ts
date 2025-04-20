@@ -27,7 +27,8 @@ export class ConsultantProfileComponent {
 
   fetchCertificates(): void {
     const url = `${environment.apiUrl}/user/${this.data.user_id}/files`;
-    console.log('Consultant ID for fetch:', this.data.user_id);
+    console.log('Fetching certificates from:', url);
+  
     this.http.get<any>(url, { withCredentials: true }).subscribe({
       next: (response) => {
         if (response.files_by_category) {
@@ -40,15 +41,17 @@ export class ConsultantProfileComponent {
       }
     });
   }
+  
 
   getFileUrl(fileId: number): string {
     return `${environment.apiUrl}/file/${fileId}`;
   }
-
+  
   openFile(fileId: number) {
-    const fileUrl = this.getFileUrl(fileId);
-    window.open(fileUrl, '_blank');
+    const url = this.getFileUrl(fileId);
+    window.open(url, '_blank');
   }
+  
 
   getCategoryKeys(obj: any): string[] {
     return Object.keys(obj);

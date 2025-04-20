@@ -11,6 +11,11 @@ import { Router } from '@angular/router';
 import { ClientJobsService } from '../../../services/client-jobs.service';
 import { FormDataService } from '../../../services/form-data.service';
 import { LoadingComponent } from '../../../components/loading/loading.component';
+import { FileUploadResponse } from '../../../services/client-jobs.service';
+import { AuthService } from '../../../services/auth.service'; // adjust path as needed
+
+
+
 
 @Component({
   selector: 'app-client-full-form',
@@ -65,7 +70,8 @@ export class ClientFullFormComponent implements OnInit {
     private fb: FormBuilder,
     private clientJobsService: ClientJobsService,
     private router: Router,
-    private formDataService: FormDataService
+    private formDataService: FormDataService,
+    private authService: AuthService // <-- add this
   ) { }
 
   ngOnInit() {
@@ -237,7 +243,6 @@ export class ClientFullFormComponent implements OnInit {
     this.showScopeOtherInput = selectedOptions.includes('Other...');
   }
 
-
   onFileSelected(event: Event) {
     const input = event.target as HTMLInputElement;
     if (input.files?.length) {
@@ -249,44 +254,34 @@ export class ClientFullFormComponent implements OnInit {
   submitForm() {
     if (this.clientForm.invalid || this.isSubmitting) return;
     this.isSubmitting = true;
+  
+    this.submitJobForm();  // Submit form first, then upload file after getting job_id
+  }
+  
+
+  submitJobForm() {
     const rawForm = this.clientForm.value;
-
     const formPayload: any = {};
-
+  
     Object.keys(rawForm).forEach(camelKey => {
       const snakeKey = this.camelToSnakeCase(camelKey);
       let value = rawForm[camelKey];
-
-      if (Array.isArray(value)) {
-        value = value.join(', ');
-      }
-
-      if (snakeKey === 'budget') {
-        value = parseFloat(value);
-      }
-
+      if (Array.isArray(value)) value = value.join(', ');
+      if (snakeKey === 'budget') value = parseFloat(value);
       formPayload[snakeKey] = value;
     });
-
+  
     formPayload.responses = [];
-
+  
     for (const category of this.categories) {
       const questions = this.formStructure[category];
       for (const questionKey of Object.keys(questions)) {
         const camelKey = this.camelCase(questionKey);
         const control = this.clientForm.get(camelKey);
-    
         if (control && control.value !== undefined && control.value !== null) {
           let value = control.value;
-    
-          // Convert arrays to comma-separated strings
-          if (Array.isArray(value)) {
-            value = value.join(', ');
-          }
-    
-          // Convert all values to string explicitly
+          if (Array.isArray(value)) value = value.join(', ');
           value = String(value);
-    
           formPayload.responses.push({
             question_key: questionKey,
             response_value: value
@@ -294,24 +289,37 @@ export class ClientFullFormComponent implements OnInit {
         }
       }
     }
-    
-
-
+  
     const request$ = this.jobIdToEdit
-      ? this.clientJobsService.updateJob(this.jobIdToEdit, formPayload)
-      : this.clientJobsService.submitForm(formPayload);
+  ? this.clientJobsService.updateJob(this.jobIdToEdit, formPayload)
+  : this.clientJobsService.submitForm(formPayload);
 
-    request$.subscribe({
-      next: () => {
-        setTimeout(() => {
-          this.router.navigate(['/client/pending-bids']);
-        }, 300);
-      },
-      error: (error: any) => {
-        console.error('Submission failed:', error);
-        this.isSubmitting = false;
-      }
-    });
+request$.subscribe({
+  next: (res) => {
+    const jobId = res.job_id;
+    if (this.uploadedFile) {
+      const formData = new FormData();
+      formData.append('job_id', jobId);
+      formData.append('files', this.uploadedFile);
+      formData.append('category', 'Job Description');
+
+      this.clientJobsService.uploadFiles(formData).subscribe({
+        next: () => this.router.navigate(['/client/pending-bids']),
+        error: (e) => {
+          console.error('File upload failed', e);
+          this.isSubmitting = false;
+        }
+      });
+    } else {
+      this.router.navigate(['/client/pending-bids']);
+    }
+  },
+  error: (error: any) => {
+    console.error('Submission failed:', error);
+    this.isSubmitting = false;
+  }
+});
+
   }
 
   camelCase(label: string): string {
