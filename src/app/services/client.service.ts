@@ -20,4 +20,12 @@ export class ClientService {
   getBidsInProgress(): Observable<any> {
     return this.http.get(`${environment.apiUrl}/bids-in-progress`, { withCredentials: true });
   }
+
+  createJobWithResponses(jobData: any): Observable<any> {
+    return this.http.post(`${environment.apiUrl}/client/create-job-with-responses`, jobData, { withCredentials: true });
+  }
+
+  updateJobWithResponses(jobId: number, jobData: any): Observable<any> {
+    return this.http.post(`${environment.apiUrl}/update-job-with-responses/${jobId}`, jobData, { withCredentials: true });
+  }
 }
