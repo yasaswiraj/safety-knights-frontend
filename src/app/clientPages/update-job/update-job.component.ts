@@ -19,7 +19,7 @@ export class UpdateJobComponent implements OnInit {
 
   ngOnInit(): void {
     // Fetch client detailed responses for a given client_response_id (e.g., 123)
-    this.formsService.getClientResponsesDetailed(123).subscribe(
+    this.formsService.getClientResponsesDetailed(128).subscribe(
       data => {
         console.log('Client Responses Detailed in update component:', data);
         this.clientResponses = data;

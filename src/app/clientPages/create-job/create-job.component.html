@@ -1,58 +1,65 @@
 <div *ngIf="formStructure" class="bg-white p-4 rounded-lg shadow-md">
-  <form>
-    <!-- Iterate over categories -->
-    <div *ngFor="let category of formStructure.categories" class="mb-6">
+  <form [formGroup]="jobForm" (ngSubmit)="onSubmit()">
+    <ng-container *ngFor="let category of formStructure.categories">
       <h3 class="text-2xl font-bold mb-2">{{ category.category_name }}</h3>
-      <!-- Iterate over questions within the category -->
-      <div *ngFor="let question of category.questions" class="mb-4">
-        <label class="block font-medium mb-1 text-gray-700">{{ question.question }}</label>
-        <div [ngSwitch]="question.answer_type">
-          <div *ngSwitchCase="'text'">
-            <input
-              type="text"
-              name="question{{ question.question_id }}"
-              class="w-full p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500" />
-          </div>
-          <div *ngSwitchCase="'date'">
-            <input
-              type="date"
-              name="question{{ question.question_id }}"
-              class="w-full p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500" />
-          </div>
+      <ng-container *ngFor="let q of category.questions">
+        <label class="block font-medium mb-1 text-gray-700">{{ q.question }}</label>
+        <ng-container [ngSwitch]="q.answer_type">
+          <!-- text -->
+          <input *ngSwitchCase="'text'"
+                 type="text"
+                 class="w-full p-2 border rounded-md"
+                 [formControlName]="q.question_id" />
+          <!-- date -->
+          <input *ngSwitchCase="'date'"
+                 type="date"
+                 class="w-70 p-2 border rounded-md"
+                 [formControlName]="q.question_id" />
+          <!-- radio -->
           <div *ngSwitchCase="'radio'">
-            <ng-container *ngIf="getOptions(question.question_id) | async as options">
-              <div *ngFor="let option of options" class="flex items-center space-x-2">
-                <input
-                  type="radio"
-                  name="question{{ question.question_id }}"
-                  [value]="option"
-                  class="form-radio text-blue-600" />
-                <label class="text-gray-700">{{ option }}</label>
-              </div>
+            <ng-container *ngIf="getOptions(q.question_id) | async as opts">
+              <label *ngFor="let opt of opts" class="flex items-center space-x-2">
+                <input  type="radio"
+                        [value]="opt"
+                        [formControlName]="q.question_id" />
+                <span>{{ opt }}</span>
+              </label>
             </ng-container>
           </div>
+          <!-- checkbox group -->
           <div *ngSwitchCase="'CHECKBOX_GROUP'">
-            <ng-container *ngIf="getOptions(question.question_id) | async as options">
-              <div *ngFor="let option of options" class="flex items-center space-x-2">
-                <input
+            <ng-container *ngIf="getOptions(q.question_id) | async as opts">
+              <label *ngFor="let opt of opts" class="flex items-center space-x-2">
+                <input  
                   type="checkbox"
-                  name="question{{ question.question_id }}[]"
-                  [value]="option"
-                  class="form-checkbox text-blue-600" />
-                <label class="text-gray-700">{{ option }}</label>
-              </div>
+                  [value]="opt"
+                  #chk
+                  (change)="toggleCheckbox(q.question_id, opt, chk.checked)" />
+                <span>{{ opt }}</span>
+              </label>
             </ng-container>
           </div>
-          <div *ngSwitchDefault>
-            <input
-              type="text"
-              name="question{{ question.question_id }}"
-              class="w-full p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500" />
+          <!-- textbox group -->
+          <div *ngSwitchCase="'TEXT_GROUP'" [formArrayName]="q.question_id">
+            <ng-container *ngFor="let ctrl of getTextGroupControls(q.question_id).controls; let i = index">
+              <label class="block font-medium mb-1 text-gray-700">
+                {{ 'Minimum Insurance Coverage for ' + getInsuranceControlValue(i) }}
+              </label>
+              <input type="text"
+                     class="w-full p-2 mb-4 border rounded-md"
+                     [formControlName]="i" />
+            </ng-container>
           </div>
-        </div>
-      </div>
-    </div>
-    <button type="submit" class="w-full py-3 bg-blue-600 text-white rounded-lg font-semibold hover:bg-blue-700 transition">
+          <!-- fallback -->
+          <input *ngSwitchDefault
+                 type="text"
+                 class="w-full p-2 border rounded-md"
+                 [formControlName]="q.question_id" />
+        </ng-container>
+      </ng-container>
+    </ng-container>
+    <button type="submit"
+            class="w-full py-3 mt-6 bg-(--accent-color) text-white rounded-full font-semibold hover:bg-(--accent-color)/50 transition cursor-pointer">
       Submit
     </button>
   </form>

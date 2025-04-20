@@ -86,7 +86,7 @@ export const routes: Routes = [
     }],
     children: [
       { path: 'received-bids', component: ClientReceivedBidsComponent },
-      { path: 'client-form', component: ClientFullFormComponent },
+      { path: 'client-form', component: CreateJobComponent },
       { path: 'bids-in-progress', component: BidsInProgressComponent },
       { path: 'pending-bids', component: PendingBidsComponent },
       { path: 'job-in-progress', component: JobInProgressComponent },
