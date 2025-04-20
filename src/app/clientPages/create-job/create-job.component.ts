@@ -88,7 +88,7 @@ export class CreateJobComponent implements OnInit {
 
     this.clientService.createJobWithResponses(payload).subscribe(response => {
       console.log('Job created successfully:', response);
-      this.router.navigate(['/client/bids-in-progress']);
+      this.router.navigate(['/client/pending-bids']);
     });
   }
 
