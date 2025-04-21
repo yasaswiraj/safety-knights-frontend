@@ -85,8 +85,6 @@ export interface ClientProfileUpdate {
   phone_number: string;
 }
 
-
-
 export interface ConsultantProfile {
   user_id: number;
   name: string;
@@ -117,7 +115,11 @@ export interface ConsultantProfile {
   }[];
 }
 
-
+export interface FileUploadResponse {
+  success: boolean;
+  message: string;
+  fileLocations?: string[];
+}
 
 @Injectable({
   providedIn: 'root'
@@ -167,8 +169,6 @@ export class ClientJobsService {
       withCredentials: true
     });
   }
-
-
 
   createJob(jobData: CreateJobRequest): Observable<any> {
     console.log('Creating job with data:', jobData);
@@ -220,7 +220,6 @@ export class ClientJobsService {
     });
   }
 
-
   getClientProfile(): Observable<any> {
     return this.http.get(`${environment.apiUrl}/client/profile`, {
       withCredentials: true
@@ -232,7 +231,6 @@ export class ClientJobsService {
       withCredentials: true
     });
   }
-
 
   // Optional helper
   private fixDate(date: any): string | null {
@@ -279,10 +277,13 @@ export class ClientJobsService {
       { withCredentials: true }
     );
   }
-  
 
-
-
-
+  uploadFiles(formData: FormData): Observable<FileUploadResponse> {
+    return this.http.post<FileUploadResponse>(
+      `${environment.apiUrl}/upload-multiple-files`, 
+      formData,
+      { withCredentials: true }
+    );
+  }
 }
 

@@ -56,6 +56,7 @@ export class PendingBidsComponent implements AfterViewInit, OnInit {
         const transformedJobs = response.jobs.map(job => ({
           ...job,
           jobId: job.client_job_id,
+          formId: job.form_id,
           jobName: job.scope_of_service,
           deadline: job.proposal_deadline,
           budget: job.budget,
@@ -150,7 +151,16 @@ export class PendingBidsComponent implements AfterViewInit, OnInit {
 
 
   handleAction(bid: PendingBid) {
-    this.editJob(bid);
+    const jobId = bid.client_job_id;
+    const formId = bid.form_id;
+  
+    if (!jobId || !formId) {
+      console.error('Missing jobId or formId');
+      return;
+    }
+  
+    this.router.navigate(['/client/update-job'],{state: {client_response_id: jobId }});
   }
+  
 
 }

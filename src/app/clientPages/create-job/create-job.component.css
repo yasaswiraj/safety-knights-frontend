@@ -1,0 +1,27 @@
+form {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+  }
+  
+  input[type="text"],
+  input[type="date"] {
+    padding: 0.75rem;
+    border: 1px solid #ccc;
+    border-radius: 0.5rem;
+  }
+  
+  button {
+    background-color: #b17457;
+    color: white;
+    padding: 1rem;
+    border-radius: 9999px;
+    font-weight: 600;
+    border: none;
+    transition: background-color 0.3s ease;
+  }
+  
+  button:hover {
+    background-color: #b17457;
+  }
+  
