@@ -31,9 +31,9 @@ import { environment } from '../../../../environments/environment';
 })
 export class ConsultantForm3Component implements OnInit {
   signUpForm!: FormGroup;
-  categories: Record<string, Record<string, { type: string; option?: string[] }>> = {};
+   categories: Record<string, Record<string, { type: string; option?: string[] }>> = {};
   selectedFiles: File[] = [];
-
+  categoryFiles: { [key: string]: File[] } = {};
   constructor(
     private fb: FormBuilder,
     private router: Router,
@@ -78,48 +78,72 @@ export class ConsultantForm3Component implements OnInit {
     });
   }
 
- 
-onFilesSelected(event: Event) {
-  const input = event.target as HTMLInputElement;
 
+
+onCategoryFileSelected(event: Event, categoryKey: string): void {
+  const input = event.target as HTMLInputElement;
   if (input.files && input.files.length > 0) {
-    // Convert FileList to an array and merge with existing selected files
-    this.selectedFiles = [...this.selectedFiles, ...Array.from(input.files)];
-    
+    if (!this.categoryFiles[categoryKey]) {
+      this.categoryFiles[categoryKey] = [];
+    }
+
+    // You can adjust this to allow multiple files if needed
+    this.categoryFiles[categoryKey].push(...Array.from(input.files));
   }
 }
 
-  removeFile(index: number) {
-    this.selectedFiles.splice(index, 1);
-  }
+removeCategoryFile(categoryKey: string, index: number): void {
+  this.categoryFiles[categoryKey].splice(index, 1);
+}
 
-  uploadFiles() {
-    const formData = new FormData();
-    this.selectedFiles.forEach((file) => {
-      formData.append('files', file);
+uploadFiles() {
+  const formData = new FormData();
+  const fileMap: Record<string, string[]> = {};
 
+  Object.keys(this.categoryFiles).forEach((categoryKey) => {
+    const snakeCaseKey = this.toSnakeCase(categoryKey);
+    const files = this.categoryFiles[categoryKey];
+
+    console.log(`Uploading files for category: ${categoryKey} (${snakeCaseKey})`, files);
+
+    fileMap[snakeCaseKey] = [];
+
+    files.forEach((file, index) => {
+      const fieldKey = `${snakeCaseKey}_${index}`;
+      formData.append(fieldKey, file); // This stores the actual files
+      fileMap[snakeCaseKey].push(fieldKey); // Keep track of the file keys
     });
+  });
 
-    this.formDataService.setFormData({ files: this.selectedFiles });
+  // Attach the fileMap JSON as metadata to know which keys belong to which category
+  formData.append('fileCategoryMap', JSON.stringify(fileMap));
 
-    // this.http.post(`${environment.apiUrl}/upload-multiple-files`, formData).subscribe({
-    //   next: (res) => {
-    //     console.log('Upload success', res);
-    //     alert('Files uploaded successfully!');
-    //     this.selectedFiles = [];
-    //   },
-    //   error: (err) => {
-    //     console.error('Upload failed', err);
-    //     alert('Upload failed. Please try again.');
-    //   },
-    // });
-  }
+  console.log('FormData prepared for upload:', formData);
 
-  navigateToNextForm() {
-    const formData = this.processFormData();
-    this.formDataService.setFormData(formData);
-    this.router.navigate(['/consultant-form8']);
-  }
+  // Optional: Store locally or in service
+  this.formDataService.setFormData({
+    categoryFiles: this.categoryFiles,
+    fileCategoryMap: fileMap
+  });
+
+
+}
+
+
+
+  // uploadFiles() {
+  //   const formData = new FormData();
+  //   this.selectedFiles.forEach((file) => {
+  //     formData.append('files', file);
+
+  //   });
+
+  //   this.formDataService.setFormData({ files: this.selectedFiles });
+
+    
+  // }
+
+  
 
   private processFormData(): any {
     const rawData = this.signUpForm.value;
@@ -136,6 +160,12 @@ onFilesSelected(event: Event) {
         processedData[snakeKey] = categoryValues;
       }
     });
+
+      
+      const fileMeta = this.formDataService.getFormData();
+      if (fileMeta?.fileNamesMap) {
+        processedData.files = fileMeta.fileNamesMap;
+      }
 
     return processedData;
   }
@@ -165,5 +195,12 @@ onFilesSelected(event: Event) {
 
   navigateToPreviousForm() {
     this.router.navigate(['/consultant-form-contact']);
+  }
+
+  navigateToNextForm() {
+    const formData = this.processFormData();
+    this.formDataService.setFormData(formData);
+    console.log('Form data with files before navigation:', formData);
+    this.router.navigate(['/consultant-form8']);
   }
 }

@@ -128,7 +128,14 @@ export class ConsultantFormsSubmissionComponent {
             
             uploadPayload.append('user_id', userId);
 
-            console.log('Upload Payload:', uploadPayload);
+                      // ✅ Log the FormData properly
+          for (const [key, value] of uploadPayload.entries()) {
+            console.log(`${key}:`, value);
+          }
+
+
+
+            // console.log('Upload Payload:', uploadPayload);
   
             // Second call: Upload file
             this.http.post(`${environment.apiUrl}/upload-multiple-files`, uploadPayload)

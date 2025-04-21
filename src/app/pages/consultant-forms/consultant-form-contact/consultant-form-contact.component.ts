@@ -49,12 +49,12 @@ export class ConsultantFormContactComponent {
   navigateToNextForm() {
     this.formSubmitted = true;
     this.clientForm.markAllAsTouched(); 
-
+    this.router.navigate(['/consultant-form3']);
     console.log("Button Clicked!");
     if (this.clientForm.valid) {
       console.log('Form is valid, navigating to consultant-form3');
       this.formDataService.setFormData(this.clientForm.value);
-      this.router.navigate(['/consultant-form3']);
+      // this.router.navigate(['/consultant-form3']);
     }else {
       console.log('Form is invalid, check fields:', this.clientForm.value);
       // alert('Please fill in all required fields.');

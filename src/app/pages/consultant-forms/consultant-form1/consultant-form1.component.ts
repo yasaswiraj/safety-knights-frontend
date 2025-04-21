@@ -45,9 +45,10 @@ export class ConsultantForm1Component {
   navigateToNextForm() {
     this.formSubmitted = true;
   this.clientForm.markAllAsTouched(); // Trigger validation
+  this.router.navigate(['/consultant-form-contact']);
     if (this.clientForm.valid) {
       this.formDataService.setFormData(this.clientForm.value);
-      this.router.navigate(['/consultant-form-contact']);
+      // this.router.navigate(['/consultant-form-contact']);
     }
   }
 
