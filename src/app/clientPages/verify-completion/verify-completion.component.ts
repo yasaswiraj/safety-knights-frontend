@@ -46,27 +46,10 @@ export class VerifyCompletionComponent implements OnInit {
         this.jobs = response.jobs.map((job) => ({
           ...job,
           jobName: job.scope_of_service || 'N/A',
-          consultant: 'N/A',
-          bid_amount: job.bid_amount ?? 0 // Ensure bid_amount is always a number
+          consultant: job.consultant_company || 'N/A',
+          bid_amount: job.bid_amount ?? 0 // use bid amount directly from response
         }));
-
-        // Update consultant names
-        this.jobs.forEach((job) => {
-          if (job.consultant_user_id) {
-            this.clientJobsService.getConsultantProfile(job.consultant_user_id).subscribe({
-              next: (profile: { company_name?: string; name?: string }) => {
-                job.consultant = profile.company_name || profile.name || 'N/A';
-                // Update dataSource after consultant name is fetched
-                this.updateDataSource();
-              },
-              error: (err) => {
-                console.error('Failed to fetch consultant profile:', err);
-                this.updateDataSource();
-              }
-            });
-          }
-        });
-
+  
         this.updateDataSource();
       },
       error: (err) => {
@@ -74,6 +57,7 @@ export class VerifyCompletionComponent implements OnInit {
       }
     });
   }
+  
 
   private updateDataSource() {
     this.dataSource.data = [...this.jobs];

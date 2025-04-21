@@ -21,13 +21,18 @@ export class ClientService {
     return this.http.get(`${environment.apiUrl}/bids-in-progress`, { withCredentials: true });
   }
 
-  createJobWithResponses(jobData: any): Observable<any> {
-    return this.http.post(`${environment.apiUrl}/client/create-job-with-responses`, jobData, { withCredentials: true });
+  createJobWithResponses(formData: FormData): Observable<any> {
+    return this.http.post(`${environment.apiUrl}/client/create-job-with-responses`, formData, {
+      withCredentials: true
+    });
+  }
+  
+  updateJobWithResponses(jobId: number, formData: FormData): Observable<any> {
+    return this.http.post(`${environment.apiUrl}/client/update-job-with-responses/${jobId}`, formData, {
+      withCredentials: true
+    });
   }
 
-  updateJobWithResponses(jobId: number, jobData: any): Observable<any> {
-    return this.http.post(`${environment.apiUrl}/client/update-job-with-responses/${jobId}`, jobData, { withCredentials: true });
-  }
 
   uploadJobFile(fileData: FormData): Observable<any> {
     return this.http.post(`${environment.apiUrl}/upload-multiple-files`, fileData, {

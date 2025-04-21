@@ -1,3 +1,4 @@
+<!-- Updated update-job.component.html -->
 <div class="min-h-screen flex items-center justify-center pt-12" style="background-color: #FAF7F0;">
   <div class="w-full max-w-3xl bg-white p-8 rounded-2xl shadow-lg" *ngIf="formStructure">
     <h1 class="text-3xl font-bold text-center mb-8" style="color: #b17457;">
@@ -11,7 +12,10 @@
         </h3>
 
         <ng-container *ngFor="let q of category.questions">
-          <label class="block font-medium text-gray-700">{{ q.question }}</label>
+          <label class="block font-medium text-gray-700">
+            {{ q.question }}
+            <span *ngIf="isRequiredField(q.question_id)" class="text-black-500 ml-1">*</span>
+          </label>
 
           <ng-container [ngSwitch]="q.answer_type">
             <!-- Text -->
@@ -20,17 +24,37 @@
               [formControlName]="q.question_id" />
 
             <!-- Date -->
-            <input *ngSwitchCase="'date'" type="date"
-              class="w-full p-3 border border-gray-300 rounded-md focus:outline-none focus:ring focus:ring-blue-300"
-              [formControlName]="q.question_id" />
+            <div *ngSwitchCase="'date'" class="mb-4">
+              <input
+                type="date"
+                [formControlName]="q.question_id"
+                (blur)="jobForm.get(q.question_id.toString())?.markAsTouched()"
+                class="w-full p-3 border border-gray-300 rounded-md focus:outline-none focus:ring focus:ring-blue-300"
+              />
+              <p class="text-red-600 text-sm mt-1"
+                *ngIf="jobForm.get(q.question_id.toString())?.hasError('pastDate') && jobForm.get(q.question_id.toString())?.touched">
+                Date cannot be in the past.
+              </p>
+              <p class="text-red-600 text-sm mt-1"
+                *ngIf="jobForm.hasError('proposalAfterWork') && (jobForm.get('4')?.touched || jobForm.get('5')?.touched)">
+                Proposal deadline should be before work conducted.
+              </p>
+            </div>
 
             <!-- Radio -->
             <div *ngSwitchCase="'radio'" class="space-y-2">
               <ng-container *ngIf="getOptions(q.question_id) | async as opts">
                 <label *ngFor="let opt of opts" class="flex items-center space-x-2">
-                  <input type="radio" [value]="opt" [formControlName]="q.question_id" />
+                  <input type="radio" [value]="opt" [formControlName]="q.question_id"
+                    (change)="handleRadioChange(q.question_id, opt)" />
                   <span>{{ opt }}</span>
                 </label>
+
+                <div *ngIf="isOtherSelected[q.question_id]" class="mt-2">
+                  <input type="text" class="w-full p-2 border border-gray-300 rounded-md"
+                    placeholder="Please specify..." [formControl]="otherInputControls[q.question_id]"
+                    (input)="updateRadioValue(q.question_id)" />
+                </div>
               </ng-container>
             </div>
 
@@ -38,10 +62,15 @@
             <div *ngSwitchCase="'CHECKBOX_GROUP'" class="space-y-2">
               <ng-container *ngIf="getOptions(q.question_id) | async as opts">
                 <label *ngFor="let opt of opts" class="flex items-center space-x-2">
-                  <input type="checkbox" [value]="opt" #ck (change)="toggleCheckbox(q.question_id, opt, ck.checked)"
+                  <input type="checkbox" [value]="opt" #ck
+                    (change)="toggleCheckbox(q.question_id, opt, ck.checked)"
                     [checked]="isCheckboxChecked(q.question_id, opt)" />
                   <span>{{ opt }}</span>
                 </label>
+                <div *ngIf="isOtherSelected[q.question_id]" class="mt-2">
+                  <input type="text" class="w-full p-2 border border-gray-300 rounded-md"
+                    placeholder="Please specify..." [formControl]="otherInputControls[q.question_id]" />
+                </div>
               </ng-container>
             </div>
 
@@ -59,6 +88,22 @@
             <input *ngSwitchDefault type="text" class="w-full p-3 border border-gray-300 rounded-md"
               [formControlName]="q.question_id" />
           </ng-container>
+
+          <!-- Upload Field -->
+          <div *ngIf="q.question === 'Please describe the work in detail'" class="mt-2">
+            <label class="block font-medium text-gray-700">Upload Job Description</label>
+            <div class="relative">
+              <label for="jobFile"
+                class="inline-block cursor-pointer px-4 py-2 bg-[#b17457] text-white font-medium rounded-md shadow-md hover:bg-[#a06044] transition">
+                Choose File
+              </label>
+              <input id="jobFile" type="file" (change)="onFileSelected($event)" class="hidden" />
+            </div>
+            <p *ngIf="uploadedFile" class="mt-2 text-sm text-green-600">
+              Selected: {{ uploadedFile.name }}
+            </p>
+          </div>
+
         </ng-container>
       </ng-container>
 

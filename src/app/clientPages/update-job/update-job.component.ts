@@ -8,6 +8,8 @@ import {
   FormGroup,
   FormArray,
   FormControl,
+  AbstractControl,
+  ValidatorFn,
 } from '@angular/forms';
 import { FormsService } from '../../services/forms.service';
 import { ClientService } from '../../services/client.service';
@@ -21,20 +23,22 @@ import { Router } from '@angular/router';
   styleUrl: './update-job.component.css',
 })
 export class UpdateJobComponent implements OnInit {
-  formStructure: any;                    // server schema
-  clientResponses: any;                  // existing answers
-  jobForm!: FormGroup;                   // reactive form
+  formStructure: any;
+  clientResponses: any;
+  jobForm!: FormGroup;
   optionsCache: Record<number, Observable<string[]>> = {};
 
-  /* ids we need for the special Insurance‑Coverage sync */
   private insuranceQuestionId = 7;
   private textGroupId!: number;
+  uploadedFile: File | null = null;
+  isOtherSelected: { [questionId: number]: boolean } = {};
+  otherInputControls: { [questionId: number]: FormControl } = {};
 
   constructor(
     private fb: FormBuilder,
     private formsService: FormsService,
     private clientService: ClientService,
-    private router: Router // Added router injection
+    private router: Router
   ) { }
 
   ngOnInit() {
@@ -52,48 +56,39 @@ export class UpdateJobComponent implements OnInit {
     }
   }
 
-
   private buildJobForm(structure: any) {
     const group: Record<string, FormControl | FormArray<any>> = {};
 
     structure.categories.forEach((cat: any) => {
       cat.questions.forEach((q: any) => {
         const pref = this.prefilledValue(q.question_id);
+        const validators = [];
 
-        switch (q.answer_type) {
-          // text / date / radio
-          case 'text':
-          case 'date':
-          case 'radio':
-            group[q.question_id] = this.fb.control(pref ?? '');
-            break;
-          // CHECKBOX_GROUP
-          case 'CHECKBOX_GROUP': {
-            const chosen = pref ? String(pref).split(/\s*,\s*/) : [];
-            group[q.question_id] = this.fb.array(
-              chosen.map((val: string) => this.fb.control(val))
-            );
-            break;
+        if (q.answer_type === 'CHECKBOX_GROUP') {
+          const chosen = pref ? String(pref).split(/\s*,\s*/) : [];
+          group[q.question_id] = this.fb.array(
+            chosen.map((val: string) => this.fb.control(val))
+          );
+        } else if (q.answer_type === 'TEXT_GROUP') {
+          this.textGroupId = q.question_id;
+          const vals = pref ? String(pref).split(/\s*,\s*/) : [];
+          group[q.question_id] = this.fb.array(
+            vals.map((v: string) => this.fb.control(v))
+          );
+        } else {
+          if (q.question_id === 4 || q.question_id === 5) {
+            validators.push(this.noPastDateValidator());
           }
-          // TEXT_GROUP (coverage inputs)
-          case 'TEXT_GROUP': {
-            this.textGroupId = q.question_id;
-            const vals = pref ? String(pref).split(/\s*,\s*/) : [];
-            group[q.question_id] = this.fb.array(
-              vals.map((v: string) => this.fb.control(v))
-            );
-            break;
-          }
-          default:
-            group[q.question_id] = this.fb.control(pref ?? '');
+          group[q.question_id] = this.fb.control(pref ?? '', validators);
         }
       });
     });
 
-    this.jobForm = this.fb.group(group);
+    this.jobForm = this.fb.group(group, {
+      validators: this.dateOrderValidator(),
+    });
   }
 
-  /** read existing answer for a question‑id */
   private prefilledValue(qId: number) {
     for (const cat of this.clientResponses.categories || []) {
       const resp = cat.responses.find((r: any) => r.question_id === qId);
@@ -102,18 +97,32 @@ export class UpdateJobComponent implements OnInit {
     return null;
   }
 
-  /** ---------  Checkbox handler (qId 7 = Insurance)  --------------------- */
+  isRequiredField(questionId: number): boolean {
+    const optionalQuestionIds = [10, 7, 22];
+    return !optionalQuestionIds.includes(questionId);
+  }
+
   toggleCheckbox(qId: number, option: string, checked: boolean) {
     const boxArray = this.jobForm.get(qId.toString()) as FormArray<FormControl>;
-    const i = boxArray.controls.findIndex(c => c.value === option);
+    const i = boxArray.controls.findIndex((c) => c.value === option);
+
     if (checked) {
       boxArray.push(this.fb.control(option));
     } else {
       if (i !== -1) boxArray.removeAt(i);
     }
 
+    if (option.toLowerCase().includes('other')) {
+      this.isOtherSelected[qId] = checked;
+      if (checked && !this.otherInputControls[qId]) {
+        this.otherInputControls[qId] = new FormControl('');
+      }
+    }
+
     if (qId === this.insuranceQuestionId) {
-      const coverageArray = this.jobForm.get(this.textGroupId.toString()) as FormArray<FormControl>;
+      const coverageArray = this.jobForm.get(
+        this.textGroupId.toString()
+      ) as FormArray<FormControl>;
 
       if (checked) {
         coverageArray.push(this.fb.control(''));
@@ -123,12 +132,33 @@ export class UpdateJobComponent implements OnInit {
     }
   }
 
-  /** convenience for template */
+  handleRadioChange(questionId: number, selectedValue: string) {
+    const isOther = selectedValue.toLowerCase().includes('other');
+
+    if (isOther) {
+      this.isOtherSelected[questionId] = true;
+
+      if (!this.otherInputControls[questionId]) {
+        this.otherInputControls[questionId] = new FormControl('');
+      }
+
+      // Don't clear the value – leave "Other..." selected
+    } else {
+      this.isOtherSelected[questionId] = false;
+    }
+  }
+
+  updateRadioValue(questionId: number) {
+    const otherValue = this.otherInputControls[questionId]?.value;
+    if (otherValue) {
+      this.jobForm.get(questionId.toString())?.setValue(otherValue);
+    }
+  }
+
   getTextGroupControls(qId: number) {
     return (this.jobForm.get(qId.toString()) as FormArray)?.controls;
   }
 
-  /** lazy‑load options */
   getOptions(qId: number): Observable<string[]> {
     if (!this.optionsCache[qId]) {
       this.optionsCache[qId] = this.formsService.getOptionsForQuestion(qId).pipe(
@@ -139,7 +169,6 @@ export class UpdateJobComponent implements OnInit {
     return this.optionsCache[qId];
   }
 
-  /** Collect payload and send to backend */
   onSubmit() {
     if (this.jobForm.invalid) {
       this.jobForm.markAllAsTouched();
@@ -148,32 +177,91 @@ export class UpdateJobComponent implements OnInit {
 
     const responses = Object.entries(this.jobForm.value)
       .filter(([_, v]) => !(Array.isArray(v) && v.length === 0) && v !== '')
-      .map(([id, val]) => ({
-        question_id: +id,
-        response_value: Array.isArray(val) ? val.join(', ') : val,
-      }));
+      .map(([id, val]) => {
+        const qId = +id;
+        if (val === 'Other...' && this.otherInputControls[qId]) {
+          val = this.otherInputControls[qId].value;
+        }
+        if (
+          Array.isArray(val) &&
+          val.includes('Other...') &&
+          this.otherInputControls[qId]
+        ) {
+          val = val.map((v: string) =>
+            v === 'Other...' ? this.otherInputControls[qId].value : v
+          );
+        }
+        return {
+          question_id: qId,
+          response_value: Array.isArray(val) ? val.join(', ') : val,
+        };
+      });
 
-    const payload = { form_id: this.formStructure.form_id, responses };
-    console.log(' update‑job payload', payload);
-    console.log(' client_response_id', this.clientResponses.client_response_id);
-    // TODO: call update endpoint
-    this.clientService.updateJobWithResponses(this.clientResponses.client_response_id, payload).subscribe({
-      next: (response) => {
-        console.log('Job updated successfully:', response);
-        this.router.navigate(['/client/pending-bids']);
-      },
-      error: (err) => {
-        console.error('Job update failed:', err);
-      }
-    });
+    const payload = {
+      form_id: this.formStructure.form_id,
+      responses,
+    };
+
+    const formData = new FormData();
+    formData.append('job_data_str', JSON.stringify(payload));
+    if (this.uploadedFile) {
+      formData.append('files', this.uploadedFile);
+    }
+
+    this.clientService
+      .updateJobWithResponses(this.clientResponses.client_response_id, formData)
+      .subscribe({
+        next: (res) => {
+          console.log('Job updated successfully:', res);
+          this.router.navigate(['/client/pending-bids']);
+        },
+        error: (err) => {
+          console.error('Job update failed:', err);
+        },
+      });
+
   }
 
-  // Add getter to simplify access to the insurance FormArray for TEXT_GROUP fields
+  onFileSelected(event: Event): void {
+    const input = event.target as HTMLInputElement;
+    if (input.files && input.files.length > 0) {
+      this.uploadedFile = input.files[0];
+    }
+  }
+
+  noPastDateValidator(): ValidatorFn {
+    return (control: AbstractControl): { [key: string]: any } | null => {
+      const value = control.value;
+      if (!value) return null;
+
+      const selected = new Date(value);
+      const today = new Date();
+
+      selected.setHours(0, 0, 0, 0);
+      today.setHours(0, 0, 0, 0);
+
+      return selected < today ? { pastDate: true } : null;
+    };
+  }
+
+  dateOrderValidator(): ValidatorFn {
+    return (group: AbstractControl): { [key: string]: any } | null => {
+      const proposalControl = group.get('4');
+      const workControl = group.get('5');
+
+      if (!proposalControl || !workControl || !proposalControl.value || !workControl.value) return null;
+
+      const proposalDate = new Date(proposalControl.value);
+      const workDate = new Date(workControl.value);
+
+      return proposalDate > workDate ? { proposalAfterWork: true } : null;
+    };
+  }
+
   get insuranceFormArray(): FormArray {
     return this.jobForm.get(this.insuranceQuestionId.toString()) as FormArray;
   }
 
-  // New function to check if checkbox option is selected
   isCheckboxChecked(questionId: number, option: string): boolean {
     const boxArray = this.jobForm.get(questionId.toString()) as FormArray;
     return boxArray ? boxArray.value.includes(option) : false;

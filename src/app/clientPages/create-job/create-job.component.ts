@@ -57,7 +57,7 @@ export class CreateJobComponent implements OnInit {
           group[q.question_id] = this.fb.array<FormControl<string>>([]);
         } else {
           // Apply past-date validator
-          if (q.question_id === 4|| q.question_id === 5) {
+          if (q.question_id === 4 || q.question_id === 5) {
             validators.push(this.noPastDateValidator());
           }
 
@@ -143,18 +143,18 @@ export class CreateJobComponent implements OnInit {
     return (control: AbstractControl): { [key: string]: any } | null => {
       const value = control.value;
       if (!value) return null;
-  
+
       const selected = new Date(value);
       const today = new Date();
-  
+
       // Reset hours for strict date-only comparison
       selected.setHours(0, 0, 0, 0);
       today.setHours(0, 0, 0, 0);
-  
+
       return selected < today ? { pastDate: true } : null;
     };
   }
-  
+
 
 
   dateOrderValidator(): ValidatorFn {
@@ -205,18 +205,30 @@ export class CreateJobComponent implements OnInit {
 
 
     const payload = {
-      form_id: this.formStructure.form_id,
-      responses
+      job_data_str: {
+        form_id: this.formStructure.form_id,
+        responses
+      }
     };
 
-    this.clientService.createJobWithResponses(payload).subscribe({
+
+    // If you also have files:
+    // formData.append('files', this.uploadedFile); // or loop for multiple
+
+    const formDataToSend = new FormData();
+    formDataToSend.append('job_data_str', JSON.stringify({
+      form_id: this.formStructure.form_id,
+      responses
+    }));
+    if (this.uploadedFile) {
+      formDataToSend.append('files', this.uploadedFile);
+    }
+
+    this.clientService.createJobWithResponses(formDataToSend).subscribe({
       next: (response) => {
+        console.log('Job created successfully:', response);
         const jobId = response.job_id;
-        if (this.uploadedFile) {
-          this.uploadJobDescriptionFile(jobId);
-        } else {
-          this.router.navigate(['/client/pending-bids']);
-        }
+        this.router.navigate(['/client/pending-bids']);
       },
       error: (err) => {
         console.error('Job creation failed:', err);
