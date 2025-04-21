@@ -11,7 +11,10 @@
         </h3>
 
         <ng-container *ngFor="let q of category.questions">
-          <label class="block font-medium text-gray-700">{{ q.question }}</label>
+          <label class="block font-medium text-gray-700">
+            {{ q.question }}
+            <span *ngIf="isRequiredField(q.question_id)" class="text-black-500 ml-1">*</span>
+          </label>
 
           <ng-container [ngSwitch]="q.answer_type">
             <!-- Text -->
@@ -20,20 +23,44 @@
               [formControlName]="q.question_id" />
 
             <!-- Date -->
-            <input *ngSwitchCase="'date'" type="date"
-              class="w-full p-3 border border-gray-300 rounded-md focus:outline-none focus:ring focus:ring-blue-300"
-              [formControlName]="q.question_id" />
+            <div *ngSwitchCase="'date'" class="mb-4">
+              <input type="date" [formControlName]="q.question_id"
+                (blur)="jobForm.get(q.question_id.toString())?.markAsTouched()"
+                class="w-full p-3 border border-gray-300 rounded-md focus:outline-none focus:ring focus:ring-blue-300" />
 
+
+              <!-- Past date error -->
+              <p class="text-red-600 text-sm mt-1"
+                *ngIf="jobForm.get(q.question_id.toString())?.hasError('pastDate') && jobForm.get(q.question_id.toString())?.touched">
+                Date cannot be in the past.
+              </p>
+
+              <!-- Proposal after work error -->
+              <p class="text-red-600 text-sm mt-1"
+                *ngIf="jobForm.hasError('proposalAfterWork') && (jobForm.get('4')?.touched || jobForm.get('5')?.touched)">
+                Proposal deadline should be before work conducted.
+              </p>
+            </div>
 
             <!-- Radio -->
             <div *ngSwitchCase="'radio'" class="space-y-2">
               <ng-container *ngIf="getOptions(q.question_id) | async as opts">
                 <label *ngFor="let opt of opts" class="flex items-center space-x-2">
-                  <input type="radio" [value]="opt" [formControlName]="q.question_id" />
+                  <input type="radio" [value]="opt" [formControlName]="q.question_id"
+                    (change)="handleRadioChange(q.question_id, opt)" />
                   <span>{{ opt }}</span>
                 </label>
+
+                <!-- If 'Other...' is selected, show input -->
+                <div *ngIf="isOtherSelected[q.question_id]" class="mt-2">
+                  <input type="text" class="w-full p-2 border border-gray-300 rounded-md"
+                    placeholder="Please specify..." [formControl]="otherInputControls[q.question_id]"
+                    (input)="updateRadioValue(q.question_id)" />
+                </div>
               </ng-container>
             </div>
+
+
 
             <!-- Checkbox Group -->
             <div *ngSwitchCase="'CHECKBOX_GROUP'" class="space-y-2">
@@ -43,8 +70,15 @@
                     (change)="toggleCheckbox(q.question_id, opt, chk.checked)" />
                   <span>{{ opt }}</span>
                 </label>
+
+                <!-- If 'Other...' is selected, show input -->
+                <div *ngIf="isOtherSelected[q.question_id]" class="mt-2">
+                  <input type="text" class="w-full p-2 border border-gray-300 rounded-md"
+                    placeholder="Please specify..." [formControl]="otherInputControls[q.question_id]" />
+                </div>
               </ng-container>
             </div>
+
 
             <!-- Textbox Group -->
             <div *ngSwitchCase="'TEXT_GROUP'" [formArrayName]="q.question_id">
@@ -76,22 +110,30 @@
               Selected: {{ uploadedFile.name }}
             </p>
 
-            <p *ngIf="uploadedFile" class="mt-1 text-sm text-green-600">
-              Selected: {{ uploadedFile.name }}
-            </p>
           </div>
 
         </ng-container>
       </ng-container>
 
       <!-- Submit Button -->
-      <button type="submit"
-        class="w-full py-3 mt-4 bg-blue-600 text-white rounded-full font-semibold hover:bg-blue-700 transition">
-        Submit
+      <button type="submit" [disabled]="isSubmitting" class="w-full py-3 mt-4 rounded-full font-semibold transition 
+    text-white bg-blue-600 hover:bg-blue-700 
+    disabled:opacity-60 disabled:cursor-not-allowed">
+        <ng-container *ngIf="!isSubmitting">Submit</ng-container>
+        <ng-container *ngIf="isSubmitting">
+          <span class="flex justify-center items-center gap-2">
+            <svg class="animate-spin h-5 w-5 text-white" viewBox="0 0 24 24">
+              <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+              <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z"></path>
+            </svg>
+            Submitting...
+          </span>
+        </ng-container>
       </button>
 
-      
-      
+
+
+
     </form>
   </div>
 </div>

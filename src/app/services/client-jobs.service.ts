@@ -113,6 +113,8 @@ export interface ConsultantProfile {
     client_name: string;
     created_at: string;
   }[];
+  files_by_category?: Record<string, any[]>;
+
 }
 
 export interface FileUploadResponse {
@@ -225,6 +227,13 @@ export class ClientJobsService {
       withCredentials: true
     });
   }
+
+  getConsultantFiles(userId: number): Observable<any> {
+    return this.http.get(`${environment.apiUrl}/user/${userId}/files`, {
+      withCredentials: true,
+    });
+  }
+  
 
   updateClientProfile(payload: ClientProfileUpdate): Observable<any> {
     return this.http.post(`${environment.apiUrl}/client/update_profile`, payload, {

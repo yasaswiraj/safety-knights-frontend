@@ -87,6 +87,8 @@ job: any;
     if (isReviewed || job.hasReview) {
       alert('You have already submitted feedback for this job.');
       job.hasReview = true; // Disable immediately in UI
+  
+      this.router.navigate(['/client/completed-jobs']);
       return;
     }
   
@@ -99,6 +101,7 @@ job: any;
       }
     });
   }
+  
   
   
   

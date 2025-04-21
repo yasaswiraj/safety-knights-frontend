@@ -47,9 +47,9 @@ export class ConsultantFormContactComponent {
 
   //  Navigate to Next Form
   navigateToNextForm() {
-    this.formSubmitted = true;
-    this.clientForm.markAllAsTouched(); 
-
+    // this.formSubmitted = true;
+    // this.clientForm.markAllAsTouched(); 
+    // this.router.navigate(['/consultant-form3']);
     console.log("Button Clicked!");
     if (this.clientForm.valid) {
       console.log('Form is valid, navigating to consultant-form3');

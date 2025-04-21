@@ -14,52 +14,66 @@
     </p>
   </div>
 
-  <!-- Consultant Details -->
-  <div class="mt-6 space-y-4 text-sm leading-6">
-    <div class="flex items-start gap-2">
-      <span class="font-semibold w-32">Job Title:</span>
-      <span>{{ data.job_title || 'Not provided' }}</span>
-    </div>
-    <div class="flex items-start gap-2">
-      <span class="font-semibold w-32">Company:</span>
-      <span>{{ data.company_name || 'Not provided' }}</span>
-    </div>
-    <div class="flex items-start gap-2">
-      <span class="font-semibold w-32">Address:</span>
-      <span>{{ data.company_address || 'Not provided' }}</span>
-    </div>
-    <div class="flex items-start gap-2">
-      <span class="font-semibold w-32">Email:</span>
-      <span>{{ data.email || 'Not provided' }}</span>
-    </div>
-    <div class="flex items-start gap-2">
-      <span class="font-semibold w-32">Contact:</span>
-      <span>{{ data.contact || 'Not provided' }}</span>
-    </div>
+  <!-- Statistics -->
+<div class="mt-6 text-sm">
+  <h3 class="font-semibold text-lg mb-2">Job Statistics</h3>
+  <div class="grid grid-cols-2 gap-2">
+    <div>Total Jobs: <span class="font-medium">{{ data.statistics?.total_jobs || 0 }}</span></div>
+    <div>Completed Jobs: <span class="font-medium">{{ data.statistics?.completed_jobs || 0 }}</span></div>
+    <div>Active Jobs: <span class="font-medium">{{ data.statistics?.active_jobs || 0 }}</span></div>
+    <div>Average Rating: <span class="font-medium">{{ data.statistics?.average_rating || 0 }}</span></div>
+    <div>Total Reviews: <span class="font-medium">{{ data.statistics?.total_reviews || 0 }}</span></div>
   </div>
+</div>
 
-  <!-- View Certificates Button -->
-  <div class="mt-6 text-center">
-    <button (click)="fetchCertificates()"
-      class="bg-[var(--accent-color)] hover:bg-opacity-90 text-white font-semibold py-2 px-4 rounded-full shadow-md">
-      View Certificates
-    </button>
+<!-- Written Responses -->
+<div *ngIf="data.written_responses?.length" class="mt-6">
+  <h3 class="font-semibold text-lg mb-2">Written Responses</h3>
+  <div *ngFor="let response of data.written_responses" class="mb-2">
+    <p class="text-sm text-gray-700"><strong>{{ response.question }}:</strong> {{ response.response }}</p>
   </div>
+</div>
 
-  <!-- Certificates Display -->
-  <div *ngIf="certificates" class="mt-4 border-t pt-4">
-    <h3 class="text-lg font-bold mb-2">Uploaded Certificates</h3>
+<!-- Category Selections -->
+<div *ngIf="data.categories" class="mt-6">
+  <h3 class="font-semibold text-lg mb-2">Category Expertise</h3>
+  <div *ngFor="let category of getCategoryKeys(data.categories)" class="mb-4">
+    <h4 class="font-medium text-gray-800 capitalize">{{ formatCategoryName(category) }}</h4>
+    <ul class="list-disc list-inside text-sm text-blue-700">
+      <li *ngFor="let item of data.categories[category]">{{ item.option_value }}</li>
+    </ul>
+  </div>
+</div>
 
-    <div *ngFor="let category of certificateCategories">
-      <h4 class="font-semibold text-sm mb-1">{{ category }}</h4>
-      <ul class="list-disc list-inside text-sm text-blue-600 space-y-1">
-        <li *ngFor="let file of certificates[category]">
-          <span class="text-blue-600 hover:underline cursor-pointer" (click)="openFile(file.file_id)">
+<!-- Uploaded Files -->
+<!-- All Uploaded Files (no categories, each in new line) -->
+<div *ngIf="data.files_by_category && getCategoryKeys(data.files_by_category).length" class="mt-6">
+  <h3 class="font-semibold text-lg mb-2">Uploaded Files</h3>
+  <ul class="list-disc list-inside text-sm text-blue-700 space-y-1">
+    <ng-container *ngFor="let category of getCategoryKeys(data.files_by_category)">
+      <ng-container *ngFor="let file of data.files_by_category[category]">
+        <li>
+          <span class="hover:underline cursor-pointer" (click)="openFile(file.file_id)">
             {{ file.filename }}
           </span>
         </li>
+      </ng-container>
+    </ng-container>
+  </ul>
+</div>
 
-      </ul>
-    </div>
+
+
+
+
+<!-- Reviews -->
+<div *ngIf="data.recent_reviews?.length" class="mt-6">
+  <h3 class="font-semibold text-lg mb-2">Recent Reviews</h3>
+  <div *ngFor="let review of data.recent_reviews" class="text-sm border rounded p-3 mb-2">
+    <p class="italic text-gray-700">"{{ review.review }}"</p>
+    <p class="text-xs text-gray-500">By {{ review.client_name }} on {{ review.created_at | date:'shortDate' }} (Rating: {{ review.rating }})</p>
   </div>
+</div>
+
+
 </div>

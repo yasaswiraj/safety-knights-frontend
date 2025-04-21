@@ -23,7 +23,7 @@
           </h2>
           <p><strong>Name:</strong> {{ profile?.name }}</p>
           <p><strong>Email:</strong> {{ profile?.email }}</p>
-          <p><strong>Contact:</strong> {{ profile?.contact }}</p>
+          <p><strong>Contact:</strong> {{ profile?.phone_number }}</p>
           <p><strong>Job Title:</strong> {{ profile?.job_title }}</p>
         </div>
   
@@ -41,10 +41,10 @@
           <h2 class="text-xl font-semibold mb-4 flex items-center gap-2">
             <i class="fas fa-chart-line"></i> Job Statistics
           </h2>
-          <p><strong>Total Jobs:</strong> {{ profile?.job_statistics.total_jobs }}</p>
-          <p><strong>Completed:</strong> {{ profile?.job_statistics.completed_jobs }}</p>
-          <p><strong>Active:</strong> {{ profile?.job_statistics.active_jobs }}</p>
-          <p><strong>In Progress:</strong> {{ profile?.job_statistics.in_progress_jobs }}</p>
+          <p><strong>Total Jobs:</strong> {{ total_jobs }}</p>
+          <p><strong>Completed:</strong> {{ completed_jobs }}</p>
+          <p><strong>Active:</strong> {{ active_jobs }}</p>
+          
         </div>
   
         <!-- Ratings -->
@@ -63,9 +63,9 @@
           <h2 class="text-xl font-semibold mb-4 flex items-center gap-2">
             <i class="fas fa-user-edit"></i> Edit Personal Info
           </h2>
-          <label>Name: <input class="input" [(ngModel)]="profile.name" name="name" required /></label>
+          <label>Name: <input class="input" [(ngModel)]="profile.name" name="name" /></label>
           <label>Email: <input class="input" [value]="profile.email" disabled /></label>
-          <label>Contact: <input class="input" [(ngModel)]="profile.contact" name="contact" /></label>
+          <label>Contact: <input class="input" [(ngModel)]="profile.phone_number" name="contact" /></label>
           <label>Job Title: <input class="input" [(ngModel)]="profile.job_title" name="job_title" /></label>
         </div>
   
@@ -76,22 +76,66 @@
           <label>Company Name: <input class="input" [(ngModel)]="profile.company_name" name="company_name" /></label>
           <label>Address: <input class="input" [(ngModel)]="profile.company_address" name="company_address" /></label>
         </div>
-  
-        <div class="col-span-2 text-right mt-6 flex justify-end gap-4">
-          <!-- Save Button in brown -->
-          <button type="submit"
-            class="bg-[#A15D3C] text-white px-6 py-2 rounded-md shadow-sm hover:bg-[#b17457] transition">
-            <i class="fas fa-save mr-2"></i> Save
-          </button>
-        
-          <!-- Cancel Button in soft gray -->
-          <button type="button" (click)="cancelEdit()"
-            class="bg-gray-100 text-gray-700 px-6 py-2 rounded-md border border-gray-300 shadow-sm hover:bg-gray-200 transition">
-            <i class="fas fa-times mr-2"></i> Cancel
-          </button>
-        </div>
-        
-        
+   
+        <!-- Service Providing Details -->
+<div class="col-span-2">
+  <h2 class="text-xl font-semibold mb-4 flex items-center gap-2">
+    <i class="fas fa-cogs"></i> Edit Service Providing Details
+  </h2>
+
+  <!-- Service Categories -->
+  <div *ngFor="let category of serviceCategories" class="mb-6">
+    <label class="block font-semibold text-gray-800 mb-2 capitalize">
+      {{ category.replace('_', ' ') | titlecase }}
+    </label>
+
+    <textarea
+      class="w-full border border-gray-300 rounded-md p-3 resize-y min-h-[80px]"
+      [(ngModel)]="profile[category]"
+      [name]="category"
+      placeholder="List services separated by commas"
+    >
+    </textarea>
+  </div>
+
+  <!-- Written Responses -->
+  <div class="mb-6">
+    <label class="block font-semibold text-gray-800 mb-2">
+      Availability Specifics
+    </label>
+    <textarea
+      class="w-full border border-gray-300 rounded-md p-3 resize-y min-h-[80px]"
+      [(ngModel)]="profile.written_responses['Please state any specifics about availability that you may have']"
+      name="availability"
+    ></textarea>
+  </div>
+
+  <div class="mb-6">
+    <label class="block font-semibold text-gray-800 mb-2">
+      Additional Comments or Clarifications
+    </label>
+    <textarea
+      class="w-full border border-gray-300 rounded-md p-3 resize-y min-h-[80px]"
+      [(ngModel)]="profile.written_responses['Additional Information, Comments or Clarifications']"
+      name="additional_comments"
+    ></textarea>
+  </div>
+</div>
+
+<div class="col-span-2 text-right mt-6 flex justify-end gap-4">
+  <!-- Save Button in brown -->
+  <button type="submit"
+    class="bg-[#A15D3C] text-white px-6 py-2 rounded-md shadow-sm hover:bg-[#b17457] transition">
+    <i class="fas fa-save mr-2"></i> Save
+  </button>
+
+  <!-- Cancel Button in soft gray -->
+  <button type="button" (click)="cancelEdit()"
+    class="bg-gray-100 text-gray-700 px-6 py-2 rounded-md border border-gray-300 shadow-sm hover:bg-gray-200 transition">
+    <i class="fas fa-times mr-2"></i> Cancel
+  </button>
+</div>
+
         
       </form>
     </div>

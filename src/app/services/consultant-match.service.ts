@@ -33,4 +33,34 @@ export class ConsultantMatchesService {
       withCredentials: true
     });
   }
+
+  getProfile(): Observable<any> {
+  
+    return this.http.get<any>(`${environment.apiUrl}/consultant/get_filled_form`, {
+      withCredentials: true
+    });
+  }
+
+  updateProfile(profileData: any): Observable<any> {
+    const headers = new HttpHeaders({ 'Content-Type': 'application/json' });
+    return this.http.post<any>(`${environment.apiUrl}/consultant/consultant_update`, profileData, {  withCredentials: true });
+  }
+
+  getJobsFromAPI1(): Observable<any> {
+    return this.http.get<any>(`${environment.apiUrl}/consultant/get_bids_in_progress`, {
+      withCredentials: true
+    });
+  }
+
+  getJobsFromAPI2(): Observable<any> {
+    return this.http.get<any>(`${environment.apiUrl}/consultant/job_in_progress`, {
+      withCredentials: true
+    });
+  }
+
+  getJobsFromAPI3(): Observable<any> {
+    return this.http.get<any>(`${environment.apiUrl}/consultant/completed_jobs`, {
+      withCredentials: true
+    });
+  }
 }
