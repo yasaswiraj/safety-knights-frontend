@@ -62,7 +62,7 @@ export class LoginComponent {
   }
 
   navigateToSignUp() {
-    this.router.navigate(['/onboarding']);
+    this.router.navigate(['/']);
   }
 
   navigateToForgotPassword() {
