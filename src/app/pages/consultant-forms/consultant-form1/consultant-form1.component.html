@@ -33,15 +33,16 @@
 
                       <!-- ✅ Password & Confirm Password Fields (Side by Side) -->
             <div class="flex gap-4">
-              <!-- Password Field -->
-              <mat-form-field class="w-1/2 mb-6">
-                  <mat-label>Password</mat-label>
-                  <input matInput type="password" formControlName="password" placeholder="Enter password(min 6 characters)">
-                  <mat-error *ngIf="clientForm.get('password')?.invalid && formSubmitted"  >
-                      Password is required.
-                  </mat-error>
+              <mat-form-field class="w-1/2 mb-6" appearance="fill">
+                <input
+                  matInput
+                  type="password"
+                  formControlName="password"
+                  placeholder="Enter password (min 6 characters)">
+                <mat-error *ngIf="clientForm.get('password')?.invalid && formSubmitted">
+                  Password is required.
+                </mat-error>
               </mat-form-field>
-
               <!-- Confirm Password Field -->
               <mat-form-field class="w-1/2 mb-6">
                   <mat-label>Confirm Password</mat-label>

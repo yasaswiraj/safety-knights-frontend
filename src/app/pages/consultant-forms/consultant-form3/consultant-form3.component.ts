@@ -131,18 +131,6 @@ uploadFiles() {
 
 
 
-  // uploadFiles() {
-  //   const formData = new FormData();
-  //   this.selectedFiles.forEach((file) => {
-  //     formData.append('files', file);
-
-  //   });
-
-  //   this.formDataService.setFormData({ files: this.selectedFiles });
-
-    
-  // }
-
   
 
   private processFormData(): any {
