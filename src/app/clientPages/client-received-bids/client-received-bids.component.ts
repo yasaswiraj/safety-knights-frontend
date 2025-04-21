@@ -112,29 +112,6 @@ export class ClientReceivedBidsComponent {
       }
     });
   }
-  
-  
-
-  openConsultantProfile(bid: any) {
-    this.clientJobsService.getConsultantProfile(bid.consultantId).subscribe({
-      next: (consultant) => {
-  
-        this.dialog.open(ConsultantProfileComponent, {
-          width: '50vw',
-          maxWidth: '700px',
-          height: 'auto',
-          maxHeight: '90vh',
-          panelClass: 'full-screen-dialog',
-          data: consultant
-
-        });
-      },
-      error: (err) => {
-        console.error(' Error fetching consultant profile:', err);
-      }
-    });
-  }
-  
 
   openConsultantReviews(bid: any) {
     this.clientJobsService.getConsultantProfile(bid.consultantId).subscribe({
@@ -156,10 +133,50 @@ export class ClientReceivedBidsComponent {
         });
       },
       error: (err) => {
-        console.error(' Error fetching consultant reviews:', err);
+        console.error('Error fetching consultant reviews:', err);
       }
     });
   }
+  
+  
+
+  
+
+  openConsultantProfile(bid: any) {
+    this.clientJobsService.getConsultantProfile(bid.consultantId).subscribe({
+      next: (consultant) => {
+        this.clientJobsService.getConsultantFiles(bid.consultantId).subscribe({
+          next: (filesResponse) => {
+            consultant.files_by_category = filesResponse.files_by_category || {};
+            this.dialog.open(ConsultantProfileComponent, {
+              width: '50vw',
+              maxWidth: '700px',
+              height: 'auto',
+              maxHeight: '90vh',
+              panelClass: 'full-screen-dialog',
+              data: consultant
+            });
+          },
+          error: (err) => {
+            console.error('Error fetching consultant files:', err);
+            consultant.files_by_category = {};
+            this.dialog.open(ConsultantProfileComponent, {
+              width: '50vw',
+              maxWidth: '700px',
+              height: 'auto',
+              maxHeight: '90vh',
+              panelClass: 'full-screen-dialog',
+              data: consultant
+            });
+          }
+        });
+      },
+      error: (err) => {
+        console.error('Error fetching consultant profile:', err);
+      }
+    });
+  }
+  
   
 }
 
