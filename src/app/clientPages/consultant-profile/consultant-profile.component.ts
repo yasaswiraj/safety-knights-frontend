@@ -24,25 +24,11 @@ export class ConsultantProfileComponent {
   closeDialog(): void {
     this.dialogRef.close();
   }
-
-  fetchCertificates(): void {
-    const url = `${environment.apiUrl}/user/${this.data.user_id}/files`;
-    console.log('Fetching certificates from:', url);
   
-    this.http.get<any>(url, { withCredentials: true }).subscribe({
-      next: (response) => {
-        if (response.files_by_category) {
-          this.certificates = response.files_by_category;
-          this.certificateCategories = Object.keys(response.files_by_category);
-        }
-      },
-      error: (err) => {
-        console.error('Failed to fetch certificates:', err);
-      }
-    });
+  formatCategoryName(name: string): string {
+    return name.replace(/_/g, ' ').replace(/\b\w/g, char => char.toUpperCase());
   }
   
-
   getFileUrl(fileId: number): string {
     return `${environment.apiUrl}/file/${fileId}`;
   }
@@ -51,6 +37,7 @@ export class ConsultantProfileComponent {
     const url = this.getFileUrl(fileId);
     window.open(url, '_blank');
   }
+  
   
 
   getCategoryKeys(obj: any): string[] {

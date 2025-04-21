@@ -24,6 +24,8 @@ export class CreateJobComponent implements OnInit {
   private textGroupId!: number;
   private insuranceQuestionId = 7;
   uploadedFile: File | null = null;
+  isOtherSelected: { [questionId: number]: boolean } = {};
+  otherInputControls: { [questionId: number]: FormControl } = {};
 
 
   constructor(
@@ -43,11 +45,11 @@ export class CreateJobComponent implements OnInit {
 
   private buildJobForm(structure: any) {
     const group: { [controlName: string]: FormControl | FormArray<any> } = {};
-  
+
     structure.categories.forEach((cat: any) => {
       cat.questions.forEach((q: any) => {
         const validators = [];
-  
+
         if (q.answer_type === 'CHECKBOX_GROUP') {
           group[q.question_id] = this.fb.array<FormControl<string>>([]);
         } else if (q.answer_type === 'TEXT_GROUP') {
@@ -55,20 +57,20 @@ export class CreateJobComponent implements OnInit {
           group[q.question_id] = this.fb.array<FormControl<string>>([]);
         } else {
           // Apply past-date validator
-          if (q.question_id === '4'|| q.question_id === '5') {
+          if (q.question_id === 4|| q.question_id === 5) {
             validators.push(this.noPastDateValidator());
           }
-  
+
           group[q.question_id] = this.fb.control('', validators);
         }
       });
     });
-  
+
     this.jobForm = this.fb.group(group, {
       validators: this.dateOrderValidator()
     });
   }
-  
+
 
   getOptions(questionId: number): Observable<string[]> {
     if (!this.optionsCache[questionId]) {
@@ -79,6 +81,39 @@ export class CreateJobComponent implements OnInit {
     }
     return this.optionsCache[questionId];
   }
+
+  isRequiredField(questionId: number): boolean {
+    const optionalQuestionIds = [10, 7, 22];
+    return !optionalQuestionIds.includes(questionId);
+  }
+
+
+  handleRadioChange(questionId: number, selectedValue: string) {
+    const isOther = selectedValue.toLowerCase().includes('other');
+
+    if (isOther) {
+      this.isOtherSelected[questionId] = true;
+
+      if (!this.otherInputControls[questionId]) {
+        this.otherInputControls[questionId] = new FormControl('');
+      }
+
+      // Don't clear the value – leave "Other..." selected
+    } else {
+      this.isOtherSelected[questionId] = false;
+    }
+  }
+
+
+  // When user types into the "Other..." field
+  updateRadioValue(questionId: number) {
+    const otherValue = this.otherInputControls[questionId]?.value;
+    if (otherValue) {
+      this.jobForm.get(questionId.toString())?.setValue(otherValue);
+    }
+  }
+
+
 
   onFileSelected(event: Event): void {
     const input = event.target as HTMLInputElement;
@@ -106,30 +141,37 @@ export class CreateJobComponent implements OnInit {
 
   noPastDateValidator(): ValidatorFn {
     return (control: AbstractControl): { [key: string]: any } | null => {
-      if (!control.value) return null;
-      const selected = new Date(control.value);
+      const value = control.value;
+      if (!value) return null;
+  
+      const selected = new Date(value);
       const today = new Date();
+  
+      // Reset hours for strict date-only comparison
+      selected.setHours(0, 0, 0, 0);
       today.setHours(0, 0, 0, 0);
+  
       return selected < today ? { pastDate: true } : null;
     };
   }
   
 
+
   dateOrderValidator(): ValidatorFn {
     return (group: AbstractControl): { [key: string]: any } | null => {
       const proposalControl = group.get('4');
       const workControl = group.get('5');
-  
-  
+
+
       if (!proposalControl || !workControl || !proposalControl.value || !workControl.value) return null;
-  
+
       const proposalDate = new Date(proposalControl.value);
       const workDate = new Date(workControl.value);
-  
+
       return proposalDate > workDate ? { proposalAfterWork: true } : null;
     };
   }
-  
+
 
 
 
@@ -138,13 +180,29 @@ export class CreateJobComponent implements OnInit {
       this.jobForm.markAllAsTouched();
       return;
     }
-
     const responses = Object.entries(this.jobForm.value)
       .filter(([_, v]) => v !== null && v !== '' && !(Array.isArray(v) && v.length === 0))
-      .map(([qId, value]) => ({
-        question_id: +qId,
-        response_value: Array.isArray(value) ? value.join(', ') : value
-      }));
+      .map(([qId, value]) => {
+        const questionId = +qId;
+
+        // For radio
+        if (value === 'Other...' && this.otherInputControls[questionId]) {
+          value = this.otherInputControls[questionId].value;
+        }
+
+        // For checkbox group
+        if (Array.isArray(value) && value.includes('Other...') && this.otherInputControls[questionId]) {
+          value = value.map((v: string) =>
+            v === 'Other...' ? this.otherInputControls[questionId].value : v
+          );
+        }
+
+        return {
+          question_id: questionId,
+          response_value: Array.isArray(value) ? value.join(', ') : value
+        };
+      });
+
 
     const payload = {
       form_id: this.formStructure.form_id,
@@ -170,12 +228,23 @@ export class CreateJobComponent implements OnInit {
   toggleCheckbox(qId: number, option: string, checked: boolean) {
     const boxArray = this.jobForm.get(qId.toString()) as FormArray<FormControl>;
     const i = boxArray.controls.findIndex(c => c.value === option);
+
     if (checked) {
       boxArray.push(this.fb.control(option));
     } else {
       if (i !== -1) boxArray.removeAt(i);
     }
 
+    // If 'Other...' is selected, show textbox
+    if (option.toLowerCase().includes('other')) {
+      this.isOtherSelected[qId] = checked;
+
+      if (checked && !this.otherInputControls[qId]) {
+        this.otherInputControls[qId] = new FormControl('');
+      }
+    }
+
+    // Handle syncing TEXT_GROUP if this is insurance
     if (qId === this.insuranceQuestionId) {
       const coverageArray = this.jobForm.get(this.textGroupId.toString()) as FormArray<FormControl>;
 
@@ -186,6 +255,7 @@ export class CreateJobComponent implements OnInit {
       }
     }
   }
+
 
   addTextGroupControl(questionId: string): void {
     (this.jobForm.get(questionId) as FormArray).push(this.fb.control(''));

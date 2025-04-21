@@ -116,18 +116,8 @@ export class ClientReceivedBidsComponent {
           height: 'auto',
           maxHeight: '90vh',
           panelClass: 'full-screen-dialog',
-          data: {
-            user_id: consultant.user_id, 
-            name: consultant.name,
-            rating: consultant.statistics.average_rating,
-            reviews: consultant.statistics.total_reviews,
-            company_name: consultant.company_name,
-            company_address: consultant.company_address,
-            contact: consultant.contact,
-            job_title: consultant.job_title,
-            email: consultant.email,
-          }
-          
+          data: consultant
+
         });
       },
       error: (err) => {

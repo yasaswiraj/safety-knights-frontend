@@ -31,28 +31,28 @@ export class UpdateJobComponent implements OnInit {
   private textGroupId!: number;
 
   constructor(
-    private fb: FormBuilder, 
-    private formsService: FormsService, 
+    private fb: FormBuilder,
+    private formsService: FormsService,
     private clientService: ClientService,
     private router: Router // Added router injection
-  ) {}
+  ) { }
 
   ngOnInit() {
     const respId = history.state?.client_response_id;
-    if (!respId) return;
-
-    /* fetch form‑structure AND current answers in parallel */
-    forkJoin({
-      structure: this.formsService.getFormStructure(1),
-      responses: this.formsService.getClientResponsesDetailed(respId),
-    }).subscribe(({ structure, responses }) => {
-      this.formStructure = structure;
-      this.clientResponses = responses;
-      this.buildJobForm(structure);
-    });
+    if (!respId) this.router.navigate(['/client/pending-bids']);
+    else {
+      forkJoin({
+        structure: this.formsService.getFormStructure(1),
+        responses: this.formsService.getClientResponsesDetailed(respId),
+      }).subscribe(({ structure, responses }) => {
+        this.formStructure = structure;
+        this.clientResponses = responses;
+        this.buildJobForm(structure);
+      });
+    }
   }
 
-  /** ---------- Build reactive form WITH initial values ------------------- */
+
   private buildJobForm(structure: any) {
     const group: Record<string, FormControl | FormArray<any>> = {};
 
@@ -154,7 +154,8 @@ export class UpdateJobComponent implements OnInit {
       }));
 
     const payload = { form_id: this.formStructure.form_id, responses };
-    console.log('📝 update‑job payload', payload);
+    console.log(' update‑job payload', payload);
+    console.log(' client_response_id', this.clientResponses.client_response_id);
     // TODO: call update endpoint
     this.clientService.updateJobWithResponses(this.clientResponses.client_response_id, payload).subscribe({
       next: (response) => {
