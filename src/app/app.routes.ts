@@ -22,7 +22,7 @@ import { ConsultantFormsSubmissionComponent } from './pages/consultant-forms/con
 import { ConsultantMatchesComponent } from './pages/consultant-matches/consultant-matches.component';
 import { ConsultantActiveJobsComponent } from './pages/consultant-active-jobs/consultant-active-jobs.component';
 import { ConsultantBiddedJobsComponent } from './pages/consultant-bidded-jobs/consultant-bidded-jobs.component';
-import path from 'path';
+import { UpdateProfileConsultantComponent } from './pages/update-profile-consultant/update-profile-consultant.component';
 import { ConsultantCompletedJobsComponent } from './pages/consultant-completed-jobs/consultant-completed-jobs.component';
 
 import { BidsInProgressComponent } from './clientPages/bids-in-progress/bids-in-progress.component';
@@ -146,6 +146,7 @@ export const routes: Routes = [
       {path: 'consultant-completed',component: ConsultantCompletedJobsComponent },
       {path: 'update-profile-consultant',component: ClientProfileComponent  },
       { path: 'consultant-inbox', component: ChatComponent },
+      { path: 'update-profile', component: UpdateProfileConsultantComponent, data: { editMode: true } },
     ],
   },
   { path: 'consultant-form1', component: ConsultantForm1Component },

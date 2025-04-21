@@ -103,11 +103,24 @@ export class ConsultantFormsSubmissionComponent {
   // }
 
   onGetStarted() {
+
+    const formData = new FormData();
     console.log("Button Clicked!");
     console.log('Final JSON Payload:', this.finalPayload);
+
+    formData.append('consultant_data_str', JSON.stringify(this.finalPayload));
+
+    for (const category in this.selectedFiles) {
+      if (this.selectedFiles.hasOwnProperty(category)) {
+        const fileList = this.selectedFiles[category];
+        for (let i = 0; i < fileList.length; i++) {
+          formData.append(`files[${category}]`, fileList[i]); // fileList[i] is a File object
+        }
+      }
+    }
   
     // First call: Signup
-    this.http.post<any>(`${environment.apiUrl}/consultant/signup`, this.finalPayload, { withCredentials: true })
+    this.http.post<any>(`${environment.apiUrl}/consultant/signup`, formData, { withCredentials: true })
       .subscribe({
         next: (response) => {
           console.log('Form submitted successfully', response);
@@ -128,18 +141,25 @@ export class ConsultantFormsSubmissionComponent {
             
             uploadPayload.append('user_id', userId);
 
-            console.log('Upload Payload:', uploadPayload);
+                      // ✅ Log the FormData properly
+          for (const [key, value] of uploadPayload.entries()) {
+            console.log(`${key}:`, value);
+          }
+
+
+
+            // console.log('Upload Payload:', uploadPayload);
   
             // Second call: Upload file
-            this.http.post(`${environment.apiUrl}/upload-multiple-files`, uploadPayload)
-              .subscribe({
-                next: (uploadResponse) => {
-                  console.log('File uploaded successfully', uploadResponse);
-                },
-                error: (uploadError) => {
-                  console.error('Error uploading file:', uploadError);
-                }
-              });
+            // this.http.post(`${environment.apiUrl}/upload-multiple-files`, uploadPayload)
+            //   .subscribe({
+            //     next: (uploadResponse) => {
+            //       console.log('File uploaded successfully', uploadResponse);
+            //     },
+            //     error: (uploadError) => {
+            //       console.error('Error uploading file:', uploadError);
+            //     }
+            //   });
           }
   
           // Optional: clear form after both steps
