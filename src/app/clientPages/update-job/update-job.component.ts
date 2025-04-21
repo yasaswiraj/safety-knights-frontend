@@ -33,6 +33,8 @@ export class UpdateJobComponent implements OnInit {
   uploadedFile: File | null = null;
   isOtherSelected: { [questionId: number]: boolean } = {};
   otherInputControls: { [questionId: number]: FormControl } = {};
+  isSubmitting = false;
+
 
   constructor(
     private fb: FormBuilder,
@@ -170,11 +172,13 @@ export class UpdateJobComponent implements OnInit {
   }
 
   onSubmit() {
-    if (this.jobForm.invalid) {
+    if (this.jobForm.invalid || this.isSubmitting) {
       this.jobForm.markAllAsTouched();
       return;
     }
-
+  
+    this.isSubmitting = true;
+  
     const responses = Object.entries(this.jobForm.value)
       .filter(([_, v]) => !(Array.isArray(v) && v.length === 0) && v !== '')
       .map(([id, val]) => {
@@ -196,18 +200,18 @@ export class UpdateJobComponent implements OnInit {
           response_value: Array.isArray(val) ? val.join(', ') : val,
         };
       });
-
+  
     const payload = {
       form_id: this.formStructure.form_id,
       responses,
     };
-
+  
     const formData = new FormData();
     formData.append('job_data_str', JSON.stringify(payload));
     if (this.uploadedFile) {
       formData.append('files', this.uploadedFile);
     }
-
+  
     this.clientService
       .updateJobWithResponses(this.clientResponses.client_response_id, formData)
       .subscribe({
@@ -218,9 +222,12 @@ export class UpdateJobComponent implements OnInit {
         error: (err) => {
           console.error('Job update failed:', err);
         },
+        complete: () => {
+          this.isSubmitting = false;
+        }
       });
-
   }
+  
 
   onFileSelected(event: Event): void {
     const input = event.target as HTMLInputElement;

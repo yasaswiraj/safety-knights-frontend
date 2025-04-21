@@ -25,12 +25,9 @@
 
             <!-- Date -->
             <div *ngSwitchCase="'date'" class="mb-4">
-              <input
-                type="date"
-                [formControlName]="q.question_id"
+              <input type="date" [formControlName]="q.question_id"
                 (blur)="jobForm.get(q.question_id.toString())?.markAsTouched()"
-                class="w-full p-3 border border-gray-300 rounded-md focus:outline-none focus:ring focus:ring-blue-300"
-              />
+                class="w-full p-3 border border-gray-300 rounded-md focus:outline-none focus:ring focus:ring-blue-300" />
               <p class="text-red-600 text-sm mt-1"
                 *ngIf="jobForm.get(q.question_id.toString())?.hasError('pastDate') && jobForm.get(q.question_id.toString())?.touched">
                 Date cannot be in the past.
@@ -62,8 +59,7 @@
             <div *ngSwitchCase="'CHECKBOX_GROUP'" class="space-y-2">
               <ng-container *ngIf="getOptions(q.question_id) | async as opts">
                 <label *ngFor="let opt of opts" class="flex items-center space-x-2">
-                  <input type="checkbox" [value]="opt" #ck
-                    (change)="toggleCheckbox(q.question_id, opt, ck.checked)"
+                  <input type="checkbox" [value]="opt" #ck (change)="toggleCheckbox(q.question_id, opt, ck.checked)"
                     [checked]="isCheckboxChecked(q.question_id, opt)" />
                   <span>{{ opt }}</span>
                 </label>
@@ -107,11 +103,22 @@
         </ng-container>
       </ng-container>
 
-      <!-- Submit Button -->
-      <button type="submit"
-        class="w-full py-3 mt-4 bg-[#b17457] text-white rounded-full font-semibold hover:bg-[#a06044] transition">
-        Update Job
+      <!-- Update Button -->
+      <button type="submit" [disabled]="isSubmitting" class="w-full py-3 mt-4 rounded-full font-semibold transition
+         text-white bg-[#b17457] hover:bg-[#a06044] 
+         disabled:opacity-60 disabled:cursor-not-allowed">
+        <ng-container *ngIf="!isSubmitting">Update Job</ng-container>
+        <ng-container *ngIf="isSubmitting">
+          <span class="flex justify-center items-center gap-2">
+            <svg class="animate-spin h-5 w-5 text-white" viewBox="0 0 24 24">
+              <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4" />
+              <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z" />
+            </svg>
+            Updating...
+          </span>
+        </ng-container>
       </button>
+
 
     </form>
   </div>
