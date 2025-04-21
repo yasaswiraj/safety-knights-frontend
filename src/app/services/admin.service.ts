@@ -42,6 +42,14 @@ export class AdminService {
     return this.http.put(`${environment.apiUrl}/admin/questions/${questionId}`, questionData, { withCredentials: true });
   }
 
+  banUser(user_id: number, banData: any): Observable<any> {
+    return this.http.post(`${environment.apiUrl}/admin/ban/${user_id}`, banData, { withCredentials: true });
+  }
+
+  rejectUser(user_id: number, rejectData: any): Observable<any> {
+    return this.http.post(`${environment.apiUrl}/admin/reject/${user_id}`, rejectData, { withCredentials: true });
+  }
+
   updateOption(answerId: number, optionData: any): Observable<any> {
     return this.http.put(`${environment.apiUrl}/admin/options/${answerId}`, optionData, { withCredentials: true });
   }

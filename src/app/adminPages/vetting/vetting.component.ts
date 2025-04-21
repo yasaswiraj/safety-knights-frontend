@@ -2,7 +2,6 @@ import { Component, ViewChild, AfterViewInit, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { MatTableModule, MatTableDataSource } from '@angular/material/table';
 import { MatButtonModule } from '@angular/material/button';
-import { MatIconModule } from '@angular/material/icon';
 import { MatSortModule, MatSort } from '@angular/material/sort';
 import { FormsModule } from '@angular/forms';
 import { VettingUserComponent } from "../../components/vetting-user/vetting-user.component";
@@ -18,7 +17,6 @@ import { Router } from '@angular/router'; // Import Router for navigation
     CommonModule,
     MatTableModule,
     MatButtonModule,
-    MatIconModule,
     MatSortModule,
     FormsModule,
     VettingUserComponent
@@ -38,6 +36,9 @@ export class VettingComponent implements OnInit, AfterViewInit {
   expandedElement: any = null;
   consultantDetails: any = null; // Store fetched consultant details
   loading: boolean = false; // Add loading flag
+  declinePopupVisible: boolean = false; // Add decline popup visibility flag
+  selectedConsultant: any; // Add selected consultant property
+  rejectMessage: string = ''; // Add reject message property
 
   constructor(private adminService: AdminService, private router: Router) { // Add Router to constructor
     this.dataSource = new MatTableDataSource<{ 
@@ -110,7 +111,31 @@ export class VettingComponent implements OnInit, AfterViewInit {
   }
 
   decline(consultant: any) {
-    console.log('Declined', consultant);
+    this.showDeclinePopUp(consultant); // Show decline popup
+  }
+
+  showDeclinePopUp(consultant: any): void {
+    this.selectedConsultant = consultant;
+    this.declinePopupVisible = true;
+  }
+
+  confirmDecline(): void {
+    // Use the rejectUser function to reject the user
+    if (this.selectedConsultant) {
+      this.adminService.rejectUser(this.selectedConsultant.user_id, { reject_reason: this.rejectMessage })
+        .subscribe(response => {
+          console.log("User rejected:", response);
+        }, error => {
+          console.error("Rejection failed:", error);
+        });
+    }
+    // Clear the message and hide the popup
+    this.rejectMessage = '';
+    this.declinePopupVisible = false;
+  }
+
+  cancelDecline(): void {
+    this.declinePopupVisible = false;
   }
 
   requestChanges(consultant: any): void {
