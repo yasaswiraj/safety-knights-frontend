@@ -6,12 +6,14 @@ import { ConsultantProfileComponent } from '../consultant-profile/consultant-pro
 import { ConsultantReviewComponent } from '../consultant-review/consultant-review.component';
 import { ClientJobsService, BidInProgress } from '../../services/client-jobs.service';
 import { firstValueFrom } from 'rxjs';
+import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
+
 
 
 @Component({
   selector: 'app-client-received-bids',
   standalone: true,
-  imports: [CommonModule, NgFor],
+  imports: [CommonModule, NgFor, MatSnackBarModule],
   templateUrl: './client-received-bids.component.html',
   styleUrls: ['./client-received-bids.component.css']
 })
@@ -36,7 +38,9 @@ export class ClientReceivedBidsComponent {
     private router: Router,
     private route: ActivatedRoute,
     private dialog: MatDialog,
-    private clientJobsService: ClientJobsService
+    private clientJobsService: ClientJobsService,
+    private snackBar: MatSnackBar 
+
   ) {}
   ngOnInit() {
     this.route.queryParams.subscribe(async params => {
@@ -92,10 +96,15 @@ export class ClientReceivedBidsComponent {
     });
   }
   
-
   acceptBid(jobId: number, consultantId: number) {
     this.clientJobsService.acceptBid(jobId, consultantId).subscribe({
       next: () => {
+        this.snackBar.open('You have accepted the bid.', 'Close', {
+          duration: 3000, // show for 3 seconds
+          horizontalPosition: 'center',
+          verticalPosition: 'top',
+          panelClass: ['snackbar-success'] // optional custom style
+        });
         this.router.navigate(['/client/bids-in-progress']);
       },
       error: (err) => {
@@ -103,34 +112,11 @@ export class ClientReceivedBidsComponent {
       }
     });
   }
-  
-  
-
-  openConsultantProfile(bid: any) {
-    this.clientJobsService.getConsultantProfile(bid.consultantId).subscribe({
-      next: (consultant) => {
-  
-        this.dialog.open(ConsultantProfileComponent, {
-          width: '50vw',
-          maxWidth: '700px',
-          height: 'auto',
-          maxHeight: '90vh',
-          panelClass: 'full-screen-dialog',
-          data: consultant
-
-        });
-      },
-      error: (err) => {
-        console.error(' Error fetching consultant profile:', err);
-      }
-    });
-  }
-  
 
   openConsultantReviews(bid: any) {
     this.clientJobsService.getConsultantProfile(bid.consultantId).subscribe({
       next: (consultant) => {
-        console.log('📝 Consultant reviews:', consultant.recent_reviews);
+        console.log('📝Consultant reviews:', consultant.recent_reviews);
   
         this.dialog.open(ConsultantReviewComponent, {
           width: '50vw',
@@ -147,10 +133,50 @@ export class ClientReceivedBidsComponent {
         });
       },
       error: (err) => {
-        console.error('❌ Error fetching consultant reviews:', err);
+        console.error('Error fetching consultant reviews:', err);
       }
     });
   }
+  
+  
+
+  
+
+  openConsultantProfile(bid: any) {
+    this.clientJobsService.getConsultantProfile(bid.consultantId).subscribe({
+      next: (consultant) => {
+        this.clientJobsService.getConsultantFiles(bid.consultantId).subscribe({
+          next: (filesResponse) => {
+            consultant.files_by_category = filesResponse.files_by_category || {};
+            this.dialog.open(ConsultantProfileComponent, {
+              width: '50vw',
+              maxWidth: '700px',
+              height: 'auto',
+              maxHeight: '90vh',
+              panelClass: 'full-screen-dialog',
+              data: consultant
+            });
+          },
+          error: (err) => {
+            console.error('Error fetching consultant files:', err);
+            consultant.files_by_category = {};
+            this.dialog.open(ConsultantProfileComponent, {
+              width: '50vw',
+              maxWidth: '700px',
+              height: 'auto',
+              maxHeight: '90vh',
+              panelClass: 'full-screen-dialog',
+              data: consultant
+            });
+          }
+        });
+      },
+      error: (err) => {
+        console.error('Error fetching consultant profile:', err);
+      }
+    });
+  }
+  
   
 }
 

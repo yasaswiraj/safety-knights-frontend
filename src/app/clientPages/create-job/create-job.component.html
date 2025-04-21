@@ -24,13 +24,10 @@
 
             <!-- Date -->
             <div *ngSwitchCase="'date'" class="mb-4">
-              <input
-              type="date"
-              [formControlName]="q.question_id"
-              (blur)="jobForm.get(q.question_id.toString())?.markAsTouched()"
-              class="w-full p-3 border border-gray-300 rounded-md focus:outline-none focus:ring focus:ring-blue-300"
-            />
-            
+              <input type="date" [formControlName]="q.question_id"
+                (blur)="jobForm.get(q.question_id.toString())?.markAsTouched()"
+                class="w-full p-3 border border-gray-300 rounded-md focus:outline-none focus:ring focus:ring-blue-300" />
+
 
               <!-- Past date error -->
               <p class="text-red-600 text-sm mt-1"
@@ -119,10 +116,21 @@
       </ng-container>
 
       <!-- Submit Button -->
-      <button type="submit"
-        class="w-full py-3 mt-4 bg-blue-600 text-white rounded-full font-semibold hover:bg-blue-700 transition">
-        Submit
+      <button type="submit" [disabled]="isSubmitting" class="w-full py-3 mt-4 rounded-full font-semibold transition 
+    text-white bg-blue-600 hover:bg-blue-700 
+    disabled:opacity-60 disabled:cursor-not-allowed">
+        <ng-container *ngIf="!isSubmitting">Submit</ng-container>
+        <ng-container *ngIf="isSubmitting">
+          <span class="flex justify-center items-center gap-2">
+            <svg class="animate-spin h-5 w-5 text-white" viewBox="0 0 24 24">
+              <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+              <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z"></path>
+            </svg>
+            Submitting...
+          </span>
+        </ng-container>
       </button>
+
 
 
 

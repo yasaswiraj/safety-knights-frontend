@@ -26,6 +26,8 @@ export class CreateJobComponent implements OnInit {
   uploadedFile: File | null = null;
   isOtherSelected: { [questionId: number]: boolean } = {};
   otherInputControls: { [questionId: number]: FormControl } = {};
+  isSubmitting = false;
+
 
 
   constructor(
@@ -57,7 +59,7 @@ export class CreateJobComponent implements OnInit {
           group[q.question_id] = this.fb.array<FormControl<string>>([]);
         } else {
           // Apply past-date validator
-          if (q.question_id === 4|| q.question_id === 5) {
+          if (q.question_id === 4 || q.question_id === 5) {
             validators.push(this.noPastDateValidator());
           }
 
@@ -143,18 +145,18 @@ export class CreateJobComponent implements OnInit {
     return (control: AbstractControl): { [key: string]: any } | null => {
       const value = control.value;
       if (!value) return null;
-  
+
       const selected = new Date(value);
       const today = new Date();
-  
+
       // Reset hours for strict date-only comparison
       selected.setHours(0, 0, 0, 0);
       today.setHours(0, 0, 0, 0);
-  
+
       return selected < today ? { pastDate: true } : null;
     };
   }
-  
+
 
 
   dateOrderValidator(): ValidatorFn {
@@ -172,57 +174,58 @@ export class CreateJobComponent implements OnInit {
     };
   }
 
-
-
-
   onSubmit() {
-    if (this.jobForm.invalid) {
+    if (this.jobForm.invalid || this.isSubmitting) {
       this.jobForm.markAllAsTouched();
       return;
     }
+  
+    this.isSubmitting = true;
+  
     const responses = Object.entries(this.jobForm.value)
       .filter(([_, v]) => v !== null && v !== '' && !(Array.isArray(v) && v.length === 0))
       .map(([qId, value]) => {
         const questionId = +qId;
-
-        // For radio
+  
         if (value === 'Other...' && this.otherInputControls[questionId]) {
           value = this.otherInputControls[questionId].value;
         }
-
-        // For checkbox group
+  
         if (Array.isArray(value) && value.includes('Other...') && this.otherInputControls[questionId]) {
           value = value.map((v: string) =>
             v === 'Other...' ? this.otherInputControls[questionId].value : v
           );
         }
-
+  
         return {
           question_id: questionId,
           response_value: Array.isArray(value) ? value.join(', ') : value
         };
       });
-
-
-    const payload = {
+  
+    const formDataToSend = new FormData();
+    formDataToSend.append('job_data_str', JSON.stringify({
       form_id: this.formStructure.form_id,
       responses
-    };
-
-    this.clientService.createJobWithResponses(payload).subscribe({
+    }));
+    if (this.uploadedFile) {
+      formDataToSend.append('files', this.uploadedFile);
+    }
+  
+    this.clientService.createJobWithResponses(formDataToSend).subscribe({
       next: (response) => {
-        const jobId = response.job_id;
-        if (this.uploadedFile) {
-          this.uploadJobDescriptionFile(jobId);
-        } else {
-          this.router.navigate(['/client/pending-bids']);
-        }
+        console.log('Job created successfully:', response);
+        this.router.navigate(['/client/pending-bids']);
       },
       error: (err) => {
         console.error('Job creation failed:', err);
+      },
+      complete: () => {
+        this.isSubmitting = false;
       }
     });
   }
+  
 
 
   toggleCheckbox(qId: number, option: string, checked: boolean) {
