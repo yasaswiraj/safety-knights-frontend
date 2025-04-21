@@ -26,7 +26,7 @@ export class ClientService {
   }
 
   updateJobWithResponses(jobId: number, jobData: any): Observable<any> {
-    return this.http.post(`${environment.apiUrl}/update-job-with-responses/${jobId}`, jobData, { withCredentials: true });
+    return this.http.post(`${environment.apiUrl}/client/update-job-with-responses/${jobId}`, jobData, { withCredentials: true });
   }
 
   uploadJobFile(fileData: FormData): Observable<any> {

@@ -169,11 +169,10 @@ export class CreateJobComponent implements OnInit {
 
   toggleCheckbox(qId: number, option: string, checked: boolean) {
     const boxArray = this.jobForm.get(qId.toString()) as FormArray<FormControl>;
-
+    const i = boxArray.controls.findIndex(c => c.value === option);
     if (checked) {
       boxArray.push(this.fb.control(option));
     } else {
-      const i = boxArray.controls.findIndex(c => c.value === option);
       if (i !== -1) boxArray.removeAt(i);
     }
 
@@ -183,7 +182,7 @@ export class CreateJobComponent implements OnInit {
       if (checked) {
         coverageArray.push(this.fb.control(''));
       } else {
-        coverageArray.removeAt(coverageArray.length - (boxArray.length + 1));
+        if (i !== -1) coverageArray.removeAt(i);
       }
     }
   }
