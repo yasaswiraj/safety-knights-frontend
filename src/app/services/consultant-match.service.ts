@@ -45,4 +45,22 @@ export class ConsultantMatchesService {
     const headers = new HttpHeaders({ 'Content-Type': 'application/json' });
     return this.http.post<any>(`${environment.apiUrl}/consultant/consultant_update`, profileData, {  withCredentials: true });
   }
+
+  getJobsFromAPI1(): Observable<any> {
+    return this.http.get<any>(`${environment.apiUrl}/consultant/get_bids_in_progress`, {
+      withCredentials: true
+    });
+  }
+
+  getJobsFromAPI2(): Observable<any> {
+    return this.http.get<any>(`${environment.apiUrl}/consultant/job_in_progress`, {
+      withCredentials: true
+    });
+  }
+
+  getJobsFromAPI3(): Observable<any> {
+    return this.http.get<any>(`${environment.apiUrl}/consultant/completed_jobs`, {
+      withCredentials: true
+    });
+  }
 }
