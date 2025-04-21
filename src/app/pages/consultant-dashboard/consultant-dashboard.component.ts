@@ -17,7 +17,9 @@ export class ConsultantDashboardComponent {
     { label: 'Bidded Jobs', route: '/consultant/consultant-bidded', icon: 'fas fa-gavel' },
     { label: 'Active Jobs', route: '/consultant/consultant-active', icon: 'fas fa-check' },   
     { label: 'Completed', route: '/consultant/consultant-completed', icon: 'fas fa-envelope' },
-    { label: 'Inbox', route: '/consultant/consultant-inbox', icon: 'fas fa-message' }
+    { label: 'Inbox', route: '/consultant/consultant-inbox', icon: 'fas fa-message' },
+    { label: 'Update Profile', route: '/consultant/update-profile', icon: 'fas fa-edit' },
+  
   ];
 
   isSidebarOpen = true;
