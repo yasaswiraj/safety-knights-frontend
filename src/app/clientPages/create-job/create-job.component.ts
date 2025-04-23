@@ -4,7 +4,7 @@ import { Observable } from 'rxjs';
 import { map, tap } from 'rxjs/operators';
 import { FormDataService } from '../../services/form-data.service';
 import { FormsService } from '../../services/forms.service';
-import { ReactiveFormsModule, FormBuilder, FormGroup, FormArray, FormControl } from '@angular/forms';
+import { ReactiveFormsModule, FormBuilder, FormGroup, FormArray, FormControl, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 import { ClientService } from '../../services/client.service';
 import { AbstractControl, ValidatorFn } from '@angular/forms';
@@ -92,28 +92,24 @@ export class CreateJobComponent implements OnInit {
 
   handleRadioChange(questionId: number, selectedValue: string) {
     const isOther = selectedValue.toLowerCase().includes('other');
-
+  
     if (isOther) {
       this.isOtherSelected[questionId] = true;
-
+  
       if (!this.otherInputControls[questionId]) {
-        this.otherInputControls[questionId] = new FormControl('');
+        // Add required validator here
+        this.otherInputControls[questionId] = new FormControl('', Validators.required);
       }
-
-      // Don't clear the value – leave "Other..." selected
     } else {
       this.isOtherSelected[questionId] = false;
+  
+      // Optional: Reset or clear the otherInputControl when not in use
+      if (this.otherInputControls[questionId]) {
+        this.otherInputControls[questionId].setValue('');
+      }
     }
   }
-
-
-  // When user types into the "Other..." field
-  updateRadioValue(questionId: number) {
-    const otherValue = this.otherInputControls[questionId]?.value;
-    if (otherValue) {
-      this.jobForm.get(questionId.toString())?.setValue(otherValue);
-    }
-  }
+  
 
 
 
@@ -175,43 +171,91 @@ export class CreateJobComponent implements OnInit {
   }
 
   onSubmit() {
-    if (this.jobForm.invalid || this.isSubmitting) {
-      this.jobForm.markAllAsTouched();
+    // Mark all main form controls as touched
+    this.jobForm.markAllAsTouched();
+  
+    // Mark all 'Other...' controls as touched (safely)
+    Object.values(this.otherInputControls).forEach(ctrl => {
+      if (ctrl && typeof ctrl.markAsTouched === 'function') {
+        ctrl.markAsTouched();
+      }
+    });
+  
+    // Block submission if main form or any 'Other...' field is invalid
+    const otherFieldsInvalid = Object.values(this.otherInputControls).some(ctrl => {
+      return ctrl && typeof ctrl.invalid === 'boolean' && ctrl.invalid;
+    });
+  
+    if (this.jobForm.invalid || this.isSubmitting || otherFieldsInvalid) {
       return;
     }
   
     this.isSubmitting = true;
   
-    const responses = Object.entries(this.jobForm.value)
-      .filter(([_, v]) => v !== null && v !== '' && !(Array.isArray(v) && v.length === 0))
-      .map(([qId, value]) => {
-        const questionId = +qId;
-  
-        if (value === 'Other...' && this.otherInputControls[questionId]) {
-          value = this.otherInputControls[questionId].value;
+    // Inject latest 'Other...' values into form
+    Object.entries(this.otherInputControls).forEach(([qIdStr, ctrl]) => {
+      const qId = +qIdStr;
+      if (this.isOtherSelected[qId] && ctrl.value) {
+        const control = this.jobForm.get(qId.toString());
+        if (control) {
+          // Check if the control is a FormArray
+          if (control instanceof FormArray) {
+            // Replace 'Other...' value in the array
+            const idx = control.controls.findIndex(c => c.value === 'Other...');
+            if (idx !== -1) {
+              control.at(idx).setValue(ctrl.value); // ✅ Replace only "Other..."
+            } else {
+              control.push(this.fb.control(ctrl.value)); // just in case it's not added
+            }
+          }
+           else {
+            // For regular FormControl
+            control.setValue(ctrl.value);
+          }
         }
+      }
+    });
   
-        if (Array.isArray(value) && value.includes('Other...') && this.otherInputControls[questionId]) {
+    // Extract and clean responses from form
+    const responses = Object.entries(this.jobForm.value)
+    .filter(([_, v]) => v !== null && v !== '' && !(Array.isArray(v) && v.length === 0))
+    .map(([qId, rawValue]) => {
+      const questionId = +qId;
+      let value = rawValue;
+  
+      // Replace 'Other...' in radio
+      if (value === 'Other...' && this.otherInputControls[questionId]) {
+        value = this.otherInputControls[questionId].value;
+      }
+  
+      // Replace 'Other...' in checkbox group
+      if (Array.isArray(value)) {
+        if (value.includes('Other...') && this.otherInputControls[questionId]) {
           value = value.map((v: string) =>
             v === 'Other...' ? this.otherInputControls[questionId].value : v
           );
         }
+      }
   
-        return {
-          question_id: questionId,
-          response_value: Array.isArray(value) ? value.join(', ') : value
-        };
-      });
+      return {
+        question_id: questionId,
+        response_value: Array.isArray(value) ? value.join(', ') : value
+      };
+    });
   
+  
+    // Prepare FormData
     const formDataToSend = new FormData();
     formDataToSend.append('job_data_str', JSON.stringify({
       form_id: this.formStructure.form_id,
       responses
     }));
+  
     if (this.uploadedFile) {
       formDataToSend.append('files', this.uploadedFile);
     }
   
+    // Call backend
     this.clientService.createJobWithResponses(formDataToSend).subscribe({
       next: (response) => {
         console.log('Job created successfully:', response);
@@ -226,6 +270,8 @@ export class CreateJobComponent implements OnInit {
     });
   }
   
+  
+
 
 
   toggleCheckbox(qId: number, option: string, checked: boolean) {

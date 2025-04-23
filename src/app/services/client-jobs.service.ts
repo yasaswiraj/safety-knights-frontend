@@ -21,7 +21,8 @@ export interface CreateJobRequest {
 
 export interface PendingBid {
   client_job_id: number;
-  // client_user_id: number;
+  // user_id: number;
+  client_user_id: number;
   form_id: number;
   scope_of_service: string;
   work_in_detail: string;

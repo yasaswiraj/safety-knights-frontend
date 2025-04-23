@@ -10,6 +10,7 @@ import {
   FormControl,
   AbstractControl,
   ValidatorFn,
+  FormControlOptions,
 } from '@angular/forms';
 import { FormsService } from '../../services/forms.service';
 import { ClientService } from '../../services/client.service';
@@ -34,6 +35,8 @@ export class UpdateJobComponent implements OnInit {
   isOtherSelected: { [questionId: number]: boolean } = {};
   otherInputControls: { [questionId: number]: FormControl } = {};
   isSubmitting = false;
+  uploadedFiles: { filename: string, download_url: string }[] = [];
+
 
 
   constructor(
@@ -45,38 +48,81 @@ export class UpdateJobComponent implements OnInit {
 
   ngOnInit() {
     const respId = history.state?.client_response_id;
-    if (!respId) this.router.navigate(['/client/pending-bids']);
-    else {
+    const userId = history.state?.user_id; 
+  
+    if (!respId || !userId) {
+      this.router.navigate(['/client/pending-bids']);
+    } else {
       forkJoin({
         structure: this.formsService.getFormStructure(1),
         responses: this.formsService.getClientResponsesDetailed(respId),
-      }).subscribe(({ structure, responses }) => {
+        files: this.clientService.getUserFilesForJob(userId, respId) 
+      }).subscribe(({ structure, responses, files }) => {
         this.formStructure = structure;
         this.clientResponses = responses;
+        this.uploadedFiles = files?.files_by_category?.["Job Files"] || [];
         this.buildJobForm(structure);
       });
     }
   }
-
+  
+  
   private buildJobForm(structure: any) {
     const group: Record<string, FormControl | FormArray<any>> = {};
-
+    const optionCalls: Observable<any>[] = [];
+    const questionMap: any[] = [];
+  
+    // Collect all questions and option fetch calls
     structure.categories.forEach((cat: any) => {
       cat.questions.forEach((q: any) => {
+        questionMap.push(q);
+        optionCalls.push(this.getOptions(q.question_id));
+      });
+    });
+  
+    // Wait for all options to load
+    forkJoin(optionCalls).subscribe((allOptionsResults) => {
+      questionMap.forEach((q, idx) => {
         const pref = this.prefilledValue(q.question_id);
-        const validators = [];
-
+        const options = allOptionsResults[idx];
+        const optionSet = new Set(options.map((o: string) => o.toLowerCase()));
+        const validators: ValidatorFn | ValidatorFn[] | FormControlOptions | null | undefined = [];
+  
         if (q.answer_type === 'CHECKBOX_GROUP') {
           const chosen = pref ? String(pref).split(/\s*,\s*/) : [];
-          group[q.question_id] = this.fb.array(
-            chosen.map((val: string) => this.fb.control(val))
-          );
+          const formArray = this.fb.array<FormControl>([]);
+          const otherItems: string[] = [];
+  
+          chosen.forEach((val: string) => {
+            if (optionSet.has(val.toLowerCase())) {
+              formArray.push(this.fb.control(val));
+            } else {
+              this.isOtherSelected[q.question_id] = true;
+              otherItems.push(val);
+            }
+          });
+  
+          if (this.isOtherSelected[q.question_id]) {
+            this.otherInputControls[q.question_id] = new FormControl(otherItems.join(', '), validators);
+            formArray.push(this.fb.control('Other...'));
+          }
+  
+          group[q.question_id] = formArray;
+  
         } else if (q.answer_type === 'TEXT_GROUP') {
           this.textGroupId = q.question_id;
           const vals = pref ? String(pref).split(/\s*,\s*/) : [];
-          group[q.question_id] = this.fb.array(
-            vals.map((v: string) => this.fb.control(v))
-          );
+          group[q.question_id] = this.fb.array(vals.map(v => this.fb.control(v)));
+  
+        } else if (q.answer_type === 'radio') {
+          let selected = pref ?? '';
+          if (selected && !optionSet.has(selected.toLowerCase())) {
+            this.isOtherSelected[q.question_id] = true;
+            this.otherInputControls[q.question_id] = new FormControl(selected, validators);
+            selected = 'Other...';
+          }
+          group[q.question_id] = this.fb.control(selected, validators);
+  
         } else {
           if (q.question_id === 4 || q.question_id === 5) {
             validators.push(this.noPastDateValidator());
@@ -84,12 +130,14 @@ export class UpdateJobComponent implements OnInit {
           group[q.question_id] = this.fb.control(pref ?? '', validators);
         }
       });
-    });
-
-    this.jobForm = this.fb.group(group, {
-      validators: this.dateOrderValidator(),
+  
+      // Now build the full form once
+      this.jobForm = this.fb.group(group, {
+        validators: this.dateOrderValidator()
+      });
     });
   }
+  
 
   private prefilledValue(qId: number) {
     for (const cat of this.clientResponses.categories || []) {
@@ -150,13 +198,6 @@ export class UpdateJobComponent implements OnInit {
     }
   }
 
-  updateRadioValue(questionId: number) {
-    const otherValue = this.otherInputControls[questionId]?.value;
-    if (otherValue) {
-      this.jobForm.get(questionId.toString())?.setValue(otherValue);
-    }
-  }
-
   getTextGroupControls(qId: number) {
     return (this.jobForm.get(qId.toString()) as FormArray)?.controls;
   }
@@ -176,9 +217,9 @@ export class UpdateJobComponent implements OnInit {
       this.jobForm.markAllAsTouched();
       return;
     }
-  
+
     this.isSubmitting = true;
-  
+
     const responses = Object.entries(this.jobForm.value)
       .filter(([_, v]) => !(Array.isArray(v) && v.length === 0) && v !== '')
       .map(([id, val]) => {
@@ -200,18 +241,18 @@ export class UpdateJobComponent implements OnInit {
           response_value: Array.isArray(val) ? val.join(', ') : val,
         };
       });
-  
+
     const payload = {
       form_id: this.formStructure.form_id,
       responses,
     };
-  
+
     const formData = new FormData();
     formData.append('job_data_str', JSON.stringify(payload));
     if (this.uploadedFile) {
       formData.append('files', this.uploadedFile);
     }
-  
+
     this.clientService
       .updateJobWithResponses(this.clientResponses.client_response_id, formData)
       .subscribe({
@@ -227,7 +268,7 @@ export class UpdateJobComponent implements OnInit {
         }
       });
   }
-  
+
 
   onFileSelected(event: Event): void {
     const input = event.target as HTMLInputElement;

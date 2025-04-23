@@ -153,14 +153,22 @@ export class PendingBidsComponent implements AfterViewInit, OnInit {
   handleAction(bid: PendingBid) {
     const jobId = bid.client_job_id;
     const formId = bid.form_id;
+    const userId = bid.client_user_id; 
   
-    if (!jobId || !formId) {
-      console.error('Missing jobId or formId');
+    if (!jobId || !formId || !userId) {
+      console.error('Missing jobId, formId or userId');
       return;
     }
-  
-    this.router.navigate(['/client/update-job'],{state: {client_response_id: jobId }});
+    console.log('Navigating to update-job with:', bid.client_user_id, bid.client_job_id);
+
+    this.router.navigate(['/client/update-job'], {
+      state: {
+        client_response_id: jobId,
+        user_id: userId
+      }
+    });
   }
+  
   
 
 }

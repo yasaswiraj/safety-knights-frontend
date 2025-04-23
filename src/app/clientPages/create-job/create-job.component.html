@@ -54,8 +54,7 @@
                 <!-- If 'Other...' is selected, show input -->
                 <div *ngIf="isOtherSelected[q.question_id]" class="mt-2">
                   <input type="text" class="w-full p-2 border border-gray-300 rounded-md"
-                    placeholder="Please specify..." [formControl]="otherInputControls[q.question_id]"
-                    (input)="updateRadioValue(q.question_id)" />
+                    placeholder="Please specify..." [formControl]="otherInputControls[q.question_id]" />
                 </div>
               </ng-container>
             </div>

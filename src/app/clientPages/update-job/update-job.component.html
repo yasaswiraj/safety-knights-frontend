@@ -1,11 +1,10 @@
-<!-- Updated update-job.component.html -->
 <div class="min-h-screen flex items-center justify-center pt-12" style="background-color: #FAF7F0;">
   <div class="w-full max-w-3xl bg-white p-8 rounded-2xl shadow-lg" *ngIf="formStructure">
     <h1 class="text-3xl font-bold text-center mb-8" style="color: #b17457;">
       EHS Consulting Network - Update Job Information
     </h1>
 
-    <form [formGroup]="jobForm" (ngSubmit)="onSubmit()" class="space-y-1">
+    <form *ngIf="jobForm" [formGroup]="jobForm" (ngSubmit)="onSubmit()" class="space-y-1">
       <ng-container *ngFor="let category of formStructure.categories">
         <h3 class="text-2xl font-semibold mb-2 text-gray-800 border-b pb-2">
           {{ category.category_name }}
@@ -49,8 +48,7 @@
 
                 <div *ngIf="isOtherSelected[q.question_id]" class="mt-2">
                   <input type="text" class="w-full p-2 border border-gray-300 rounded-md"
-                    placeholder="Please specify..." [formControl]="otherInputControls[q.question_id]"
-                    (input)="updateRadioValue(q.question_id)" />
+                    placeholder="Please specify..." [formControl]="otherInputControls[q.question_id]" />
                 </div>
               </ng-container>
             </div>
@@ -99,9 +97,20 @@
               Selected: {{ uploadedFile.name }}
             </p>
           </div>
-
         </ng-container>
       </ng-container>
+
+      <!-- ✅ Uploaded files shown only once -->
+      <div *ngIf="uploadedFiles.length > 0" class="mb-6">
+        <label class="block font-medium text-gray-700">Uploaded File(s)</label>
+        <ul class="list-disc list-inside text-sm text-blue-700">
+          <li *ngFor="let file of uploadedFiles">
+            <a [href]="file.download_url" target="_blank" class="underline hover:text-blue-900">
+              {{ file.filename }}
+            </a>
+          </li>
+        </ul>
+      </div>
 
       <!-- Update Button -->
       <button type="submit" [disabled]="isSubmitting" class="w-full py-3 mt-4 rounded-full font-semibold transition
@@ -118,8 +127,6 @@
           </span>
         </ng-container>
       </button>
-
-
     </form>
   </div>
 </div>
