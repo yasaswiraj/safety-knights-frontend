@@ -90,26 +90,29 @@ job: any;
   }
 
   handleFeedback(job: CompletedJob) {
-    const reviewedKey = `reviewed_job_${job.client_job_id}`;
-    const isReviewed = localStorage.getItem(reviewedKey) === 'true';
+    this.clientJobsService.checkReviewExists(job.client_job_id, job.consultant_user_id).subscribe({
+      next: (res) => {
+        if (res.reviewExists) {
+          alert('You have already submitted feedback for this job.');
+          return;
+        }
   
-    if (isReviewed || job.hasReview) {
-      alert('You have already submitted feedback for this job.');
-      job.hasReview = true; // Disable immediately in UI
-  
-      this.router.navigate(['/client/completed-jobs']);
-      return;
-    }
-  
-    this.router.navigate(['/client/feedback'], {
-      queryParams: {
-        jobId: job.client_job_id,
-        consultantId: job.consultant_user_id,
-        consultantName: job.consultant_company,
-        scope: job.scope_of_service
+        this.router.navigate(['/client/feedback'], {
+          queryParams: {
+            jobId: job.client_job_id,
+            consultantId: job.consultant_user_id,
+            consultantName: job.consultant_company,
+            scope: job.scope_of_service
+          }
+        });
+      },
+      error: (err) => {
+        console.error('Failed to check review status:', err);
+        alert('Something went wrong. Please try again.');
       }
     });
   }
+  
   
   
   

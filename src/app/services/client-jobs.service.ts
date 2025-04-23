@@ -295,5 +295,19 @@ export class ClientJobsService {
       { withCredentials: true }
     );
   }
+
+  checkReviewExists(jobId: number, consultantId: number) {
+    return this.http.get<{ reviewExists: boolean }>(
+      `${environment.apiUrl}/client/check_review_exists`,
+      {
+        params: {
+          job_id: jobId,
+          consultant_id: consultantId
+        },
+        withCredentials: true
+      }
+    );
+  }
+  
 }
 
