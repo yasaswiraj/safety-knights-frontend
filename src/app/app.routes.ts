@@ -40,6 +40,7 @@ import { inject } from '@angular/core';
 import { Router } from '@angular/router';
 import { CreateJobComponent } from './clientPages/create-job/create-job.component';
 import { UpdateJobComponent } from './clientPages/update-job/update-job.component';
+import { ForgotPasswordComponent } from './clientPages/forgot-password/forgot-password.component';
 
 export const routes: Routes = [
   {
@@ -72,6 +73,8 @@ export const routes: Routes = [
   },
   { path: 'onboarding', component: OnboardingComponent }, // New combined form route
   { path: 'consultant-login', component: ConsultantLoginComponent }, // Consultant login route
+  { path: 'forgot-password', component: ForgotPasswordComponent }, 
+
 
   // Client Routes with a Layout Component
   {

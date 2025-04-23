@@ -80,9 +80,30 @@
 }
 
 .snackbar-success {
-    background-color: #4caf50;
+    background-color: #8b5e3b;
     color: #fff;
     font-weight: bold;
     text-align: center;
+  }
+
+.snackbar-success .mat-simple-snackbar-action {
+    color: #ffe0b2 !important; /* Your preferred color */
+    font-weight: bold;
+    background-color: transparent !important;
+  }
+  
+  .snackbar-success .mat-button,
+  .snackbar-success .mat-button:focus,
+  .snackbar-success .mat-button:active,
+  .snackbar-success .mat-button:hover {
+    background-color: transparent !important;
+    color: #ffe0b2 !important;
+    box-shadow: none !important;
+    outline: none !important;
+  }
+  
+  ::ng-deep .snackbar-success .mat-button .mat-ripple-element {
+    display: none !important;
+    background: transparent !important;
   }
   
