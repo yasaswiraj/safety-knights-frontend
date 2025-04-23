@@ -6,10 +6,12 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
-import { CommonModule } from '@angular/common';  // ✅ Required for Angular pipes
+import { CommonModule } from '@angular/common';  
 import { ClientJobsService } from '../../services/client-jobs.service';
 import { catchError, map } from 'rxjs/operators';
 import { of, forkJoin } from 'rxjs';
+import { LoadingComponent } from '../../components/loading/loading.component'; // adjust path if needed
+
 
 
 
@@ -39,19 +41,23 @@ interface CompletedJob {
     MatIconModule,
     MatButtonModule,
     FormsModule,
+    LoadingComponent
   ],
 })
 export class CompletedJobsComponent implements AfterViewInit, OnInit {
   @ViewChild(MatSort) sort!: MatSort;
   searchTerm = '';
+  isLoading = false;
+
 
   dataSource: MatTableDataSource<CompletedJob> = new MatTableDataSource<CompletedJob>();
   displayedColumns: string[] = ['jobName', 'consultant', 'budget', 'feedback'];
 job: any;
 
   constructor(private router: Router, private clientJobsService: ClientJobsService) {}
-
   ngOnInit() {
+    this.isLoading = true;
+  
     const reviewedJobs = JSON.parse(localStorage.getItem('reviewedJobs') || '[]');
   
     this.clientJobsService.getCompletedJobs().subscribe({
@@ -62,12 +68,15 @@ job: any;
         }));
   
         this.dataSource.data = jobs;
+        this.isLoading = false;
       },
       error: (err) => {
         console.error('Error fetching completed jobs:', err);
+        this.isLoading = false;
       }
     });
   }
+  
   
   
 

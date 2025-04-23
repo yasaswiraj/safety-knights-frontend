@@ -13,6 +13,10 @@
         />
     </div>
 
+    <!-- Loading Spinner -->
+  <app-loading *ngIf="isLoading" [message]="'Loading bids in progress...'"></app-loading>
+
+
     <!-- Table Wrapper -->
     <div class="bg-white h-[calc(100vh-17rem)] overflow-auto mt-4 rounded-3xl border border-gray-300">
         <table mat-table [dataSource]="dataSource" matSort class="mat-elevation-z8 w-full">

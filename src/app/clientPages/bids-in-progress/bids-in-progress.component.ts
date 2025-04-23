@@ -9,6 +9,8 @@ import { MatIconModule } from '@angular/material/icon';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { ClientJobsService, BidInProgress } from '../../services/client-jobs.service';
+import { LoadingComponent } from '../../components/loading/loading.component';
+
 
 @Component({
   selector: 'app-bids-in-progress',
@@ -21,7 +23,8 @@ import { ClientJobsService, BidInProgress } from '../../services/client-jobs.ser
     MatIconModule,
     MatButtonModule,
     FormsModule,
-    CommonModule ]
+    CommonModule,
+    LoadingComponent]
 })
 
 export class BidsInProgressComponent implements OnInit, AfterViewInit {
@@ -29,6 +32,8 @@ export class BidsInProgressComponent implements OnInit, AfterViewInit {
   searchTerm = '';
   dataSource: MatTableDataSource<Bid> = new MatTableDataSource<Bid>([]);
   displayedColumns: string[] = ['jobName', 'deadline', 'numBids', 'actions'];
+  isLoading = false;
+
 
   constructor(
     private router: Router,
@@ -36,9 +41,10 @@ export class BidsInProgressComponent implements OnInit, AfterViewInit {
   ) {}
 
   ngOnInit() {
+    this.isLoading = true;
+  
     this.clientJobsService.getBidsInProgress().subscribe({
       next: (response) => {
-        console.log('Bids in progress:', response);
         const groupedJobsMap = new Map<number, any>();
   
         response.jobs.forEach((job: any) => {
@@ -52,22 +58,21 @@ export class BidsInProgressComponent implements OnInit, AfterViewInit {
               numBids: 1
             });
           } else {
-            // Increment the bid count for existing jobId
             const existing = groupedJobsMap.get(jobId);
             existing.numBids += 1;
           }
         });
   
-        // Convert the grouped map to an array
-        const groupedJobsArray = Array.from(groupedJobsMap.values());
-  
-        this.dataSource.data = groupedJobsArray;
+        this.dataSource.data = Array.from(groupedJobsMap.values());
+        this.isLoading = false;
       },
       error: (err) => {
         console.error('Error fetching bids in progress:', err);
+        this.isLoading = false;
       }
     });
   }
+  
   
 
   ngAfterViewInit() {

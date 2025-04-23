@@ -8,6 +8,8 @@ import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { ClientJobsService } from '../../services/client-jobs.service';
+import { LoadingComponent } from '../../components/loading/loading.component'; 
+
 
 @Component({
   selector: 'app-job-in-progress',
@@ -22,6 +24,7 @@ import { ClientJobsService } from '../../services/client-jobs.service';
     MatIconModule,
     MatButtonModule,
     FormsModule,
+    LoadingComponent
   ],
 })
 export class JobInProgressComponent implements OnInit, AfterViewInit {
@@ -29,11 +32,15 @@ export class JobInProgressComponent implements OnInit, AfterViewInit {
   searchTerm = '';
   dataSource: MatTableDataSource<any> = new MatTableDataSource<any>();
   displayedColumns: string[] = ['jobName', 'daysRemaining', 'actions'];
+  isLoading = false;
+
 
   constructor(private router: Router, private clientJobsService: ClientJobsService) {}
 
   ngOnInit() {
     console.log('Fetching jobs in progress...');
+    this.isLoading = true;
+  
     this.clientJobsService.getJobsInProgress().subscribe({
       next: (response) => {
         console.log('Jobs in progress:', response.jobs);
@@ -45,12 +52,15 @@ export class JobInProgressComponent implements OnInit, AfterViewInit {
           daysRemaining: this.calculateDaysRemaining(job.proposal_deadline)
         }));
         this.dataSource.data = jobs;
+        this.isLoading = false;
       },
       error: (err) => {
         console.error('Error fetching jobs in progress:', err);
+        this.isLoading = false;
       }
     });
   }
+  
 
   ngAfterViewInit() {
     this.dataSource.sort = this.sort;
