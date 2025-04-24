@@ -54,7 +54,7 @@
           <button mat-icon-button color="primary" (click)="approve(consultant)">
             <i class="fa-solid fa-check text-green-500"></i>
           </button>
-          <button mat-icon-button color="warn" (click)="decline(consultant)">
+          <button mat-icon-button color="warn" (click)="showDeclinePopUp(consultant)">
             <i class="fa-solid fa-times text-red-500"></i>
           </button>
           <button mat-icon-button color="accent" (click)="requestChanges(consultant)">
@@ -72,5 +72,18 @@
       <tr mat-row *matRowDef="let consultant; columns: ['name', 'email_id', 'job_title', 'company_name', 'contact', 'actions'];"></tr>
     </table>
   </div>
+  </div>
+  <!-- Decline popup modal -->
+  <div *ngIf="declinePopupVisible" class="fixed inset-0 flex items-center justify-center bg-gray-800/30 bg-opacity-50">
+    <div class="bg-white p-4 rounded shadow-md">
+      <h2 class="text-xl font-bold mb-4">Decline Consultant</h2>
+      <p class="mb-4">Are you sure you want to decline this consultant?</p>
+      <!-- Added rejection message input -->
+      <textarea [(ngModel)]="rejectMessage" placeholder="Enter rejection message" class="w-full border border-gray-300 rounded p-2 mb-4"></textarea>
+      <div class="flex justify-end">
+        <button class="cursor-pointer px-4 py-2 bg-red-500 text-white rounded mr-2" (click)="confirmDecline()">Yes</button>
+        <button class="cursor-pointer px-4 py-2 bg-gray-300 rounded" (click)="cancelDecline()">Cancel</button>
+      </div>
+    </div>
   </div>
 </div>

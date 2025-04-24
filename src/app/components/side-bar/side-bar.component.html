@@ -8,16 +8,15 @@
     <ul>
       @for (item of menuItems; track item.route) {
       <li class="mb-2">
-        <a [routerLink]="item.route" class="flex items-center p-3 rounded-lg transition" [ngClass]="{
-      hidden: !isSidebarOpen,
-      'bg-(--accent-color) text-white': activeLabel() === item.label,
-      'hover:bg-gray-100': activeLabel() !== item.label
-    }" (click)="handleMenuClick(item)">
-          
+        <a [routerLink]="item.route" 
+           routerLinkActive="bg-(--accent-color) text-white" 
+           [routerLinkActiveOptions]="{exact: true}"
+           class="flex items-center p-3 rounded-lg transition hover:bg-gray-100"
+           [ngClass]="{ hidden: !isSidebarOpen }"
+           (click)="handleMenuClick(item)">
           <i class="mr-2" [class]="item.icon"></i>
           {{ item.label }}
         </a>
-
       </li>
       }
     </ul>
