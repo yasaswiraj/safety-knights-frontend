@@ -23,22 +23,30 @@ export class FeedbackComponent {
     private route: ActivatedRoute,
     private clientJobsService: ClientJobsService,
     private router: Router
-  ) {}
+  ) {
+    // Check here, before the component initializes
+    const params = this.route.snapshot.queryParams;
+    this.jobId = +params['jobId'];
+    const reviewedJobs = JSON.parse(localStorage.getItem('reviewedJobs') || '[]');
+  
+    if (reviewedJobs.includes(this.jobId)) {
+      this.router.navigate(['/client/completed-jobs']);
+    }
+  }
+  
 
   consultantName: string = '';
 scope: string = '';
 
 ngOnInit() {
-  this.route.queryParams.subscribe(params => {
-    this.jobId = +params['jobId'];
-    this.consultantId = +params['consultantId'];
-    this.consultantName = params['consultantName'] || '';
-    this.scope = params['scope'] || '';
+  const params = this.route.snapshot.queryParams;
 
-    console.log('Job ID:', this.jobId);
-    console.log('Consultant ID:', this.consultantId); 
-  });
+  this.consultantId = +params['consultantId'];
+  this.consultantName = params['consultantName'] || '';
+  this.scope = params['scope'] || '';
 }
+
+
 
 
   setOverallRating(star: number) {
@@ -67,7 +75,6 @@ ngOnInit() {
       next: (res) => {
         alert('Feedback submitted successfully!');
   
-        // ✅ Store job ID locally
         const reviewedJobs = JSON.parse(localStorage.getItem('reviewedJobs') || '[]');
         if (!reviewedJobs.includes(this.jobId)) {
           reviewedJobs.push(this.jobId);

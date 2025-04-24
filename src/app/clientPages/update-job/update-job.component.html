@@ -1,11 +1,10 @@
-<!-- Updated update-job.component.html -->
 <div class="min-h-screen flex items-center justify-center pt-12" style="background-color: #FAF7F0;">
   <div class="w-full max-w-3xl bg-white p-8 rounded-2xl shadow-lg" *ngIf="formStructure">
     <h1 class="text-3xl font-bold text-center mb-8" style="color: #b17457;">
       EHS Consulting Network - Update Job Information
     </h1>
 
-    <form [formGroup]="jobForm" (ngSubmit)="onSubmit()" class="space-y-1">
+    <form *ngIf="jobForm" [formGroup]="jobForm" (ngSubmit)="onSubmit()" class="space-y-1">
       <ng-container *ngFor="let category of formStructure.categories">
         <h3 class="text-2xl font-semibold mb-2 text-gray-800 border-b pb-2">
           {{ category.category_name }}
@@ -20,14 +19,18 @@
           <ng-container [ngSwitch]="q.answer_type">
             <!-- Text -->
             <input *ngSwitchCase="'text'" type="text"
-              class="w-full p-3 border border-gray-300 rounded-md focus:outline-none focus:ring focus:ring-blue-300"
-              [formControlName]="q.question_id" />
+              class="w-full p-3 border rounded-md focus:outline-none focus:ring focus:ring-blue-300" [ngClass]="{
+    'border-gray-300': !jobForm.get(q.question_id.toString())?.invalid || !jobForm.get(q.question_id.toString())?.touched,
+    'border-red-500': jobForm.get(q.question_id.toString())?.invalid && jobForm.get(q.question_id.toString())?.touched
+  }" [formControlName]="q.question_id" />
 
             <!-- Date -->
             <div *ngSwitchCase="'date'" class="mb-4">
               <input type="date" [formControlName]="q.question_id"
-                (blur)="jobForm.get(q.question_id.toString())?.markAsTouched()"
-                class="w-full p-3 border border-gray-300 rounded-md focus:outline-none focus:ring focus:ring-blue-300" />
+                class="w-full p-3 border rounded-md focus:outline-none focus:ring" [ngClass]="{
+    'border-gray-300': !jobForm.get(q.question_id.toString())?.invalid || !jobForm.get(q.question_id.toString())?.touched,
+    'border-red-500': jobForm.get(q.question_id.toString())?.invalid && jobForm.get(q.question_id.toString())?.touched
+  }" />
               <p class="text-red-600 text-sm mt-1"
                 *ngIf="jobForm.get(q.question_id.toString())?.hasError('pastDate') && jobForm.get(q.question_id.toString())?.touched">
                 Date cannot be in the past.
@@ -39,36 +42,50 @@
             </div>
 
             <!-- Radio -->
-            <div *ngSwitchCase="'radio'" class="space-y-2">
+            <div *ngSwitchCase="'radio'" [ngClass]="{
+              'border border-red-500 p-2 rounded-md': jobForm.get(q.question_id.toString())?.invalid &&
+                                                       jobForm.get(q.question_id.toString())?.touched
+            }">
               <ng-container *ngIf="getOptions(q.question_id) | async as opts">
                 <label *ngFor="let opt of opts" class="flex items-center space-x-2">
                   <input type="radio" [value]="opt" [formControlName]="q.question_id"
                     (change)="handleRadioChange(q.question_id, opt)" />
                   <span>{{ opt }}</span>
                 </label>
-
-                <div *ngIf="isOtherSelected[q.question_id]" class="mt-2">
-                  <input type="text" class="w-full p-2 border border-gray-300 rounded-md"
-                    placeholder="Please specify..." [formControl]="otherInputControls[q.question_id]"
-                    (input)="updateRadioValue(q.question_id)" />
-                </div>
-              </ng-container>
-            </div>
-
-            <!-- Checkbox Group -->
-            <div *ngSwitchCase="'CHECKBOX_GROUP'" class="space-y-2">
-              <ng-container *ngIf="getOptions(q.question_id) | async as opts">
-                <label *ngFor="let opt of opts" class="flex items-center space-x-2">
-                  <input type="checkbox" [value]="opt" #ck (change)="toggleCheckbox(q.question_id, opt, ck.checked)"
-                    [checked]="isCheckboxChecked(q.question_id, opt)" />
-                  <span>{{ opt }}</span>
-                </label>
+                <p class="text-red-600 text-sm mt-1"
+                  *ngIf="jobForm.get(q.question_id.toString())?.invalid && jobForm.get(q.question_id.toString())?.touched">
+                  This field is required.
+                </p>
                 <div *ngIf="isOtherSelected[q.question_id]" class="mt-2">
                   <input type="text" class="w-full p-2 border border-gray-300 rounded-md"
                     placeholder="Please specify..." [formControl]="otherInputControls[q.question_id]" />
                 </div>
               </ng-container>
             </div>
+
+
+            <!-- Checkbox Group -->
+            <div *ngSwitchCase="'CHECKBOX_GROUP'" [ngClass]="{
+              'border border-red-500 p-2 rounded-md': jobForm.get(q.question_id.toString())?.invalid &&
+                                                       jobForm.get(q.question_id.toString())?.touched
+            }">
+              <ng-container *ngIf="getOptions(q.question_id) | async as opts">
+                <label *ngFor="let opt of opts" class="flex items-center space-x-2">
+                  <input type="checkbox" [value]="opt" #ck (change)="toggleCheckbox(q.question_id, opt, ck.checked)"
+                    [checked]="isCheckboxChecked(q.question_id, opt)" />
+                  <span>{{ opt }}</span>
+                </label>
+                <p class="text-red-600 text-sm mt-1"
+                  *ngIf="jobForm.get(q.question_id.toString())?.invalid && jobForm.get(q.question_id.toString())?.touched">
+                  This field is required.
+                </p>
+                <div *ngIf="isOtherSelected[q.question_id]" class="mt-2">
+                  <input type="text" class="w-full p-2 border border-gray-300 rounded-md"
+                    placeholder="Please specify..." [formControl]="otherInputControls[q.question_id]" />
+                </div>
+              </ng-container>
+            </div>
+
 
             <!-- Textbox Group -->
             <div *ngSwitchCase="'TEXT_GROUP'" [formArrayName]="q.question_id">
@@ -99,9 +116,19 @@
               Selected: {{ uploadedFile.name }}
             </p>
           </div>
-
         </ng-container>
       </ng-container>
+
+      <div *ngIf="uploadedFiles.length > 0" class="mb-6">
+        <label class="block font-medium text-gray-700">Uploaded File(s)</label>
+        <ul class="list-disc list-inside text-sm text-blue-700">
+          <li *ngFor="let file of uploadedFiles">
+            <a [href]="file.download_url" target="_blank" class="underline hover:text-blue-900">
+              {{ file.filename }}
+            </a>
+          </li>
+        </ul>
+      </div>
 
       <!-- Update Button -->
       <button type="submit" [disabled]="isSubmitting" class="w-full py-3 mt-4 rounded-full font-semibold transition
@@ -118,8 +145,6 @@
           </span>
         </ng-container>
       </button>
-
-
     </form>
   </div>
 </div>

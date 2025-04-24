@@ -9,6 +9,8 @@ import { Router } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { ClientJobsService, PendingBid } from '../../services/client-jobs.service';
 import { FormDataService } from '../../services/form-data.service';
+import { LoadingComponent } from '../../components/loading/loading.component';
+
 
 
 @Component({
@@ -24,11 +26,14 @@ import { FormDataService } from '../../services/form-data.service';
     MatIconModule,
     MatButtonModule,
     FormsModule,
-  ],
+    LoadingComponent
+],
 })
 export class PendingBidsComponent implements AfterViewInit, OnInit {
   @ViewChild(MatSort) sort!: MatSort;
   searchTerm = '';
+  isLoading = false;
+
 
   dataSource: MatTableDataSource<PendingBid> = new MatTableDataSource<PendingBid>([]);
   displayedColumns: string[] = ['jobName', 'deadline', 'budget', 'actions'];
@@ -44,12 +49,9 @@ export class PendingBidsComponent implements AfterViewInit, OnInit {
   }
 
   fetchPendingBids() {
-    console.log('Calling API...');
-    // const userId = localStorage.getItem('user_id');
-    // console.log('User ID:', userId);
+    this.isLoading = true; // Start loading
     this.clientJobsService.getPendingBids().subscribe({
       next: (response) => {
-        console.log('Response:', response);
         if (!response || response.jobs.length === 0) {
           console.warn('No jobs returned. Possible missing cookie/session?');
         }
@@ -61,14 +63,16 @@ export class PendingBidsComponent implements AfterViewInit, OnInit {
           deadline: job.proposal_deadline,
           budget: job.budget,
         }));
-
         this.dataSource.data = transformedJobs;
+        this.isLoading = false; // Stop loading
       },
       error: (err) => {
         console.error('Error from API:', err);
+        this.isLoading = false; // Stop loading even on error
       }
     });
   }
+  
 
 
 
@@ -153,14 +157,22 @@ export class PendingBidsComponent implements AfterViewInit, OnInit {
   handleAction(bid: PendingBid) {
     const jobId = bid.client_job_id;
     const formId = bid.form_id;
+    const userId = bid.client_user_id; 
   
-    if (!jobId || !formId) {
-      console.error('Missing jobId or formId');
+    if (!jobId || !formId || !userId) {
+      console.error('Missing jobId, formId or userId');
       return;
     }
-  
-    this.router.navigate(['/client/update-job'],{state: {client_response_id: jobId }});
+    console.log('Navigating to update-job with:', bid.client_user_id, bid.client_job_id);
+
+    this.router.navigate(['/client/update-job'], {
+      state: {
+        client_response_id: jobId,
+        user_id: userId
+      }
+    });
   }
+  
   
 
 }

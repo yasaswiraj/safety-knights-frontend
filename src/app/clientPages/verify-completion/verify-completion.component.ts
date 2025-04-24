@@ -7,6 +7,8 @@ import { MatIconModule } from '@angular/material/icon';
 import { CommonModule } from '@angular/common';
 import { MatSort } from '@angular/material/sort';
 import { FormsModule } from '@angular/forms';
+import { LoadingComponent } from '../../components/loading/loading.component'; // adjust path as needed
+
 
 interface Job extends CompletedJob {
   consultant?: string;
@@ -19,7 +21,7 @@ interface Job extends CompletedJob {
   standalone: true,
   templateUrl: './verify-completion.component.html',
   styleUrls: ['./verify-completion.component.css'],
-  imports: [CommonModule, MatTableModule, MatButtonModule, MatIconModule, FormsModule,]
+  imports: [CommonModule, MatTableModule, MatButtonModule, MatIconModule, FormsModule, LoadingComponent],
 })
 export class VerifyCompletionComponent implements OnInit {
   applyFilter() {
@@ -30,6 +32,8 @@ export class VerifyCompletionComponent implements OnInit {
   jobs: Job[] = [];
   @ViewChild(MatSort) sort!: MatSort;
   searchTerm = '';
+  isLoading = false;
+
 
   showReasonBox: { [jobId: number]: boolean } = {};
   rejectionReasons: { [jobId: number]: string } = {};
@@ -41,22 +45,27 @@ export class VerifyCompletionComponent implements OnInit {
   }
 
   fetchClosedJobs() {
+    this.isLoading = true;
+  
     this.clientJobsService.getClosedJobs().subscribe({
       next: (response: { jobs: Job[] }) => {
         this.jobs = response.jobs.map((job) => ({
           ...job,
           jobName: job.scope_of_service || 'N/A',
           consultant: job.consultant_company || 'N/A',
-          bid_amount: job.bid_amount ?? 0 // use bid amount directly from response
+          bid_amount: job.bid_amount ?? 0
         }));
   
         this.updateDataSource();
+        this.isLoading = false;
       },
       error: (err) => {
         console.error('Failed to fetch closed jobs:', err);
+        this.isLoading = false;
       }
     });
   }
+  
   
 
   private updateDataSource() {

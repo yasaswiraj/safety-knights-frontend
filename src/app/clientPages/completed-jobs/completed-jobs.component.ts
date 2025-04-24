@@ -6,10 +6,12 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
-import { CommonModule } from '@angular/common';  // ✅ Required for Angular pipes
+import { CommonModule } from '@angular/common';  
 import { ClientJobsService } from '../../services/client-jobs.service';
 import { catchError, map } from 'rxjs/operators';
 import { of, forkJoin } from 'rxjs';
+import { LoadingComponent } from '../../components/loading/loading.component'; // adjust path if needed
+
 
 
 
@@ -39,19 +41,23 @@ interface CompletedJob {
     MatIconModule,
     MatButtonModule,
     FormsModule,
+    LoadingComponent
   ],
 })
 export class CompletedJobsComponent implements AfterViewInit, OnInit {
   @ViewChild(MatSort) sort!: MatSort;
   searchTerm = '';
+  isLoading = false;
+
 
   dataSource: MatTableDataSource<CompletedJob> = new MatTableDataSource<CompletedJob>();
   displayedColumns: string[] = ['jobName', 'consultant', 'budget', 'feedback'];
 job: any;
 
   constructor(private router: Router, private clientJobsService: ClientJobsService) {}
-
   ngOnInit() {
+    this.isLoading = true;
+  
     const reviewedJobs = JSON.parse(localStorage.getItem('reviewedJobs') || '[]');
   
     this.clientJobsService.getCompletedJobs().subscribe({
@@ -62,12 +68,15 @@ job: any;
         }));
   
         this.dataSource.data = jobs;
+        this.isLoading = false;
       },
       error: (err) => {
         console.error('Error fetching completed jobs:', err);
+        this.isLoading = false;
       }
     });
   }
+  
   
   
 
@@ -81,26 +90,29 @@ job: any;
   }
 
   handleFeedback(job: CompletedJob) {
-    const reviewedKey = `reviewed_job_${job.client_job_id}`;
-    const isReviewed = localStorage.getItem(reviewedKey) === 'true';
+    this.clientJobsService.checkReviewExists(job.client_job_id, job.consultant_user_id).subscribe({
+      next: (res) => {
+        if (res.reviewExists) {
+          alert('You have already submitted feedback for this job.');
+          return;
+        }
   
-    if (isReviewed || job.hasReview) {
-      alert('You have already submitted feedback for this job.');
-      job.hasReview = true; // Disable immediately in UI
-  
-      this.router.navigate(['/client/completed-jobs']);
-      return;
-    }
-  
-    this.router.navigate(['/client/feedback'], {
-      queryParams: {
-        jobId: job.client_job_id,
-        consultantId: job.consultant_user_id,
-        consultantName: job.consultant_company,
-        scope: job.scope_of_service
+        this.router.navigate(['/client/feedback'], {
+          queryParams: {
+            jobId: job.client_job_id,
+            consultantId: job.consultant_user_id,
+            consultantName: job.consultant_company,
+            scope: job.scope_of_service
+          }
+        });
+      },
+      error: (err) => {
+        console.error('Failed to check review status:', err);
+        alert('Something went wrong. Please try again.');
       }
     });
   }
+  
   
   
   

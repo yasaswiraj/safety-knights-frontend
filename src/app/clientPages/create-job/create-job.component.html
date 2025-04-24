@@ -19,14 +19,20 @@
           <ng-container [ngSwitch]="q.answer_type">
             <!-- Text -->
             <input *ngSwitchCase="'text'" type="text"
-              class="w-full p-3 border border-gray-300 rounded-md focus:outline-none focus:ring focus:ring-blue-300"
-              [formControlName]="q.question_id" />
+              class="w-full p-3 border rounded-md focus:outline-none focus:ring focus:ring-blue-300" [ngClass]="{
+    'border-gray-300': !jobForm.get(q.question_id.toString())?.invalid || !jobForm.get(q.question_id.toString())?.touched,
+    'border-red-500': jobForm.get(q.question_id.toString())?.invalid && jobForm.get(q.question_id.toString())?.touched
+  }" [formControlName]="q.question_id" />
+
 
             <!-- Date -->
             <div *ngSwitchCase="'date'" class="mb-4">
               <input type="date" [formControlName]="q.question_id"
-                (blur)="jobForm.get(q.question_id.toString())?.markAsTouched()"
-                class="w-full p-3 border border-gray-300 rounded-md focus:outline-none focus:ring focus:ring-blue-300" />
+                class="w-full p-3 border rounded-md focus:outline-none focus:ring" [ngClass]="{
+    'border-gray-300': !jobForm.get(q.question_id.toString())?.invalid || !jobForm.get(q.question_id.toString())?.touched,
+    'border-red-500': jobForm.get(q.question_id.toString())?.invalid && jobForm.get(q.question_id.toString())?.touched
+  }" />
+
 
 
               <!-- Past date error -->
@@ -43,19 +49,26 @@
             </div>
 
             <!-- Radio -->
-            <div *ngSwitchCase="'radio'" class="space-y-2">
-              <ng-container *ngIf="getOptions(q.question_id) | async as opts">
+            <div *ngSwitchCase="'radio'" [ngClass]="{
+              'border border-red-500 p-2 rounded-md': jobForm.get(q.question_id.toString())?.invalid &&
+                                                       jobForm.get(q.question_id.toString())?.touched
+            }"> <ng-container *ngIf="getOptions(q.question_id) | async as opts">
                 <label *ngFor="let opt of opts" class="flex items-center space-x-2">
                   <input type="radio" [value]="opt" [formControlName]="q.question_id"
                     (change)="handleRadioChange(q.question_id, opt)" />
                   <span>{{ opt }}</span>
                 </label>
 
+                <p class="text-red-600 text-sm mt-1"
+                  *ngIf="jobForm.get(q.question_id.toString())?.invalid && jobForm.get(q.question_id.toString())?.touched">
+                  This field is required.
+                </p>
+
+
                 <!-- If 'Other...' is selected, show input -->
                 <div *ngIf="isOtherSelected[q.question_id]" class="mt-2">
                   <input type="text" class="w-full p-2 border border-gray-300 rounded-md"
-                    placeholder="Please specify..." [formControl]="otherInputControls[q.question_id]"
-                    (input)="updateRadioValue(q.question_id)" />
+                    placeholder="Please specify..." [formControl]="otherInputControls[q.question_id]" />
                 </div>
               </ng-container>
             </div>
@@ -63,13 +76,21 @@
 
 
             <!-- Checkbox Group -->
-            <div *ngSwitchCase="'CHECKBOX_GROUP'" class="space-y-2">
-              <ng-container *ngIf="getOptions(q.question_id) | async as opts">
+            <div *ngSwitchCase="'CHECKBOX_GROUP'" [ngClass]="{
+              'border border-red-500 p-2 rounded-md': jobForm.get(q.question_id.toString())?.invalid &&
+                                                       jobForm.get(q.question_id.toString())?.touched
+            }"> <ng-container *ngIf="getOptions(q.question_id) | async as opts">
                 <label *ngFor="let opt of opts" class="flex items-center space-x-2">
                   <input type="checkbox" [value]="opt" #chk
                     (change)="toggleCheckbox(q.question_id, opt, chk.checked)" />
                   <span>{{ opt }}</span>
                 </label>
+
+                <p class="text-red-600 text-sm mt-1"
+                  *ngIf="jobForm.get(q.question_id.toString())?.invalid && jobForm.get(q.question_id.toString())?.touched">
+                  This field is required.
+                </p>
+
 
                 <!-- If 'Other...' is selected, show input -->
                 <div *ngIf="isOtherSelected[q.question_id]" class="mt-2">

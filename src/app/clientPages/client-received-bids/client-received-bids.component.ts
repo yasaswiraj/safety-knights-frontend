@@ -99,10 +99,10 @@ export class ClientReceivedBidsComponent {
   acceptBid(jobId: number, consultantId: number) {
     this.clientJobsService.acceptBid(jobId, consultantId).subscribe({
       next: () => {
-        this.snackBar.open('You have accepted the bid.', 'Close', {
-          duration: 3000, // show for 3 seconds
+        this.snackBar.open('You have accepted the bid!', 'Close', {
+          duration: 5000, // show for 5 seconds
           horizontalPosition: 'center',
-          verticalPosition: 'top',
+          verticalPosition: 'bottom',
           panelClass: ['snackbar-success'] // optional custom style
         });
         this.router.navigate(['/client/bids-in-progress']);
@@ -116,7 +116,7 @@ export class ClientReceivedBidsComponent {
   openConsultantReviews(bid: any) {
     this.clientJobsService.getConsultantProfile(bid.consultantId).subscribe({
       next: (consultant) => {
-        console.log('📝Consultant reviews:', consultant.recent_reviews);
+        console.log('Consultant reviews:', consultant.recent_reviews);
   
         this.dialog.open(ConsultantReviewComponent, {
           width: '50vw',

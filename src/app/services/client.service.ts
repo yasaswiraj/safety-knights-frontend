@@ -33,6 +33,14 @@ export class ClientService {
     });
   }
 
+  getUserFilesForJob(userId: number, jobId: number): Observable<any> {
+    return this.http.get(`${environment.apiUrl}/user/${userId}/files?job_id=${jobId}`, {
+      withCredentials: true
+    });
+  }
+  
+  
+
 
   uploadJobFile(fileData: FormData): Observable<any> {
     return this.http.post(`${environment.apiUrl}/upload-multiple-files`, fileData, {

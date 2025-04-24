@@ -21,7 +21,8 @@ export interface CreateJobRequest {
 
 export interface PendingBid {
   client_job_id: number;
-  // client_user_id: number;
+  // user_id: number;
+  client_user_id: number;
   form_id: number;
   scope_of_service: string;
   work_in_detail: string;
@@ -294,5 +295,19 @@ export class ClientJobsService {
       { withCredentials: true }
     );
   }
+
+  checkReviewExists(jobId: number, consultantId: number) {
+    return this.http.get<{ reviewExists: boolean }>(
+      `${environment.apiUrl}/client/check_review_exists`,
+      {
+        params: {
+          job_id: jobId,
+          consultant_id: consultantId
+        },
+        withCredentials: true
+      }
+    );
+  }
+  
 }
 

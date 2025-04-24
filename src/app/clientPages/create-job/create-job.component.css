@@ -25,3 +25,8 @@ form {
     background-color: #b17457;
   }
   
+  input.ng-invalid.ng-touched {
+    border-color: #ef4444; /* Tailwind red-500 */
+    background-color: #fff5f5;
+  }
+  

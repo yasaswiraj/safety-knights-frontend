@@ -10,6 +10,8 @@ import {
   FormControl,
   AbstractControl,
   ValidatorFn,
+  FormControlOptions,
+  Validators,
 } from '@angular/forms';
 import { FormsService } from '../../services/forms.service';
 import { ClientService } from '../../services/client.service';
@@ -34,6 +36,8 @@ export class UpdateJobComponent implements OnInit {
   isOtherSelected: { [questionId: number]: boolean } = {};
   otherInputControls: { [questionId: number]: FormControl } = {};
   isSubmitting = false;
+  uploadedFiles: { filename: string, download_url: string }[] = [];
+
 
 
   constructor(
@@ -45,51 +49,102 @@ export class UpdateJobComponent implements OnInit {
 
   ngOnInit() {
     const respId = history.state?.client_response_id;
-    if (!respId) this.router.navigate(['/client/pending-bids']);
-    else {
+    const userId = history.state?.user_id;
+
+    if (!respId || !userId) {
+      this.router.navigate(['/client/pending-bids']);
+    } else {
       forkJoin({
         structure: this.formsService.getFormStructure(1),
         responses: this.formsService.getClientResponsesDetailed(respId),
-      }).subscribe(({ structure, responses }) => {
+        files: this.clientService.getUserFilesForJob(userId, respId)
+      }).subscribe(({ structure, responses, files }) => {
         this.formStructure = structure;
         this.clientResponses = responses;
+        this.uploadedFiles = files?.files_by_category?.["Job Files"] || [];
         this.buildJobForm(structure);
       });
     }
   }
 
+
   private buildJobForm(structure: any) {
     const group: Record<string, FormControl | FormArray<any>> = {};
+    const optionCalls: Observable<any>[] = [];
+    const questionMap: any[] = [];
 
+    // Collect all questions and option fetch calls
     structure.categories.forEach((cat: any) => {
       cat.questions.forEach((q: any) => {
-        const pref = this.prefilledValue(q.question_id);
-        const validators = [];
-
-        if (q.answer_type === 'CHECKBOX_GROUP') {
-          const chosen = pref ? String(pref).split(/\s*,\s*/) : [];
-          group[q.question_id] = this.fb.array(
-            chosen.map((val: string) => this.fb.control(val))
-          );
-        } else if (q.answer_type === 'TEXT_GROUP') {
-          this.textGroupId = q.question_id;
-          const vals = pref ? String(pref).split(/\s*,\s*/) : [];
-          group[q.question_id] = this.fb.array(
-            vals.map((v: string) => this.fb.control(v))
-          );
-        } else {
-          if (q.question_id === 4 || q.question_id === 5) {
-            validators.push(this.noPastDateValidator());
-          }
-          group[q.question_id] = this.fb.control(pref ?? '', validators);
-        }
+        questionMap.push(q);
+        optionCalls.push(this.getOptions(q.question_id));
       });
     });
 
-    this.jobForm = this.fb.group(group, {
-      validators: this.dateOrderValidator(),
+    // Wait for all options to load
+    forkJoin(optionCalls).subscribe((allOptionsResults) => {
+      questionMap.forEach((q, idx) => {
+        const pref = this.prefilledValue(q.question_id);
+        const options = allOptionsResults[idx];
+        const optionSet = new Set(options.map((o: string) => o.toLowerCase()));
+        const isRequired = this.isRequiredField(q.question_id);
+        const validators: ValidatorFn[] = [];
+
+        if (q.question_id === 4 || q.question_id === 5) {
+          validators.push(this.noPastDateValidator());
+        }
+        if (isRequired && q.answer_type !== 'CHECKBOX_GROUP') {
+          validators.push(Validators.required);
+        }
+
+        if (q.answer_type === 'CHECKBOX_GROUP') {
+          const chosen = pref ? String(pref).split(/\s*,\s*/) : [];
+          const formArray = this.fb.array<FormControl>([], isRequired ? this.checkboxRequired() : undefined);
+          const otherItems: string[] = [];
+
+          chosen.forEach((val: string) => {
+            if (optionSet.has(val.toLowerCase())) {
+              formArray.push(this.fb.control(val));
+            } else {
+              this.isOtherSelected[q.question_id] = true;
+              otherItems.push(val);
+            }
+          });
+
+          if (this.isOtherSelected[q.question_id]) {
+            this.otherInputControls[q.question_id] = new FormControl(otherItems.join(', '), Validators.required);
+            formArray.push(this.fb.control('Other...'));
+          }
+
+          group[q.question_id] = formArray;
+
+        } else if (q.answer_type === 'TEXT_GROUP') {
+          this.textGroupId = q.question_id;
+          const vals = pref ? String(pref).split(/\s*,\s*/) : [];
+          group[q.question_id] = this.fb.array(vals.map(v => this.fb.control(v)));
+
+        } else if (q.answer_type === 'radio') {
+          let selected = pref ?? '';
+          if (selected && !optionSet.has(selected.toLowerCase())) {
+            this.isOtherSelected[q.question_id] = true;
+            this.otherInputControls[q.question_id] = new FormControl(selected, Validators.required);
+            selected = 'Other...';
+          }
+          group[q.question_id] = this.fb.control(selected, validators);
+
+        } else {
+          group[q.question_id] = this.fb.control(pref ?? '', validators);
+        }
+      });
+
+      // Now build the full form once
+      this.jobForm = this.fb.group(group, {
+        validators: this.dateOrderValidator()
+      });
     });
   }
+
+
 
   private prefilledValue(qId: number) {
     for (const cat of this.clientResponses.categories || []) {
@@ -150,13 +205,6 @@ export class UpdateJobComponent implements OnInit {
     }
   }
 
-  updateRadioValue(questionId: number) {
-    const otherValue = this.otherInputControls[questionId]?.value;
-    if (otherValue) {
-      this.jobForm.get(questionId.toString())?.setValue(otherValue);
-    }
-  }
-
   getTextGroupControls(qId: number) {
     return (this.jobForm.get(qId.toString()) as FormArray)?.controls;
   }
@@ -174,11 +222,13 @@ export class UpdateJobComponent implements OnInit {
   onSubmit() {
     if (this.jobForm.invalid || this.isSubmitting) {
       this.jobForm.markAllAsTouched();
+      Object.values(this.otherInputControls).forEach(ctrl => ctrl?.markAsTouched?.());
+      alert('Please fill in all required fields before submitting.');
       return;
     }
-  
+
     this.isSubmitting = true;
-  
+
     const responses = Object.entries(this.jobForm.value)
       .filter(([_, v]) => !(Array.isArray(v) && v.length === 0) && v !== '')
       .map(([id, val]) => {
@@ -200,18 +250,18 @@ export class UpdateJobComponent implements OnInit {
           response_value: Array.isArray(val) ? val.join(', ') : val,
         };
       });
-  
+
     const payload = {
       form_id: this.formStructure.form_id,
       responses,
     };
-  
+
     const formData = new FormData();
     formData.append('job_data_str', JSON.stringify(payload));
     if (this.uploadedFile) {
       formData.append('files', this.uploadedFile);
     }
-  
+
     this.clientService
       .updateJobWithResponses(this.clientResponses.client_response_id, formData)
       .subscribe({
@@ -227,7 +277,14 @@ export class UpdateJobComponent implements OnInit {
         }
       });
   }
-  
+
+  checkboxRequired(): ValidatorFn {
+    return (formArray: AbstractControl): { [key: string]: any } | null => {
+      return (formArray as FormArray).length > 0 ? null : { required: true };
+    };
+  }
+
+
 
   onFileSelected(event: Event): void {
     const input = event.target as HTMLInputElement;

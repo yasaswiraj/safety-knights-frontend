@@ -2,6 +2,7 @@ import { HttpClient, HttpHeaders } from "@angular/common/http";
 import { Injectable } from "@angular/core";
 import { Observable, tap } from "rxjs";
 import { jwtDecode } from 'jwt-decode';
+import { environment } from "../../environments/environment";
 
 @Injectable({
   providedIn: 'root'
@@ -47,6 +48,32 @@ export class AuthService {
     const user = JSON.parse(localStorage.getItem('currentUser') || '{}');
     return user?.user_id;
   }
+
+  // Send Forgot Password Email
+sendForgotPassword(email: string): Observable<any> {
+  return this.http.post(`${environment.apiUrl}/forgot-password`, { email }, {
+    withCredentials: true
+  });
+}
+
+// Verify OTP
+verifyOtp(email: string, otp: string): Observable<any> {
+  return this.http.post(`${environment.apiUrl}/verify-otp`, { email, otp }, {
+    withCredentials: true
+  });
+}
+
+// Reset Password
+resetPassword(email: string, otp: string, new_password: string): Observable<any> {
+  return this.http.post(`${environment.apiUrl}/reset-password`, {
+    email,
+    otp,
+    new_password
+  }, {
+    withCredentials: true
+  });
+}
+
 }
 
 
