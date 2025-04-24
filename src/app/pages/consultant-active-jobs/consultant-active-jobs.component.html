@@ -57,7 +57,7 @@
                 <td mat-cell *matCellDef="let job" class="p-3">
                     <span class="inline-flex items-center gap-1">
                         <span [ngClass]="{
-                            'bg-yellow-400': job.job_status === 'waiting' ,
+                            'bg-yellow-400': job.job_status === 'active' ,
                             'bg-green-500': job.job_status === 'in_progress',
                             'bg-red-500': job.job_status === 'closed'
                         }"
