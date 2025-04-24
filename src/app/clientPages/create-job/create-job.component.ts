@@ -45,6 +45,13 @@ export class CreateJobComponent implements OnInit {
     });
   }
 
+  checkboxRequired(): ValidatorFn {
+    return (formArray: AbstractControl): { [key: string]: any } | null => {
+      return (formArray as FormArray).length > 0 ? null : { required: true };
+    };
+  }
+  
+
   private buildJobForm(structure: any) {
     const group: { [controlName: string]: FormControl | FormArray<any> } = {};
 
@@ -53,18 +60,32 @@ export class CreateJobComponent implements OnInit {
         const validators = [];
 
         if (q.answer_type === 'CHECKBOX_GROUP') {
-          group[q.question_id] = this.fb.array<FormControl<string>>([]);
-        } else if (q.answer_type === 'TEXT_GROUP') {
+          const checkboxArray = this.fb.array<FormControl<string>>([]);
+          if (this.isRequiredField(q.question_id)) {
+            checkboxArray.setValidators(this.checkboxRequired()); 
+          }
+          group[q.question_id] = checkboxArray;
+        } 
+        else if (q.answer_type === 'TEXT_GROUP') {
           this.textGroupId = q.question_id;
           group[q.question_id] = this.fb.array<FormControl<string>>([]);
-        } else {
-          // Apply past-date validator
+        }
+        else if (q.answer_type === 'radio') {
+          if (this.isRequiredField(q.question_id)) {
+            validators.push(Validators.required);
+          }
+          group[q.question_id] = this.fb.control('', validators); // ✅ Only here
+        }
+        else {
           if (q.question_id === 4 || q.question_id === 5) {
             validators.push(this.noPastDateValidator());
           }
-
+          if (this.isRequiredField(q.question_id)) {
+            validators.push(Validators.required);
+          }
           group[q.question_id] = this.fb.control('', validators);
         }
+        
       });
     });
 
@@ -187,6 +208,7 @@ export class CreateJobComponent implements OnInit {
     });
   
     if (this.jobForm.invalid || this.isSubmitting || otherFieldsInvalid) {
+      alert('Please fill in all mandatory fields before submitting.');
       return;
     }
   
