@@ -27,11 +27,15 @@ import { environment } from '../../../../environments/environment';
 
 export class ConsultantFormsSubmissionComponent {
   finalPayload: any = {};
-  selectedFiles: any;
+  // selectedFiles: any;
+  fileCategoryMap: any = {};
+  formDataToSend: FormData | undefined;
   constructor(private router: Router, private formDataService: FormDataService, private http: HttpClient) {
     this.finalPayload = this.formDataService.getFormData();
-    this.selectedFiles = this.finalPayload.files;
-    console.log('Form Data from Service:', this.finalPayload);
+    this.fileCategoryMap = this.finalPayload.files;
+    console.log('Final Payload from FormDataService:', this.finalPayload);
+    console.log('File Category Map:', this.fileCategoryMap);
+    
     this.finalPayload= {
       name : this.finalPayload.name || " ", // Fallback to default if undefined, for demo purposes
       email : this.finalPayload.email  ,
@@ -72,107 +76,49 @@ export class ConsultantFormsSubmissionComponent {
       written_responses : {
           "Please state any specifics about availability that you may have": this.finalPayload.jobDescription1,
           "Additional Information, Comments or Clarifications": this.finalPayload.jobDescription2
+      },
+      
+  }
+
+    // Build FormData once and reuse
+    this.formDataToSend = new FormData();
+    this.formDataToSend.append('consultant_data_str', JSON.stringify(this.finalPayload));
+    console.log('Form Data to Send:', this.formDataToSend);
+    for (const category in this.fileCategoryMap) {
+      if (this.fileCategoryMap[category]) {
+        this.fileCategoryMap[category].forEach((file: File) => {
+          this.formDataToSend!.append(category, file);
+        });
       }
+    }
+    for (const [key, value] of this.formDataToSend.entries()) {
+      console.log(`${key}:`, value);
+    }
   }
-    console.log('Final Payload before submission:', this.finalPayload);
-    
-  }
+ 
  
   navigateToLanding() {
     this.router.navigate(['/']);
   }
 
-
-  // onGetStarted() {
-  //   console.log("Button Clicked!");
-  //   // Navigate to another page if needed
-    
-  //   console.log('Final JSON Payload:', this.finalPayload);
-
-  //   this.http.post(`${environment.apiUrl}/consultant/signup`, this.finalPayload,{ withCredentials: true })
-  //     .subscribe(response => {
-  //       console.log('Form submitted successfully', response);
-
-  //        this.formDataService.setFormData({}); // Clear after submission
-  //     }, error => {
-  //       console.error('Error submitting form', error);
-  //     });
-
-  //     //
-  //    this.router.navigate(['/login']);
-  // }
-
   onGetStarted() {
+    console.log("Submitting Form...");
+    console.log('Payload:', this.formDataToSend);
 
-    const formData = new FormData();
-    console.log("Button Clicked!");
-    console.log('Final JSON Payload:', this.finalPayload);
-
-    formData.append('consultant_data_str', JSON.stringify(this.finalPayload));
-
-    for (const category in this.selectedFiles) {
-      if (this.selectedFiles.hasOwnProperty(category)) {
-        const fileList = this.selectedFiles[category];
-        for (let i = 0; i < fileList.length; i++) {
-          formData.append(`files[${category}]`, fileList[i]); // fileList[i] is a File object
-        }
-      }
-    }
-  
-    // First call: Signup
-    this.http.post<any>(`${environment.apiUrl}/consultant/signup`, formData, { withCredentials: true })
+    // Send sign-up data with files
+    this.http.post<any>(`${environment.apiUrl}/consultant/signup`, this.formDataToSend, { withCredentials: true })
       .subscribe({
         next: (response) => {
-          console.log('Form submitted successfully', response);
-  
-          const userId = response?.user_id;
-          const fileToUpload = this.selectedFiles; // assuming 'files' is a File or FormData object
-          
-          console.log('User ID:', userId);
-          console.log('File to Upload:', fileToUpload);
-          if (userId && fileToUpload) {
-            const uploadPayload = new FormData();
+          console.log('Submitted successfully', response);
 
-                      // ✅ Append each file with the correct key: 'files'
-            fileToUpload.forEach((file: File) => {
-              uploadPayload.append('files', file);
-            });
-
-            
-            uploadPayload.append('user_id', userId);
-
-                      // ✅ Log the FormData properly
-          for (const [key, value] of uploadPayload.entries()) {
-            console.log(`${key}:`, value);
-          }
-
-
-
-            // console.log('Upload Payload:', uploadPayload);
-  
-            // Second call: Upload file
-            // this.http.post(`${environment.apiUrl}/upload-multiple-files`, uploadPayload)
-            //   .subscribe({
-            //     next: (uploadResponse) => {
-            //       console.log('File uploaded successfully', uploadResponse);
-            //     },
-            //     error: (uploadError) => {
-            //       console.error('Error uploading file:', uploadError);
-            //     }
-            //   });
-          }
-  
-          // Optional: clear form after both steps
-          this.formDataService.setFormData({});
+          this.formDataService.setFormData({}); // Clear cache
           this.router.navigate(['/login']);
         },
         error: (error) => {
-          console.error('Error submitting form', error);
+          console.error('Error submitting form:', error);
         }
       });
   }
-  
 
 }
 
-// files : this.finalPayload.files,
