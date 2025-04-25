@@ -210,6 +210,12 @@ export class ClientJobsService {
       );
   }
 
+  deleteJob(jobId: number): Observable<any> {
+    return this.http.delete(`${environment.apiUrl}/client/delete-job/${jobId}`, {
+      withCredentials: true
+    });
+  }
+
   getConsultantProfile(consultantId: number): Observable<ConsultantProfile> {
     return this.http.get<ConsultantProfile>(
       `${environment.apiUrl}/client/get_consultant_profile/${consultantId}`,

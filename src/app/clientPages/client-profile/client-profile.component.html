@@ -1,15 +1,15 @@
 <div class="p-8 relative">
-  <div class="absolute top-10 right-12">
-    <button
-      (click)="toggleEditMode()"
-      class="bg-[#A15D3C] text-white px-4 py-2 rounded-lg shadow hover:bg-[#b17457] transition"
-      *ngIf="!editMode"
-    >
-      <i class="fas fa-edit mr-2"></i> Edit
-    </button>
-  </div>
 
-  <div class="bg-white shadow-lg rounded-xl p-8 max-w-5xl mx-auto">
+
+  <div class="bg-white shadow-lg rounded-xl p-8 max-w-5xl mx-auto relative">
+    <div class="absolute top-6 right-6" *ngIf="!editMode">
+      <button
+        (click)="toggleEditMode()"
+        class="bg-[#A15D3C] text-white px-4 py-2 rounded-lg shadow hover:bg-[#b17457] transition"
+      >
+        <i class="fas fa-edit mr-2"></i> Edit
+      </button>
+    </div>
     <h1 class="text-4xl font-extrabold text-gray-800 mb-8 flex items-center gap-3">
        My Profile
     </h1>
@@ -17,6 +17,8 @@
     <!-- View Mode -->
     <div *ngIf="!editMode" class="grid grid-cols-1 md:grid-cols-2 gap-10 text-gray-700 text-base">
       <!-- Personal Info -->
+
+
       <div>
         <h2 class="text-xl font-semibold mb-4 flex items-center gap-2">
           <i class="fas fa-user"></i> Personal Info

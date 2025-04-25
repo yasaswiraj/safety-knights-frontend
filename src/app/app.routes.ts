@@ -46,30 +46,30 @@ export const routes: Routes = [
   {
     path: '',
     component: LandingPageComponent,
-    canActivate: [() => {
-      const router = inject(Router);
-      if (localStorage.getItem('loggedIn')) {
-        const userType = localStorage.getItem('userType');
-        if (userType === 'client') return router.parseUrl('/client/bids-in-progress');
-        if (userType === 'consultant') return router.parseUrl('/consultant/consultant-matches');
-        if (userType === 'admin') return router.parseUrl('/admin');
-      }
-      return true; // Allow access to landing page if not logged in
-    }],
+    // canActivate: [() => {
+    //   const router = inject(Router);
+    //   if (localStorage.getItem('loggedIn')) {
+    //     const userType = localStorage.getItem('userType');
+    //     if (userType === 'client') return router.parseUrl('/client/bids-in-progress');
+    //     if (userType === 'consultant') return router.parseUrl('/consultant/consultant-matches');
+    //     if (userType === 'admin') return router.parseUrl('/admin');
+    //   }
+    //   return true; // Allow access to landing page if not logged in
+    // }],
   },
   {
     path: 'login',
     component: LoginComponent,
-    canActivate: [() => {
-      const router = inject(Router);
-      if (localStorage.getItem('loggedIn')) {
-        const userType = localStorage.getItem('userType');
-        if (userType === 'client') return router.parseUrl('/client/bids-in-progress');
-        if (userType === 'consultant') return router.parseUrl('/consultant/consultant-matches');
-        if (userType === 'admin') return router.parseUrl('/admin');
-      }
-      return true; // Allow access to login page if not logged in
-    }],
+    // canActivate: [() => {
+    //   const router = inject(Router);
+    //   if (localStorage.getItem('loggedIn')) {
+    //     const userType = localStorage.getItem('userType');
+    //     if (userType === 'client') return router.parseUrl('/client/bids-in-progress');
+    //     if (userType === 'consultant') return router.parseUrl('/consultant/consultant-matches');
+    //     if (userType === 'admin') return router.parseUrl('/admin');
+    //   }
+    //   return true; // Allow access to login page if not logged in
+    // }],
   },
   { path: 'onboarding', component: OnboardingComponent }, // New combined form route
   { path: 'consultant-login', component: ConsultantLoginComponent }, // Consultant login route

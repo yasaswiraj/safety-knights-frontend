@@ -74,7 +74,7 @@ export class CreateJobComponent implements OnInit {
           if (this.isRequiredField(q.question_id)) {
             validators.push(Validators.required);
           }
-          group[q.question_id] = this.fb.control('', validators); // ✅ Only here
+          group[q.question_id] = this.fb.control('', validators); 
         }
         else {
           if (q.question_id === 4 || q.question_id === 5) {
@@ -225,7 +225,7 @@ export class CreateJobComponent implements OnInit {
             // Replace 'Other...' value in the array
             const idx = control.controls.findIndex(c => c.value === 'Other...');
             if (idx !== -1) {
-              control.at(idx).setValue(ctrl.value); // ✅ Replace only "Other..."
+              control.at(idx).setValue(ctrl.value); 
             } else {
               control.push(this.fb.control(ctrl.value)); // just in case it's not added
             }

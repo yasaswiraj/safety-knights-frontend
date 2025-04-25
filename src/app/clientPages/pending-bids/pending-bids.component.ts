@@ -10,6 +10,8 @@ import { CommonModule } from '@angular/common';
 import { ClientJobsService, PendingBid } from '../../services/client-jobs.service';
 import { FormDataService } from '../../services/form-data.service';
 import { LoadingComponent } from '../../components/loading/loading.component';
+import { MatDialog } from '@angular/material/dialog';
+import { ConfirmDialogComponent } from '../confirm-dialog/confirm-dialog.component';
 
 
 
@@ -36,9 +38,9 @@ export class PendingBidsComponent implements AfterViewInit, OnInit {
 
 
   dataSource: MatTableDataSource<PendingBid> = new MatTableDataSource<PendingBid>([]);
-  displayedColumns: string[] = ['jobName', 'deadline', 'budget', 'actions'];
+  displayedColumns: string[] = ['jobName', 'deadline', 'budget', 'actions', 'delete'];
 
-  constructor(private router: Router, private clientJobsService: ClientJobsService, private formDataService: FormDataService) { }
+  constructor(private router: Router, private clientJobsService: ClientJobsService, private formDataService: FormDataService,  public dialog: MatDialog ) { }
 
   ngOnInit() {
     this.fetchPendingBids();
@@ -73,7 +75,33 @@ export class PendingBidsComponent implements AfterViewInit, OnInit {
     });
   }
   
+  confirmDelete(bid: PendingBid) {
+    const dialogRef = this.dialog.open(ConfirmDialogComponent, {
+      width: '400px', // Control the width of the dialog
+      data: { jobName: bid.scope_of_service } // Pass the job name to the dialog
+    });
+  
+    dialogRef.afterClosed().subscribe(result => {
+      if (result) {
+        this.deleteJob(bid.client_job_id);
+      }
+    });
+  }
+  
 
+  deleteJob(jobId: number) {
+    this.clientJobsService.deleteJob(jobId).subscribe({
+      next: (res) => {
+        console.log(`Deleted job ${jobId}:`, res);
+        this.fetchPendingBids(); // Refresh the table
+      },
+      error: (err) => {
+        console.error('Failed to delete job:', err);
+        alert('Failed to delete job. Please try again.');
+      }
+    });
+  }
+  
 
 
   applyFilter() {
