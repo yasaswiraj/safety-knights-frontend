@@ -70,22 +70,22 @@ h2[mat-dialog-title] {
   
 /* Cancel Button */
 button.mat-button {
-    color: #edf0f3a5; /* Blue color for cancel button */
+    color: #040000; /* Blue color for cancel button */
     font-weight: 500;
     border-radius: 12px;
     padding: 10px 20px;
-    border: 2px solid #edf0f3a5;
+    border: 2px solid #040000;
     background-color: transparent;
     cursor: pointer;
     transition: all 0.3s ease-in-out;
 }
 
 button[mat-button] {
-  color: #edf0f3a5 !important;
+  color: #040000 !important;
   font-weight: 500 !important;
   border-radius: 12px !important;
   padding: 10px 20px !important;
-  border: 2px solid #edf0f3a5 !important;
+  border: 2px solid #040000 !important;
   background-color: transparent !important;
 }
 

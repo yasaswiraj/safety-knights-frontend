@@ -17,6 +17,8 @@ export class ClientProfileComponent implements OnInit {
   profile: any = null;
   originalProfile: any = null;
   editMode = false;
+  reviews: any[] = [];
+
 
   constructor(
     private clientJobsService: ClientJobsService,
@@ -25,11 +27,13 @@ export class ClientProfileComponent implements OnInit {
 
   ngOnInit(): void {
     this.loadProfile();
+    this.loadReviews();
 
     // Check route data for editMode flag
     const isEditRoute = this.route.snapshot.data['editMode'];
     if (isEditRoute) {
       this.editMode = true;
+      
     }
   }
 
@@ -45,6 +49,17 @@ export class ClientProfileComponent implements OnInit {
     });
   }
 
+  loadReviews(): void {
+    this.clientJobsService.getClientReviews().subscribe({
+      next: (data) => {
+        this.reviews = data.reviews || [];
+      },
+      error: (err) => {
+        console.error('Failed to load reviews:', err);
+      }
+    });
+  }
+  
   toggleEditMode(): void {
     this.editMode = true;
   }

@@ -302,6 +302,13 @@ export class ClientJobsService {
     );
   }
 
+  getClientReviews(): Observable<any> {
+    return this.http.get(`${environment.apiUrl}/client/get_client_reviews`, {
+      withCredentials: true
+    });
+  }
+  
+
   checkReviewExists(jobId: number, consultantId: number) {
     return this.http.get<{ reviewExists: boolean }>(
       `${environment.apiUrl}/client/check_review_exists`,
@@ -316,4 +323,6 @@ export class ClientJobsService {
   }
   
 }
+
+
 

@@ -41,7 +41,7 @@ export class NavBarComponent {
     this.isLoading = true; // Set loading state to true
     this.apiService.logoutUser().subscribe({
       next: (res: any) => {
-        console.log('✅ Logout successful:', res);
+        console.log('Logout successful:', res);
 
         // Disconnect WebSocket connection on logout
         this.chatService.closeWebSocket();
@@ -54,11 +54,24 @@ export class NavBarComponent {
         this.isLoading = false; // Reset loading state
       },
       error: (err) => {
-        console.error('❌ Logout failed:', err.error?.detail || err.message);
+        console.error('Logout failed:', err.error?.detail || err.message);
         this.isLoading = false; // Reset loading state
       }
     });
   }
+
+  navigateToUpdateProfile() {
+    const userType = localStorage.getItem('userType');
+  
+    if (userType === 'client') {
+      this.router.navigate(['/client/update-profile']);
+    } else if (userType === 'consultant') {
+      this.router.navigate(['/consultant/update-profile']);
+    } else {
+      console.warn('Unknown user type, cannot navigate to update profile.');
+    }
+  }
+  
 
   @HostListener('document:click', ['$event'])
   onDocumentClick(event: MouseEvent) {

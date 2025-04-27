@@ -1,24 +1,23 @@
 <div class="p-8 relative">
 
-
   <div class="bg-white shadow-lg rounded-xl p-8 max-w-5xl mx-auto relative">
+
+    <!-- Edit Button -->
     <div class="absolute top-6 right-6" *ngIf="!editMode">
-      <button
-        (click)="toggleEditMode()"
-        class="bg-[#A15D3C] text-white px-4 py-2 rounded-lg shadow hover:bg-[#b17457] transition"
-      >
+      <button (click)="toggleEditMode()"
+        class="bg-[#A15D3C] text-white px-4 py-2 rounded-lg shadow hover:bg-[#b17457] transition">
         <i class="fas fa-edit mr-2"></i> Edit
       </button>
     </div>
+
     <h1 class="text-4xl font-extrabold text-gray-800 mb-8 flex items-center gap-3">
-       My Profile
+      My Profile
     </h1>
 
     <!-- View Mode -->
     <div *ngIf="!editMode" class="grid grid-cols-1 md:grid-cols-2 gap-10 text-gray-700 text-base">
+      
       <!-- Personal Info -->
-
-
       <div>
         <h2 class="text-xl font-semibold mb-4 flex items-center gap-2">
           <i class="fas fa-user"></i> Personal Info
@@ -60,41 +59,102 @@
     </div>
 
     <!-- Edit Mode -->
-    <form *ngIf="editMode" (ngSubmit)="saveProfile()" class="grid grid-cols-1 md:grid-cols-2 gap-10 text-gray-700 text-base">
+    <form *ngIf="editMode" #profileForm="ngForm" (ngSubmit)="profileForm.valid && saveProfile()">
+
+      <!-- Edit Personal Info -->
       <div>
         <h2 class="text-xl font-semibold mb-4 flex items-center gap-2">
           <i class="fas fa-user-edit"></i> Edit Personal Info
         </h2>
-        <label>Name: <input class="input" [(ngModel)]="profile.name" name="name" required /></label>
-        <label>Email: <input class="input" [value]="profile.email" disabled /></label>
-        <label>Contact: <input class="input" [(ngModel)]="profile.contact" name="contact" /></label>
-        <label>Job Title: <input class="input" [(ngModel)]="profile.job_title" name="job_title" /></label>
+        <label>Name:
+          <input class="input" [(ngModel)]="profile.name" name="name" required />
+        </label>
+
+        <label>Email:
+          <input class="input" [value]="profile.email" disabled />
+        </label>
+
+        <label>
+          Contact:
+          <input class="input w-full p-2 border rounded-lg outline-none transition-all"
+            [(ngModel)]="profile.contact" name="contact" required #contactInput="ngModel"
+            pattern="^[0-9]{10}$"
+            [ngClass]="{
+              'border-red-500': contactInput.invalid && contactInput.touched,
+              'border-gray-300': contactInput.valid || !contactInput.touched
+            }" />
+        </label>
+
+        <!-- Error Message -->
+        <div *ngIf="contactInput.invalid && contactInput.touched" class="text-red-500 text-sm mt-1">
+          Contact must be a 10-digit number.
+        </div>
+
+        <label class="block mb-6">
+          Job Title:
+          <input class="input" [(ngModel)]="profile.job_title" name="job_title" />
+        </label>
       </div>
 
+      <!-- Edit Company Info -->
       <div>
         <h2 class="text-xl font-semibold mb-4 flex items-center gap-2">
           <i class="fas fa-industry"></i> Edit Company Info
         </h2>
-        <label>Company Name: <input class="input" [(ngModel)]="profile.company_name" name="company_name" /></label>
-        <label>Address: <input class="input" [(ngModel)]="profile.company_address" name="company_address" /></label>
+        <label>Company Name:
+          <input class="input" [(ngModel)]="profile.company_name" name="company_name" />
+        </label>
+
+        <label>Address:
+          <input class="input" [(ngModel)]="profile.company_address" name="company_address" />
+        </label>
       </div>
 
+      <!-- Save and Cancel Buttons -->
       <div class="col-span-2 text-right mt-6 flex justify-end gap-4">
-        <!-- Save Button in brown -->
         <button type="submit"
           class="bg-[#A15D3C] text-white px-6 py-2 rounded-md shadow-sm hover:bg-[#b17457] transition">
           <i class="fas fa-save mr-2"></i> Save
         </button>
-      
-        <!-- Cancel Button in soft gray -->
+
         <button type="button" (click)="cancelEdit()"
           class="bg-gray-100 text-gray-700 px-6 py-2 rounded-md border border-gray-300 shadow-sm hover:bg-gray-200 transition">
           <i class="fas fa-times mr-2"></i> Cancel
         </button>
       </div>
-      
-      
-      
-    </form>
+
+    </form> <!-- End of form -->
+
+    <!-- My Reviews Section (OUTSIDE the form) -->
+    <div class="col-span-2 mt-10">
+      <h2 class="text-xl font-semibold mb-4 flex items-center gap-2">
+        <i class="fas fa-comments"></i> My Reviews
+      </h2>
+
+      <div *ngIf="reviews.length > 0; else noReviews" class="space-y-6">
+        <div *ngFor="let review of reviews" class="bg-gray-50 p-6 rounded-lg shadow-sm">
+          <p class="font-semibold text-gray-800 mb-2">
+            {{ review.consultant_name }} ({{ review.consultant_company }})
+          </p>
+          <p class="text-gray-600 mb-1">
+            <strong>Service:</strong> {{ review.scope_of_service }}
+          </p>
+          <p class="text-gray-600 mb-1">
+            <strong>Rating:</strong> {{ review.rating }}/5
+          </p>
+          <p class="text-gray-600 mb-2">
+            <strong>Review:</strong> {{ review.review }}
+          </p>
+          <p class="text-gray-400 text-sm">
+            {{ review.created_at | date:'mediumDate' }}
+          </p>
+        </div>
+      </div>
+
+      <ng-template #noReviews>
+        <p class="text-gray-500">You have not posted any reviews yet.</p>
+      </ng-template>
+    </div>
+
   </div>
 </div>

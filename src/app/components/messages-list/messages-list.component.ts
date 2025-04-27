@@ -1,10 +1,11 @@
 import { Component, EventEmitter, Output, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ChatService, Message } from '../../services/chat.service'; // Adjust path as needed
+import { FormsModule } from '@angular/forms';
 
-@Component({
+@Component({  
   selector: 'app-messages-list',
-  imports: [CommonModule],
+  imports: [CommonModule,FormsModule],
   templateUrl: './messages-list.component.html',
   styleUrl: './messages-list.component.css',
 })
@@ -12,8 +13,17 @@ export class MessagesListComponent implements OnInit {
   @Output() chatSelected = new EventEmitter<any>();
   activeChat?: number;
   chats: any[] = [];
+  searchTerm = '';
+
 
   constructor(private chatService: ChatService) {}
+
+  get filteredChats() {
+    return this.chats.filter(chat =>
+      chat.user.name.toLowerCase().includes(this.searchTerm.toLowerCase())
+    );
+  }
+
 
   ngOnInit() {
     const token = localStorage.getItem('access_token');
