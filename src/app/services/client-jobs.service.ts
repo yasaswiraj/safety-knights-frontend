@@ -325,6 +325,13 @@ export class ClientJobsService {
       withCredentials: true
     });
   }
+
+  getFeedbackReceived(): Observable<any> {
+    return this.http.get(`${environment.apiUrl}/client/get_feedback_received`, {
+      withCredentials: true
+    });
+  }
+  
   
 
   checkReviewExists(jobId: number, consultantId: number) {

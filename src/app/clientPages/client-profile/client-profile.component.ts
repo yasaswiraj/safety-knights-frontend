@@ -50,15 +50,17 @@ export class ClientProfileComponent implements OnInit {
   }
 
   loadReviews(): void {
-    this.clientJobsService.getClientReviews().subscribe({
+    this.clientJobsService.getFeedbackReceived().subscribe({
       next: (data) => {
-        this.reviews = data.reviews || [];
+        this.reviews = data.feedbacks || [];
       },
       error: (err) => {
-        console.error('Failed to load reviews:', err);
+        console.error('Failed to load received feedbacks:', err);
       }
     });
   }
+  
+  
   
   toggleEditMode(): void {
     this.editMode = true;
