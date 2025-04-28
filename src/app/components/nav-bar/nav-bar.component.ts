@@ -23,6 +23,7 @@ import { ChatService } from '../../services/chat.service';
 export class NavBarComponent {
   menuOpen = false;
   isLoading = false; // Add loading state
+  isSidebarOpen = true;
   @Output() toggleSidebar = new EventEmitter<void>();
 
   @ViewChild('menuWrapper') menuWrapper!: ElementRef;
@@ -30,6 +31,7 @@ export class NavBarComponent {
   constructor(private router: Router, private http: HttpClient, private apiService: ApiService, private chatService: ChatService) { }
 
   onToggleSidebar() {
+    this.isSidebarOpen = !this.isSidebarOpen;
     this.toggleSidebar.emit();
   }
 
@@ -65,5 +67,9 @@ export class NavBarComponent {
     if (this.menuWrapper && !this.menuWrapper.nativeElement.contains(event.target)) {
       this.menuOpen = false;
     }
+  }
+
+  navigateToLandingPage() {
+    this.router.navigate(['/']);
   }
 }
