@@ -21,13 +21,18 @@
       <div class="flex items-center gap-4 mb-4">
         <img src="/user.png" alt="Consultant" class="w-12 h-12 rounded-full shadow-sm" />
         <div>
-          <h3 class="text-lg font-semibold text-gray-800">{{ job.consultantName }}</h3>
-        </div>
+          <h3
+          class="text-lg font-semibold text-gray-800 hover:underline cursor-pointer"
+          (click)="openConsultantProfile(job.consultantId)"
+        >
+          {{ job.consultantName }}
+        </h3>
+                </div>
       </div>
 
       <!-- Job Summary Info -->
-      <p class="text-sm text-gray-600 mb-1">Days Left</p>
-      <p class="text-lg font-bold text-gray-900 mb-3">{{ job.daysLeft }}</p>
+      <p class="text-sm text-gray-600 mb-1">Days Since Start</p>
+      <p class="text-lg font-bold text-gray-900 mb-3">{{ job.daysSinceStart }}</p>
 
       <p class="text-sm text-gray-600 mb-1">Budget</p>
       <p class="text-lg font-bold text-gray-900 mb-4">${{ job.budget }}</p>

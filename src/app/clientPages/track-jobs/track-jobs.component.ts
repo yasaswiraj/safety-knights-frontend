@@ -3,6 +3,8 @@ import { Router } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { ClientJobsService, JobInProgress, ConsultantProfile } from '../../services/client-jobs.service';
 import { ActivatedRoute } from '@angular/router';
+import { MatDialog, MatDialogModule } from '@angular/material/dialog';
+import { ConsultantProfileComponent } from '../consultant-profile/consultant-profile.component'; 
 
 // Add this interface before your component class
 interface User {
@@ -15,14 +17,14 @@ interface User {
   templateUrl: './track-jobs.component.html',
   styleUrls: ['./track-jobs.component.css'],
   standalone: true,
-  imports: [CommonModule]
+  imports: [CommonModule, MatDialogModule]
 })
 export class TrackJobsComponent implements OnInit {
   ongoingJobs: {
     consultantId: number;
     consultantName: string;
     jobTitle: string;
-    daysLeft: number;
+    daysSinceStart: number;
     budget: number;
     startDate: string;
   }[] = [];
@@ -30,23 +32,26 @@ export class TrackJobsComponent implements OnInit {
   constructor(
     private router: Router,
     private route: ActivatedRoute,
-    private clientJobsService: ClientJobsService
+    private clientJobsService: ClientJobsService,
+    private dialog: MatDialog
   ) {}
-ngOnInit() {
+
+
+  ngOnInit() {
     const jobId = Number(this.route.snapshot.queryParamMap.get('jobId'));
     const today = new Date();
-
+  
     this.clientJobsService.getJobsInProgress().subscribe({
       next: (response) => {
         const filteredJobs = response.jobs.filter((job: any) => job.client_job_id === jobId);
-
+  
         const jobPromises = filteredJobs.map(async (job: any) => {
           const startDate = new Date(job.expected_start_date);
-          const daysLeft = Math.max(
+          const daysSinceStart = Math.max(
             0,
-            Math.ceil((new Date(job.proposal_deadline).getTime() - today.getTime()) / (1000 * 60 * 60 * 24))
+            Math.floor((today.getTime() - startDate.getTime()) / (1000 * 60 * 60 * 24))
           );
-
+  
           let consultantName = 'Consultant';
           try {
             const profile = await this.clientJobsService.getConsultantProfile(job.consultant_user_id).toPromise();
@@ -54,12 +59,12 @@ ngOnInit() {
           } catch (error) {
             console.error(`Error fetching profile for consultant ID ${job.consultant_user_id}:`, error);
           }
-
+  
           return {
             consultantId: job.consultant_user_id,
             consultantName,
             jobTitle: job.scope_of_service,
-            daysLeft,
+            daysSinceStart,   // use this
             budget: job.budget,
             startDate: startDate.toLocaleDateString('en-US', {
               year: 'numeric',
@@ -68,7 +73,8 @@ ngOnInit() {
             })
           };
         });
-
+  
+        // <<<< YOU MISSED THIS PART
         Promise.all(jobPromises).then(results => {
           this.ongoingJobs = results;
         });
@@ -78,6 +84,42 @@ ngOnInit() {
       }
     });
   }
+  
+  openConsultantProfile(consultantId: number) {
+    this.clientJobsService.getConsultantProfile(consultantId).subscribe({
+      next: (consultant) => {
+        this.clientJobsService.getConsultantFiles(consultantId).subscribe({
+          next: (filesResponse) => {
+            consultant.files_by_category = filesResponse.files_by_category || {};
+            this.dialog.open(ConsultantProfileComponent, {
+              width: '50vw',
+              maxWidth: '700px',
+              height: 'auto',
+              maxHeight: '90vh',
+              panelClass: 'full-screen-dialog',
+              data: consultant
+            });
+          },
+          error: (err) => {
+            console.error('Error fetching consultant files:', err);
+            consultant.files_by_category = {};
+            this.dialog.open(ConsultantProfileComponent, {
+              width: '50vw',
+              maxWidth: '700px',
+              height: 'auto',
+              maxHeight: '90vh',
+              panelClass: 'full-screen-dialog',
+              data: consultant
+            });
+          }
+        });
+      },
+      error: (err) => {
+        console.error('Error fetching consultant profile:', err);
+      }
+    });
+  }
+  
 
   messageConsultant(consultantId: number, consultantName: string): void {
     // Convert consultant to chat object and navigate

@@ -31,7 +31,7 @@ export class JobInProgressComponent implements OnInit, AfterViewInit {
   @ViewChild(MatSort) sort!: MatSort;
   searchTerm = '';
   dataSource: MatTableDataSource<any> = new MatTableDataSource<any>();
-  displayedColumns: string[] = ['jobName', 'daysRemaining', 'actions'];
+  displayedColumns: string[] = ['jobName', 'daysSinceStart', 'actions'];
   isLoading = false;
 
 
@@ -49,7 +49,7 @@ export class JobInProgressComponent implements OnInit, AfterViewInit {
           jobName: job.scope_of_service,
           expectedStartDate: job.expected_start_date,
           proposal_deadline: job.proposal_deadline,
-          daysRemaining: this.calculateDaysRemaining(job.proposal_deadline)
+          daysSinceStart: this.calculateDaysSinceStart(job.expected_start_date)
         }));
         this.dataSource.data = jobs;
         this.isLoading = false;
@@ -75,10 +75,11 @@ export class JobInProgressComponent implements OnInit, AfterViewInit {
     this.router.navigate(['/client/track-jobs'], { queryParams: { jobId: job.jobId } });
   }
 
-  private calculateDaysRemaining(dateString: string): number {
+  private calculateDaysSinceStart(dateString: string): number {
     const today = new Date();
-    const targetDate = new Date(dateString);
-    const diffTime = targetDate.getTime() - today.getTime();
-    return Math.max(Math.ceil(diffTime / (1000 * 60 * 60 * 24)), 0);
+    const startDate = new Date(dateString);
+    const diffTime = today.getTime() - startDate.getTime();
+    return Math.max(Math.floor(diffTime / (1000 * 60 * 60 * 24)), 0);
   }
+  
 }
