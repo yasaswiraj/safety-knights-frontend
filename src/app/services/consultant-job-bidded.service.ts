@@ -19,5 +19,11 @@ export class ConsultantJobBiddedService {
         withCredentials: true
       });
     }
+
+    deleteBid(bidId: number): Observable<any> {
+      return this.http.delete<any>(`${environment.apiUrl}/consultant/${bidId}/delete_bid/`, {
+        withCredentials: true
+      });
+    }
   
 }
