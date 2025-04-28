@@ -41,6 +41,12 @@ export class ConsultantMatchesService {
     });
   }
 
+  getJobDetail(jobId: string): Observable<any> {
+    return this.http.get<any>(`${environment.apiUrl}/consultant/comprehensive_job_details/${jobId}`, {
+      withCredentials: true
+    });
+  }
+
   updateProfile(profileData: any): Observable<any> {
     const headers = new HttpHeaders({ 'Content-Type': 'application/json' });
     return this.http.post<any>(`${environment.apiUrl}/consultant/consultant_update`, profileData, {  withCredentials: true });
