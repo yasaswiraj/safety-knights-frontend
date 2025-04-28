@@ -1,8 +1,9 @@
 <div class="sidebar transition-all duration-300 h-screen bg-white shadow-md flex flex-col w-64 p-4 overflow-hidden"
   [ngClass]="{ open: isSidebarOpen, closed: !isSidebarOpen }">
   <div class="flex items-center justify-center mb-6">
-    <img src="company_logo.png" alt="Company Logo" class="h-8 cursor-pointer" />
+    <img src="company_logo.png" alt="Company Logo" class="h-8 cursor-pointer" (click)="goToLandingPage()" />
   </div>
+  
 
   <nav class="flex-1">
     <ul>
