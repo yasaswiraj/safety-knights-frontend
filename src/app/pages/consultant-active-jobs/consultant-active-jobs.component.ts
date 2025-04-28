@@ -85,6 +85,7 @@ export class ConsultantActiveJobsComponent implements AfterViewInit {
     });
   }
 
+
   calculateDaysRemaining(startDate: string): number {
     const today = new Date();
     const start = new Date(startDate);
@@ -117,22 +118,6 @@ export class ConsultantActiveJobsComponent implements AfterViewInit {
         job.job_status = updatedStatus; // 🟢 update local data
       }
     });
-
-    // dialogRef.afterClosed().subscribe((updatedJob: Job | undefined) => {
-    //   if (updatedJob) {
-    //     const index = this.dataSource.data.findIndex(j => j.job_id === updatedJob.job_id);
-    //     if (index !== -1) {
-    //       this.dataSource.data[index] = {
-    //         ...this.dataSource.data[index],
-    //         ...updatedJob,
-    //         days_remaining: this.calculateDaysRemaining(updatedJob.expected_start_date)
-    //       };
-    //       // Trigger table refresh
-    //       this.dataSource.data = [...this.dataSource.data];
-    //     }
-    //   }
-    // });
-
 
   }
      

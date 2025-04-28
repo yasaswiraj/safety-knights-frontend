@@ -42,9 +42,33 @@ export class JobUpdateDialogComponent {
   ) {}
 
   ngOnInit(): void {
+    console.log('Dialog data received:', this.data); // Add this
     this.selectedStatus = this.data.job_status;
+    console.log('JOB ID:', this.data.job_id); // Add this to check job_id
+    this.fetchCommentFromApi(this.data.job_id); // Initialize comment if available
   }
   
+  fetchCommentFromApi(jobId: number) {
+    this.http.get<any>(`${environment.apiUrl}/consultant/job_comments/${jobId}`, { withCredentials: true }).subscribe({
+      next: (response) => {
+        console.log('Fetched job details:', response);
+  
+        // If the comment exists in response, set it
+        if (response.comment) {
+          this.comment = response.comment;
+        } else {
+          console.log('No comment found for this job.');
+        }
+      },
+      error: (error) => {
+        console.error('Failed to fetch job comment:', error);
+        this.snackBar.open('Failed to fetch job comment.', 'Close', {
+          duration: 4000,
+          panelClass: ['snackbar-error']
+        });
+      }
+    });
+  }
   
     getUserDetailsByJobId(jobId: number): void {
       this.http.get<any>(`${environment.apiUrl}/consultant/jobs/${jobId}`, { withCredentials: true }).subscribe({
@@ -106,7 +130,7 @@ export class JobUpdateDialogComponent {
         return `${environment.apiUrl}/consultant/update_active_to_in_progress/${jobId}`;
       case 'closed':
         return `${environment.apiUrl}/consultant/update_in_progress_to_closed/${jobId}`;
-      case 'waiting':
+      case 'active':
         return `${environment.apiUrl}/consultant/update_in_progress_to_active/${jobId}`;
       default:
         return ''; // If invalid status, return empty
@@ -116,35 +140,56 @@ export class JobUpdateDialogComponent {
 
   updateJobStatus() {
     const apiUrl = this.getApiEndpoint();
-
+  
     if (!apiUrl) {
       alert('Please select a valid status.');
       return;
     }
-
+  
     const updatePayload = {
       job_id: this.data.job_id,
       status: this.selectedStatus, // The new status to update to
     };
-
-    this.http.post(apiUrl, updatePayload,{ withCredentials: true }).subscribe(
+  
+    this.http.post(apiUrl, updatePayload, { withCredentials: true }).subscribe(
       response => {
         console.log('Job status updated:', response);
-        this.snackBar.open('Job status updated successfully!', 'Close', {
-          duration: 5000, // Show for 5 seconds (or longer)
-          panelClass: ['snackbar-success']
-        });
-        this.dialogRef.close(this.selectedStatus); // Close dialog after success
+  
+        // Now call the add-comment API
+        const commentPayload = {
+          comment: this.comment || `Status changed to ${this.selectedStatus}`, 
+          // ^ you can collect a comment from user input or auto-generate one like this
+        };
+  
+        this.http.post(`${environment.apiUrl}/consultant/job_status_change_comment/${this.data.job_id}`, commentPayload, { withCredentials: true }).subscribe(
+          commentResponse => {
+            console.log('Comment added successfully:', commentResponse);
+            this.snackBar.open('Job status and comment updated successfully!', 'Close', {
+              duration: 5000,
+              panelClass: ['snackbar-success']
+            });
+            this.dialogRef.close(this.selectedStatus); // Close the dialog after everything is done
+          },
+          commentError => {
+            console.error('Error adding comment:', commentError);
+            this.snackBar.open('Job status updated, but failed to add comment.', 'Close', {
+              duration: 5000,
+              panelClass: ['snackbar-warning']
+            });
+            this.dialogRef.close(this.selectedStatus); // Still close, but warn about comment
+          }
+        );
       },
       error => {
         console.error('Error updating job status:', error);
-        this.snackBar.open('JFailed to update Job status', 'Close', {
-          duration: 5000, // Show for 5 seconds (or longer)
+        this.snackBar.open('Failed to update job status.', 'Close', {
+          duration: 5000,
           panelClass: ['snackbar-failure']
         });
       }
     );
   }
+  
 
   closeDialog() {
     this.dialogRef.close(false);

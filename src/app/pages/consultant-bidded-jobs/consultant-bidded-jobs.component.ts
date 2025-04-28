@@ -11,6 +11,7 @@ import { ConsultantMatchesService } from '../../services/consultant-match.servic
 import { MatDialog } from '@angular/material/dialog';
 import { JobDetailDialogComponent } from '../job-detail-dialog/job-detail-dialog.component';
 import { UpdateBidComponent } from '../update-bid/update-bid.component';
+import { MatSnackBar } from '@angular/material/snack-bar';
 
 @Component({
   selector: 'app-consultant-bidded-jobs',
@@ -28,6 +29,7 @@ import { UpdateBidComponent } from '../update-bid/update-bid.component';
   ],
 })
 export class ConsultantBiddedJobsComponent implements OnInit, AfterViewInit {
+// Removed duplicate deleteBid method
   @ViewChild(MatSort) sort!: MatSort;
   searchQuery: string = '';
 
@@ -43,7 +45,9 @@ export class ConsultantBiddedJobsComponent implements OnInit, AfterViewInit {
   errorMessage: string | undefined;
 
   constructor(private consultantJobBiddedService: ConsultantJobBiddedService,
+    private snackBar: MatSnackBar,
     private consultantMatchesService: ConsultantMatchesService,
+    
     private dialog: MatDialog) {
    
   }
@@ -91,6 +95,8 @@ export class ConsultantBiddedJobsComponent implements OnInit, AfterViewInit {
         
       });
 
+      
+
       // 👇 This is the important part
   dialogRef.afterClosed().subscribe(result => {
     if (result?.jobId) {
@@ -98,4 +104,38 @@ export class ConsultantBiddedJobsComponent implements OnInit, AfterViewInit {
       this.fetchBiddedJobs();
     }
   });
-}}
+}
+
+
+deleteBid(job: any): void {
+  const jobId = job.job_id; // Get the job ID from the job object
+  // Optionally confirm first
+  if (confirm('Are you sure you want to delete this bid?')) {
+    // Filter out the deleted job from the dataSource
+    // this.dataSource.data = this.dataSource.data.filter(job => job.job_id !== jobId);
+    console.log('Bid deleted from dataSource:', jobId);
+
+    // If you are also making a backend API call to delete:
+    
+    this.consultantJobBiddedService.deleteBid(jobId).subscribe({
+      next: () => {
+        console.log('Bid deleted successfully');
+        this.dataSource.data = this.dataSource.data.filter(job => job.job_id !== jobId);
+        this.snackBar.open('Job status updated successfully!', 'Close', {
+          duration: 5000, // Show for 5 seconds (or longer)
+          panelClass: ['snackbar-success']
+        });
+        // this.dialog.close(this.selectedStatus); 
+      },
+      error: (error) => {
+        console.error('Error deleting bid', error);
+      }
+    });
+    
+  }
+}
+
+}
+
+
+
