@@ -116,30 +116,46 @@
               [formControlName]="q.question_id" />
           </ng-container>
 
-          <div *ngIf="q.question === 'Please describe the work in detail'" class="mt-2">
-            <label class="block font-medium text-gray-700">Upload Job Description</label>
-            <div class="relative">
+          <!-- Upload Section -->
+          <div *ngIf="q.question === 'Please describe the work in detail'" class="mt-6">
+            <label class="block font-semibold text-gray-700 mb-3">
+              Upload Job Description
+            </label>
+
+            <div class="relative w-full flex flex-col gap-2">
+              <input type="file" id="jobFile" class="hidden" (change)="onFileSelected($event)"
+                accept=".pdf,.doc,.docx" />
+
               <label for="jobFile"
-                class="inline-block cursor-pointer px-4 py-2 bg-[#b17457] text-white font-medium rounded-md shadow-md hover:bg-[#a06044] transition">
+                class="cursor-pointer bg-[#b17457] text-white px-5 py-3 rounded-full shadow-md font-bold flex items-center gap-3 hover:bg-[#a06044] transition w-fit">
+                <i class="fas fa-paperclip"></i>
                 Choose File
               </label>
-              <input id="jobFile" type="file" (change)="onFileSelected($event)" class="hidden" />
+
+              <!-- Selected File Display -->
+              <div *ngIf="uploadedFile" class="flex items-center justify-between bg-white p-2 mt-2 rounded-md shadow-sm text-sm text-gray-800">
+                <span>{{ uploadedFile.name }}</span>
+                <button
+                  type="button"
+                  (click)="removeSelectedFile()"
+                  class="text-[#b17457] hover:text-red-500 transition text-xs font-semibold"
+                >
+                  Remove
+                </button>
+              </div>
+              
             </div>
-
-            <!-- Optional display of file name -->
-            <p *ngIf="uploadedFile" class="mt-2 text-sm text-green-600">
-              Selected: {{ uploadedFile.name }}
-            </p>
-
           </div>
+
+
 
         </ng-container>
       </ng-container>
 
       <!-- Submit Button -->
-      <button type="submit" [disabled]="isSubmitting" class="w-full py-3 mt-4 rounded-full font-semibold transition 
-    text-white bg-blue-600 hover:bg-blue-700 
-    disabled:opacity-60 disabled:cursor-not-allowed">
+      <button type="submit" [disabled]="isSubmitting" class="w-full py-3 mt-4 rounded-full font-semibold transition
+      text-white bg-[#b17457] hover:bg-[#a06044] 
+      disabled:opacity-60 disabled:cursor-not-allowed">
         <ng-container *ngIf="!isSubmitting">Submit</ng-container>
         <ng-container *ngIf="isSubmitting">
           <span class="flex justify-center items-center gap-2">

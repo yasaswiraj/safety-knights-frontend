@@ -154,6 +154,11 @@ export class UpdateJobComponent implements OnInit {
     return null;
   }
 
+  removeSelectedFile(): void {
+    this.uploadedFile = null;
+  }
+  
+
   isRequiredField(questionId: number): boolean {
     const optionalQuestionIds = [10, 7, 22];
     return !optionalQuestionIds.includes(questionId);

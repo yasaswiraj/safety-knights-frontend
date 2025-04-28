@@ -292,6 +292,9 @@ export class CreateJobComponent implements OnInit {
     });
   }
   
+  removeSelectedFile(): void {
+    this.uploadedFile = null;
+  }
   
 
 
