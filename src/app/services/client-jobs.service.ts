@@ -142,6 +142,24 @@ export class ClientJobsService {
     });
   }
 
+  getReview(jobId: number, consultantId: number): Observable<any> {
+    return this.http.get(`${environment.apiUrl}/client/get_review`, {
+      params: {
+        job_id: jobId,
+        consultant_id: consultantId
+      },
+      withCredentials: true
+    });
+  }
+
+  updateReview(reviewId: number, data: any): Observable<any> {
+    return this.http.put(`${environment.apiUrl}/client/update_review/${reviewId}`, data, {
+      withCredentials: true
+    });
+  }
+  
+  
+
   getBidsInProgress(): Observable<{ jobs: BidInProgress[] }> {
     console.log('getBidsInProgress');
     return this.http.get<{ jobs: BidInProgress[] }>(`${environment.apiUrl}/client/bids-in-progress`, {

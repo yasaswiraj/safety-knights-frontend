@@ -14,7 +14,7 @@ import { Router } from '@angular/router';
 })
 export class FeedbackComponent {
   overallRating = 0;
-  consultantRating = 0;
+  // consultantRating = 0;
   feedbackText = '';
   jobId: number = 0;
   consultantId: number = 0;
@@ -27,11 +27,7 @@ export class FeedbackComponent {
     // Check here, before the component initializes
     const params = this.route.snapshot.queryParams;
     this.jobId = +params['jobId'];
-    const reviewedJobs = JSON.parse(localStorage.getItem('reviewedJobs') || '[]');
-  
-    if (reviewedJobs.includes(this.jobId)) {
-      this.router.navigate(['/client/completed-jobs']);
-    }
+    
   }
   
 
@@ -41,10 +37,30 @@ scope: string = '';
 ngOnInit() {
   const params = this.route.snapshot.queryParams;
 
+  this.jobId = +params['jobId'];
   this.consultantId = +params['consultantId'];
   this.consultantName = params['consultantName'] || '';
   this.scope = params['scope'] || '';
+
+  const mode = params['mode']; // <-- important
+
+  if (mode === 'edit') {
+    // Fetch existing review and pre-fill fields
+    this.clientJobsService.getReview(this.jobId, this.consultantId).subscribe({
+      next: (res) => {
+        this.feedbackText = res.review;
+        // this.consultantRating = res.rating;
+        this.overallRating = res.rating; 
+      },
+      error: (err) => {
+        console.error('Failed to fetch existing review:', err);
+        alert('Failed to load existing feedback.');
+      }
+    });
+  }
 }
+
+
 
 
 
@@ -53,12 +69,12 @@ ngOnInit() {
     this.overallRating = star;
   }
 
-  setConsultantRating(star: number) {
-    this.consultantRating = star;
-  }
+  // setConsultantRating(star: number) {
+  //   this.consultantRating = star;
+  // }
 
   submitFeedback() {
-    if (!this.jobId || !this.consultantId || !this.feedbackText || !this.consultantRating || !this.overallRating) {
+    if (!this.jobId || !this.consultantId || !this.feedbackText || !this.overallRating || !this.overallRating) {
       alert('Please fill all fields and ensure consultant ID is provided.');
       return;
     }
@@ -67,31 +83,50 @@ ngOnInit() {
       job_id: this.jobId,
       consultant_user_id: this.consultantId,
       review: this.feedbackText,
-      rating: this.consultantRating,
-      overallRating: this.overallRating
+      rating: this.overallRating
+      // rating: this.consultantRating
     };
   
-    this.clientJobsService.postReview(payload).subscribe({
-      next: (res) => {
-        alert('Feedback submitted successfully!');
+    const mode = this.route.snapshot.queryParams['mode'];
   
-        const reviewedJobs = JSON.parse(localStorage.getItem('reviewedJobs') || '[]');
-        if (!reviewedJobs.includes(this.jobId)) {
-          reviewedJobs.push(this.jobId);
-          localStorage.setItem('reviewedJobs', JSON.stringify(reviewedJobs));
+    if (mode === 'edit') {
+      // Update review
+      this.clientJobsService.getReview(this.jobId, this.consultantId).subscribe({
+        next: (res) => {
+          const reviewId = res.review_id;
+          this.clientJobsService.updateReview(reviewId, payload).subscribe({
+            next: () => {
+              alert('Feedback updated successfully!');
+              this.router.navigate(['/client/completed-jobs']);
+            },
+            error: (err) => {
+              console.error('Error updating feedback:', err);
+              alert(err.error?.detail || 'Failed to update feedback.');
+            }
+          });
+        },
+        error: (err) => {
+          console.error('Failed to get review for update:', err);
         }
-  
-        this.feedbackText = '';
-        this.consultantRating = 0;
-        this.overallRating = 0;
-  
-        this.router.navigate(['/client/completed-jobs']);
-      },
-      error: (err) => {
-        console.error('Error submitting review:', err);
-        alert(err.error?.detail || 'Failed to submit review.');
-      }
-    });
+      });
+    } else {
+      // New review
+      this.clientJobsService.postReview(payload).subscribe({
+        next: () => {
+          alert('Feedback submitted successfully!');
+          const reviewedJobs = JSON.parse(localStorage.getItem('reviewedJobs') || '[]');
+          if (!reviewedJobs.includes(this.jobId)) {
+            reviewedJobs.push(this.jobId);
+            localStorage.setItem('reviewedJobs', JSON.stringify(reviewedJobs));
+          }
+          this.router.navigate(['/client/completed-jobs']);
+        },
+        error: (err) => {
+          console.error('Error submitting feedback:', err);
+          alert(err.error?.detail || 'Failed to submit feedback.');
+        }
+      });
+    }
   }
   
 

@@ -58,17 +58,30 @@ job: any;
   ngOnInit() {
     this.isLoading = true;
   
-    const reviewedJobs = JSON.parse(localStorage.getItem('reviewedJobs') || '[]');
-  
     this.clientJobsService.getCompletedJobs().subscribe({
       next: (response) => {
-        const jobs: CompletedJob[] = response.jobs.map(job => ({
-          ...job,
-          hasReview: reviewedJobs.includes(job.client_job_id)
-        }));
+        const jobs: CompletedJob[] = response.jobs;
   
-        this.dataSource.data = jobs;
-        this.isLoading = false;
+        const checkReviews$ = jobs.map(job =>
+          this.clientJobsService.checkReviewExists(job.client_job_id, job.consultant_user_id).pipe(
+            map(res => ({
+              ...job,
+              hasReview: res.reviewExists
+            })),
+            catchError(err => {
+              console.error(`Failed to check review for job ${job.client_job_id}`, err);
+              return of({
+                ...job,
+                hasReview: false
+              });
+            })
+          )
+        );
+  
+        forkJoin(checkReviews$).subscribe(updatedJobs => {
+          this.dataSource.data = updatedJobs;
+          this.isLoading = false;
+        });
       },
       error: (err) => {
         console.error('Error fetching completed jobs:', err);
@@ -76,6 +89,7 @@ job: any;
       }
     });
   }
+  
   
   
   
@@ -93,18 +107,28 @@ job: any;
     this.clientJobsService.checkReviewExists(job.client_job_id, job.consultant_user_id).subscribe({
       next: (res) => {
         if (res.reviewExists) {
-          alert('You have already submitted feedback for this job.');
-          return;
+          // If review already exists, open View/Edit mode
+          this.router.navigate(['/client/feedback'], {
+            queryParams: {
+              jobId: job.client_job_id,
+              consultantId: job.consultant_user_id,
+              consultantName: job.consultant_company,
+              scope: job.scope_of_service,
+              mode: 'edit'
+            }
+          });
+        } else {
+          // If no review yet, open normal Give Feedback page
+          this.router.navigate(['/client/feedback'], {
+            queryParams: {
+              jobId: job.client_job_id,
+              consultantId: job.consultant_user_id,
+              consultantName: job.consultant_company,
+              scope: job.scope_of_service,
+              mode: 'new'
+            }
+          });
         }
-  
-        this.router.navigate(['/client/feedback'], {
-          queryParams: {
-            jobId: job.client_job_id,
-            consultantId: job.consultant_user_id,
-            consultantName: job.consultant_company,
-            scope: job.scope_of_service
-          }
-        });
       },
       error: (err) => {
         console.error('Failed to check review status:', err);
