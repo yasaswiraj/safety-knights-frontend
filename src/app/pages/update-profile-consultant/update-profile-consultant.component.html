@@ -1,21 +1,23 @@
 <div class="p-8 relative">
-    <div class="absolute top-10 right-12">
-      <button
-        (click)="toggleEditMode()"
-        class="bg-[#A15D3C] text-white px-4 py-2 rounded-lg shadow hover:bg-[#b17457] transition"
-        *ngIf="!editMode"
-      >
-        <i class="fas fa-edit mr-2"></i> Edit
-      </button>
-    </div>
+    
   
     <div class="bg-white shadow-lg rounded-xl p-8 max-w-5xl mx-auto">
       <h1 class="text-4xl font-extrabold text-gray-800 mb-8 flex items-center gap-3">
          My Profile
       </h1>
+
+      <div class="absolute top-10 right-12">
+        <button
+          (click)="toggleEditMode()"
+          class="bg-[#A15D3C] text-white px-4 py-2 rounded-lg shadow hover:bg-[#b17457] transition"
+          *ngIf="!editMode"
+        >
+          <i class="fas fa-edit mr-2"></i> Edit
+        </button>
+      </div>
   
       <!-- View Mode -->
-      <div *ngIf="!editMode" class="grid grid-cols-1 md:grid-cols-2 gap-10 text-gray-700 text-base">
+      <div *ngIf="!editMode && profile" class="grid grid-cols-1 md:grid-cols-2 gap-10 text-gray-700 text-base">
         <!-- Personal Info -->
         <div>
           <h2 class="text-xl font-semibold mb-4 flex items-center gap-2">
@@ -48,96 +50,198 @@
         </div>
   
         <!-- Ratings -->
-        <div>
+        <!-- <div>
           <h2 class="text-xl font-semibold mb-4 flex items-center gap-2">
             <i class="fas fa-star"></i> Ratings
           </h2>
           <p><strong>Average Rating:</strong> {{ profile?.rating.average_rating | number: '1.1-1' }}</p>
           <p><strong>Total Reviews:</strong> {{ profile?.rating.total_reviews }}</p>
-        </div>
-      </div>
-  
+        </div> -->
+      
+
+        <!-- Service Providing Details (View Mode) -->
+       <div class="col-span-2">
+            <h2 class="text-xl font-semibold mb-4 flex items-center gap-2">
+              <i class="fas fa-cogs"></i> Service Providing Details
+            </h2>
+
+            <!-- Environmental Services -->
+            <div *ngIf="profile?.environmental_services?.length">
+              <h3 class="font-bold text-lg text-[var(--text-color)]">Environmental Services</h3>
+              <ul class="list-disc list-inside ml-4">
+                <li *ngFor="let item of profile.environmental_services">{{ item }}</li>
+              </ul>
+            </div>
+
+            <!-- Property Transactions -->
+            <div *ngIf="profile?.property_transactions?.length">
+              <h3 class="font-bold text-lg text-[var(--text-color)]">Property Transactions</h3>
+              <ul class="list-disc list-inside ml-4">
+                <li *ngFor="let item of profile.property_transactions">{{ item }}</li>
+              </ul>
+            </div>
+
+            <!-- Field Activities -->
+            <div *ngIf="profile?.field_activities?.length">
+              <h3 class="font-bold text-lg text-[var(--text-color)]">Field Activities</h3>
+              <ul class="list-disc list-inside ml-4">
+                <li *ngFor="let item of profile.field_activities">{{ item }}</li>
+              </ul>
+            </div>
+
+            <!-- Hazardous Materials -->
+            <div *ngIf="profile?.hazardous_materials?.length">
+              <h3 class="font-bold text-lg text-[var(--text-color)]">Hazardous Materials</h3>
+              <ul class="list-disc list-inside ml-4">
+                <li *ngFor="let item of profile.hazardous_materials">{{ item }}</li>
+              </ul>
+            </div>
+
+            <!-- Safety Facility Compliance -->
+            <div *ngIf="profile?.safety_facility_compliance?.length">
+              <h3 class="font-bold text-lg text-[var(--text-color)]">Safety Facility Compliance</h3>
+              <ul class="list-disc list-inside ml-4">
+                <li *ngFor="let item of profile.safety_facility_compliance">{{ item }}</li>
+              </ul>
+            </div>
+
+            <!-- Industrial Hygiene -->
+            <div *ngIf="profile?.industrial_hygiene?.length">
+              <h3 class="font-bold text-lg text-[var(--text-color)]">Industrial Hygiene</h3>
+              <ul class="list-disc list-inside ml-4">
+                <li *ngFor="let item of profile.industrial_hygiene">{{ item }}</li>
+              </ul>
+            </div>
+
+            <!-- Construction Safety -->
+            <div *ngIf="profile?.construction_safety?.length">
+              <h3 class="font-bold text-lg text-[var(--text-color)]">Construction Safety</h3>
+              <ul class="list-disc list-inside ml-4">
+                <li *ngFor="let item of profile.construction_safety">{{ item }}</li>
+              </ul>
+            </div>
+
+            <!-- Written Responses -->
+            <div *ngIf="profile?.written_responses">
+              <h3 class="font-bold text-lg text-[var(--text-color)]">Written Responses</h3>
+              <div class="ml-4">
+                <p><strong>Please state any specifics about availability:</strong> {{ profile.written_responses['Please state any specifics about availability that you may have'] }}</p>
+                <p><strong>Additional Information, Comments or Clarifications:</strong> {{ profile.written_responses['Additional Information, Comments or Clarifications'] }}</p>
+              </div>
+            </div>
+
+          </div>
+    </div>
       <!-- Edit Mode -->
-      <form *ngIf="editMode" (ngSubmit)="saveProfile()" class="grid grid-cols-1 md:grid-cols-2 gap-10 text-gray-700 text-base">
+      <form [formGroup]="updateForm" *ngIf="editMode && profile" (ngSubmit)="saveProfile()" class="grid grid-cols-1 md:grid-cols-2 gap-10 text-gray-700 text-base">
         <div>
           <h2 class="text-xl font-semibold mb-4 flex items-center gap-2">
             <i class="fas fa-user-edit"></i> Edit Personal Info
           </h2>
-          <label>Name: <input class="input" [(ngModel)]="profile.name" name="name" /></label>
-          <label>Email: <input class="input" [value]="profile.email" disabled /></label>
-          <label>Contact: <input class="input" [(ngModel)]="profile.phone_number" name="contact" /></label>
-          <label>Job Title: <input class="input" [(ngModel)]="profile.job_title" name="job_title" /></label>
+          <label>Name: <input class="input" formControlName="name" /></label>
+          <label>Email: <input class="input"  formControlName="email" /></label>
+          <label>Contact: <input class="input" formControlName="phone_number" /></label>
+          <label>Job Title: <input class="input" formControlName="job_title" /></label>
         </div>
   
         <div>
           <h2 class="text-xl font-semibold mb-4 flex items-center gap-2">
             <i class="fas fa-industry"></i> Edit Company Info
           </h2>
-          <label>Company Name: <input class="input" [(ngModel)]="profile.company_name" name="company_name" /></label>
-          <label>Address: <input class="input" [(ngModel)]="profile.company_address" name="company_address" /></label>
-        </div>
+          <label>Company Name: <input class="input" formControlName="company_name" /></label>
+          <label>Address: <input class="input" formControlName="company_address" /></label>
+        </div> 
    
         <!-- Service Providing Details -->
-<div class="col-span-2">
-  <h2 class="text-xl font-semibold mb-4 flex items-center gap-2">
-    <i class="fas fa-cogs"></i> Edit Service Providing Details
-  </h2>
+        <div class="col-span-2">
+          <h2 class="text-xl font-semibold mb-4 flex items-center gap-2">
+            <i class="fas fa-cogs"></i> Edit Service Providing Details
+          </h2>
 
-  <!-- Service Categories -->
-  <div *ngFor="let category of serviceCategories" class="mb-6">
-    <label class="block font-semibold text-gray-800 mb-2 capitalize">
-      {{ category.replace('_', ' ') | titlecase }}
-    </label>
-
-    <textarea
-      class="w-full border border-gray-300 rounded-md p-3 resize-y min-h-[80px]"
-      [(ngModel)]="profile[category]"
-      [name]="category"
-      placeholder="List services separated by commas"
-    >
-    </textarea>
-  </div>
-
-  <!-- Written Responses -->
-  <div class="mb-6">
-    <label class="block font-semibold text-gray-800 mb-2">
-      Availability Specifics
-    </label>
-    <textarea
-      class="w-full border border-gray-300 rounded-md p-3 resize-y min-h-[80px]"
-      [(ngModel)]="profile.written_responses['Please state any specifics about availability that you may have']"
-      name="availability"
-    ></textarea>
-  </div>
-
-  <div class="mb-6">
-    <label class="block font-semibold text-gray-800 mb-2">
-      Additional Comments or Clarifications
-    </label>
-    <textarea
-      class="w-full border border-gray-300 rounded-md p-3 resize-y min-h-[80px]"
-      [(ngModel)]="profile.written_responses['Additional Information, Comments or Clarifications']"
-      name="additional_comments"
-    ></textarea>
-  </div>
-</div>
-
-<div class="col-span-2 text-right mt-6 flex justify-end gap-4">
-  <!-- Save Button in brown -->
-  <button type="submit"
-    class="bg-[#A15D3C] text-white px-6 py-2 rounded-md shadow-sm hover:bg-[#b17457] transition">
-    <i class="fas fa-save mr-2"></i> Save
-  </button>
-
-  <!-- Cancel Button in soft gray -->
-  <button type="button" (click)="cancelEdit()"
-    class="bg-gray-100 text-gray-700 px-6 py-2 rounded-md border border-gray-300 shadow-sm hover:bg-gray-200 transition">
-    <i class="fas fa-times mr-2"></i> Cancel
-  </button>
-</div>
-
+          <div formGroupName="categories">
+            <div *ngFor="let category of categories | keyvalue">
+              <h3 class="font-bold text-lg text-[var(--text-color)]">{{ category.key }}</h3>
         
-      </form>
+              <div [formGroupName]="category.key">
+                <div *ngFor="let subcategory of category.value | keyvalue">
+                  <mat-form-field class="w-full">
+                    <mat-label>{{ subcategory.key }}</mat-label>
+        
+                    <mat-select [formControlName]="subcategory.key"
+                                [multiple]="subcategory.value.type === 'checkbox'">
+                      <mat-option *ngFor="let option of subcategory.value.option" [value]="option">
+                        {{ option }}
+                      </mat-option>
+                    </mat-select>
+                  </mat-form-field>
+                </div>
+              </div>
+        
+          
+           
+
+              <!-- 🔁 File Upload for each category -->
+              <div class="mb-4 mt-6">
+                <label class="block font-semibold text-[var(--text-color)] mb-3">
+                  Upload Job Description for {{ category.key }}
+                </label>
+
+                <div class="relative w-full flex flex-col gap-2">
+                  <input
+                    type="file"
+                    [id]="'fileInput-' + category.key"
+                    class="hidden"
+                    (change)="onCategoryFileSelected($event, category.key)"
+                    accept=".pdf,.doc,.docx"
+                  />
+
+                  <label
+                    [for]="'fileInput-' + category.key"
+                    class="cursor-pointer bg-[var(--elements-color)] text-black px-5 py-3 rounded-full shadow-md font-bold flex items-center gap-3 hover:bg-opacity-80 hover:shadow-lg transition w-fit"
+                  >
+                    <mat-icon class="text-[var(--accent-color)]">attach_file</mat-icon>
+                    Choose File
+                  </label>
+
+                  <div *ngIf="(categoryFiles[category.key] ?? []).length > 0" class="mt-2 space-y-1">
+                    <div
+                      *ngFor="let file of categoryFiles[category.key]; let i = index"
+                      class="flex items-center justify-between bg-white p-2 rounded-md shadow-sm text-sm text-gray-800"
+                    >
+                      <span>{{ file.name }}</span>
+                      <button
+                        (click)="removeCategoryFile(category.key, i)"
+                        class="text-[var(--accent-color)] hover:text-red-500 transition text-xs font-semibold"
+                      >
+                        Remove
+                      </button>
+                    </div>
+                  </div>
+                </div>
+
+              </div>
+
+            </div>
+          </div>
+
+            
+              
+
+        <div class="col-span-2 text-right mt-6 flex justify-end gap-4">
+          <!-- Save Button in brown -->
+          <button type="submit"
+            class="bg-[#A15D3C] text-white px-6 py-2 rounded-md shadow-sm hover:bg-[#b17457] transition">
+            <i class="fas fa-save mr-2"></i> Save
+          </button>
+
+          <!-- Cancel Button in soft gray -->
+          <button type="button" (click)="cancelEdit()"
+            class="bg-gray-100 text-gray-700 px-6 py-2 rounded-md border border-gray-300 shadow-sm hover:bg-gray-200 transition">
+            <i class="fas fa-times mr-2"></i> Cancel
+          </button>
+        </div>
+        
     </div>
+    </form>
   </div>
   
