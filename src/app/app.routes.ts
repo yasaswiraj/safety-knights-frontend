@@ -41,6 +41,7 @@ import { Router } from '@angular/router';
 import { CreateJobComponent } from './clientPages/create-job/create-job.component';
 import { UpdateJobComponent } from './clientPages/update-job/update-job.component';
 import { ForgotPasswordComponent } from './clientPages/forgot-password/forgot-password.component';
+import { ConsultantOptionsComponent } from './pages/consultant-forms/consultant-options/consultant-options.component';
 
 export const routes: Routes = [
   {
@@ -160,6 +161,7 @@ export const routes: Routes = [
   { path: 'consultant-form3', component: ConsultantForm3Component },
   { path: 'consultant-form4', component: ConsultantForm4Component },
   { path: 'consultant-form8', component: ConsultantForm8Component },
+  { path: 'consultant-options', component: ConsultantOptionsComponent },
   {
     path: 'consultant-forms-submission',
     component: ConsultantFormsSubmissionComponent,

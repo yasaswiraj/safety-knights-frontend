@@ -17,27 +17,39 @@
 
         <!-- questions -->
         <ng-container *ngFor="let q of cat.questions">
-          <label class="block font-medium text-gray-700">{{
-            q.question
-          }}</label>
+          <label class="block font-medium text-gray-700">
+            {{ q.question }}
+            <span *ngIf="isRequiredField(q.question_id)" class="text-black-500 ml-1">*</span>
+          </label>
 
           <ng-container [ngSwitch]="q.answer_type">
             <!-- Text -->
             <input
               *ngSwitchCase="'text'"
               type="text"
-              class="w-full p-3 border rounded-md"
+              class="w-full p-3 border rounded-md focus:outline-none focus:ring focus:ring-blue-300"
+              [ngClass]="{
+                'border-gray-300': !optionsForm.get(q.question_id.toString())?.invalid || !optionsForm.get(q.question_id.toString())?.touched,
+                'border-red-500': optionsForm.get(q.question_id.toString())?.invalid && optionsForm.get(q.question_id.toString())?.touched
+              }"
               [formControlName]="q.question_id" />
 
             <!-- Date -->
             <input
               *ngSwitchCase="'date'"
               type="date"
-              class="w-full p-3 border rounded-md"
+              class="w-full p-3 border rounded-md focus:outline-none focus:ring"
+              [ngClass]="{
+                'border-gray-300': !optionsForm.get(q.question_id.toString())?.invalid || !optionsForm.get(q.question_id.toString())?.touched,
+                'border-red-500': optionsForm.get(q.question_id.toString())?.invalid && optionsForm.get(q.question_id.toString())?.touched
+              }"
               [formControlName]="q.question_id" />
 
             <!-- Radio -->
-            <div *ngSwitchCase="'radio'" class="space-y-2">
+            <div *ngSwitchCase="'radio'" [ngClass]="{
+              'border border-red-500 p-2 rounded-md': optionsForm.get(q.question_id.toString())?.invalid &&
+                                                       optionsForm.get(q.question_id.toString())?.touched
+            }">
               <ng-container *ngIf="getOptions(q.question_id) | async as opts">
                 <label
                   *ngFor="let opt of opts"
@@ -45,14 +57,29 @@
                   <input
                     type="radio"
                     [value]="opt"
-                    [formControlName]="q.question_id" />
+                    [formControlName]="q.question_id"
+                    (change)="handleRadioChange(q.question_id, opt)" />
                   <span>{{ opt }}</span>
                 </label>
+
+                <p class="text-red-600 text-sm mt-1"
+                  *ngIf="optionsForm.get(q.question_id.toString())?.invalid && optionsForm.get(q.question_id.toString())?.touched">
+                  This field is required.
+                </p>
+
+                <!-- If 'Other...' is selected, show input -->
+                <div *ngIf="isOtherSelected[q.question_id]" class="mt-2">
+                  <input type="text" class="w-full p-2 border border-gray-300 rounded-md"
+                    placeholder="Please specify..." [formControl]="otherInputControls[q.question_id]" />
+                </div>
               </ng-container>
             </div>
 
             <!-- Checkbox -->
-            <div *ngSwitchCase="'CHECKBOX_GROUP'" class="space-y-2">
+            <div *ngSwitchCase="'CHECKBOX_GROUP'" [ngClass]="{
+              'border border-red-500 p-2 rounded-md': optionsForm.get(q.question_id.toString())?.invalid &&
+                                                       optionsForm.get(q.question_id.toString())?.touched
+            }">
               <ng-container *ngIf="getOptions(q.question_id) | async as opts">
                 <label
                   *ngFor="let opt of opts"
@@ -64,6 +91,17 @@
                     (change)="toggleCheckbox(q.question_id, opt, ck.checked)" />
                   <span>{{ opt }}</span>
                 </label>
+
+                <p class="text-red-600 text-sm mt-1"
+                  *ngIf="optionsForm.get(q.question_id.toString())?.invalid && optionsForm.get(q.question_id.toString())?.touched">
+                  This field is required.
+                </p>
+
+                <!-- If 'Other...' is selected, show input -->
+                <div *ngIf="isOtherSelected[q.question_id]" class="mt-2">
+                  <input type="text" class="w-full p-2 border border-gray-300 rounded-md"
+                    placeholder="Please specify..." [formControl]="otherInputControls[q.question_id]" />
+                </div>
               </ng-container>
             </div>
 
@@ -77,9 +115,38 @@
         </ng-container>
       </ng-container>
 
+      <!-- File Upload Section - Moved to the end of the form -->
+      <div class="mt-8 border-t pt-6">
+        <h3 class="text-2xl font-semibold mb-4 text-gray-800">Additional Documents</h3>
+        <div class="relative w-full flex flex-col gap-2">
+          <input type="file" id="documentFile" class="hidden" (change)="onFileSelected($event)"
+            accept=".pdf,.doc,.docx" />
+
+          <label for="documentFile"
+            class="cursor-pointer bg-[#b17457] text-white px-5 py-3 rounded-full shadow-md font-bold flex items-center gap-3 hover:bg-[#a06044] transition w-fit">
+            <i class="fas fa-paperclip"></i>
+            Choose File
+          </label>
+
+          <!-- Selected File Display -->
+          <div *ngIf="uploadedFiles.length > 0" class="mt-2 space-y-2">
+            <div *ngFor="let file of uploadedFiles" class="flex items-center justify-between bg-white p-2 rounded-md shadow-sm text-sm text-gray-800">
+              <span>{{ file.name }}</span>
+              <button
+                type="button"
+                (click)="removeFile(file)"
+                class="text-[#b17457] hover:text-red-500 transition text-xs font-semibold"
+              >
+                Remove
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+
       <div class="flex justify-between mt-6">
         <button
-          type="submit"
+          type="button"
           (click)="navigateToPreviousForm()"
           class="py-3 mt-4 text-white rounded-full font-semibold transition w-[80px] h-[80px] cursor-pointer hover:bg-opacity-80">
           <img
@@ -89,12 +156,22 @@
         </button>
         <button
           type="submit"
-          (click)="navigateToNextForm()"
-          class="py-3 mt-4 text-white rounded-full font-semibold transition w-[80px] h-[80px] cursor-pointer hover:bg-opacity-80">
-          <img
-            src="/next_button.png"
-            alt="Next"
-            class="w-full h-full object-contain" />
+          [disabled]="isSubmitting"
+          class="py-3 mt-4 text-white rounded-full font-semibold transition w-[80px] h-[80px] cursor-pointer hover:bg-opacity-80 disabled:opacity-60 disabled:cursor-not-allowed">
+          <ng-container *ngIf="!isSubmitting">
+            <img
+              src="/next_button.png"
+              alt="Next"
+              class="w-full h-full object-contain" />
+          </ng-container>
+          <ng-container *ngIf="isSubmitting">
+            <span class="flex justify-center items-center gap-2">
+              <svg class="animate-spin h-5 w-5 text-white" viewBox="0 0 24 24">
+                <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z"></path>
+              </svg>
+            </span>
+          </ng-container>
         </button>
       </div>
     </form>
