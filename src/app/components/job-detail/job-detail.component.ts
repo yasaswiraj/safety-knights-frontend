@@ -33,8 +33,8 @@ export class JobDetailComponent {
           const link = document.createElement('a');
           link.href = url;
           
-          // Get filename from file location or use default
-          const filename = file.file_location.split('/').pop()?.split('_').pop() || 'document';
+          // Get filename from file location and remove .enc extension
+          const filename = file.file_location.split('/').pop()?.split('_').pop()?.replace('.enc', '') || 'document';
           link.download = filename;
           
           // Append to body, click, and cleanup
