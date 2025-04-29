@@ -30,9 +30,10 @@ export class VettingComponent implements OnInit, AfterViewInit {
     email_id: string; 
     job_title: string; 
     company_name: string; 
-    contact: string; 
+    contact: string;
+    status: string; 
   }>; // Explicitly define the type
-  displayedColumns: string[] = ['user_id', 'name', 'email_id', 'job_title', 'company_name', 'contact', 'actions'];
+  displayedColumns: string[] = ['user_id', 'name', 'email_id', 'job_title', 'company_name', 'contact', 'status', 'actions'];
   expandedElement: any = null;
   consultantDetails: any = null; // Store fetched consultant details
   loading: boolean = false; // Add loading flag
@@ -47,7 +48,8 @@ export class VettingComponent implements OnInit, AfterViewInit {
       email_id: string; 
       job_title: string; 
       company_name: string; 
-      contact: string; 
+      contact: string;
+      status: string;
     }>([]); // Explicitly define the type
   }
 

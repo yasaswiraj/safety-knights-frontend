@@ -1,0 +1,125 @@
+<div class="bg-white p-6 rounded-lg shadow-md mt-4">
+  <div class="flex justify-between items-center mb-4">
+    <h2 class="text-2xl font-bold">Job Details</h2>
+    <button class="px-3 py-1 bg-gray-200 rounded-full hover:bg-gray-300" (click)="closeDetail()">
+      Close
+    </button>
+  </div>
+
+  <!-- Loading Spinner -->
+  <div *ngIf="!jobDetails" class="flex justify-center items-center h-40">
+    <mat-spinner diameter="40"></mat-spinner>
+    <span class="ml-3 text-gray-500">Loading job details...</span>
+  </div>
+
+  <div *ngIf="jobDetails" class="space-y-4">
+    <!-- Job Information -->
+    <div class="col-span-2">
+      <h3 class="text-lg font-semibold mb-2">Job Information</h3>
+      <div class="grid grid-cols-2 gap-4">
+        <div>
+          <p class="text-gray-600">Job ID</p>
+          <p class="font-medium">{{ jobDetails.job_details.job_id }}</p>
+        </div>
+        <div>
+          <p class="text-gray-600">Form ID</p>
+          <p class="font-medium">{{ jobDetails.job_details.form_id }}</p>
+        </div>
+        <div>
+          <p class="text-gray-600">Scope of Service</p>
+          <p class="font-medium">{{ jobDetails.job_details.scope_of_service }}</p>
+        </div>
+        <div>
+          <p class="text-gray-600">Work in Detail</p>
+          <p class="font-medium">{{ jobDetails.job_details.work_in_detail }}</p>
+        </div>
+        <div>
+          <p class="text-gray-600">Project Location</p>
+          <p class="font-medium">{{ jobDetails.job_details.project_location }}</p>
+        </div>
+        <div>
+          <p class="text-gray-600">Proposal Deadline</p>
+          <p class="font-medium">{{ jobDetails.job_details.proposal_deadline | date }}</p>
+        </div>
+        <div>
+          <p class="text-gray-600">Expected Start Date</p>
+          <p class="font-medium">{{ jobDetails.job_details.expected_start_date | date }}</p>
+        </div>
+        <div>
+          <p class="text-gray-600">Budget</p>
+          <p class="font-medium">${{ jobDetails.job_details.budget }}</p>
+        </div>
+        <div>
+          <p class="text-gray-600">Job Status</p>
+          <p class="font-medium capitalize">{{ jobDetails.job_details.job_status }}</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Client Information -->
+    <div class="col-span-2">
+      <h3 class="text-lg font-semibold mb-2">Client Information</h3>
+      <div class="grid grid-cols-2 gap-4">
+        <div>
+          <p class="text-gray-600">Name</p>
+          <p class="font-medium">{{ jobDetails.client_details.name }}</p>
+        </div>
+        <div>
+          <p class="text-gray-600">Email</p>
+          <p class="font-medium">{{ jobDetails.client_details.email }}</p>
+        </div>
+        <div>
+          <p class="text-gray-600">Job Title</p>
+          <p class="font-medium">{{ jobDetails.client_details.job_title }}</p>
+        </div>
+        <div>
+          <p class="text-gray-600">Company Name</p>
+          <p class="font-medium">{{ jobDetails.client_details.company_name }}</p>
+        </div>
+        <div>
+          <p class="text-gray-600">Company Address</p>
+          <p class="font-medium">{{ jobDetails.client_details.company_address }}</p>
+        </div>
+        <div>
+          <p class="text-gray-600">Contact</p>
+          <p class="font-medium">{{ jobDetails.client_details.contact }}</p>
+        </div>
+        <div>
+          <p class="text-gray-600">Average Rating</p>
+          <p class="font-medium">{{ jobDetails.client_details.average_rating }}/5 ({{ jobDetails.client_details.review_count }} reviews)</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Insurance Values -->
+    <div class="col-span-2" *ngIf="jobDetails.job_details.insurance_values && jobDetails.job_details.insurance_values.length > 0">
+      <h3 class="text-lg font-semibold mb-2">Insurance Values</h3>
+      <div class="grid grid-cols-1 gap-2">
+        <div *ngFor="let insurance of jobDetails.job_details.insurance_values" class="p-2 border rounded">
+          <p class="font-medium">{{ insurance }}</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Files -->
+    <div class="col-span-2" *ngIf="jobDetails.job_details.files && jobDetails.job_details.files.length > 0">
+      <h3 class="text-lg font-semibold mb-2">Files</h3>
+      <div class="grid grid-cols-1 gap-2">
+        <div *ngFor="let file of jobDetails.job_details.files" class="flex items-center p-2 border rounded">
+          <i class="fa-solid fa-file-pdf text-red-500 mr-2"></i>
+          <span class="font-medium">{{ file.name || 'Document' }}</span>
+          <a *ngIf="file.url" [href]="file.url" target="_blank" class="ml-auto text-blue-500 hover:underline">
+            View
+          </a>
+        </div>
+      </div>
+    </div>
+
+    <!-- No Files Message -->
+    <div class="col-span-2" *ngIf="!jobDetails.job_details.files || jobDetails.job_details.files.length === 0">
+      <div class="p-4 border rounded bg-gray-50">
+        <p class="text-gray-500 text-center">No files available for this job.</p>
+      </div>
+    </div>
+  </div>
+</div> 

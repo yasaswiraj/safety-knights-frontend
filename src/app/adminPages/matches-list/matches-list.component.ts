@@ -7,7 +7,9 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatSortModule, MatSort } from '@angular/material/sort';
 import { FormsModule } from '@angular/forms';
-import { AdminService } from '../../services/admin.service'; // Import AdminService
+import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
+import { AdminService } from '../../services/admin.service';
+import { JobDetailComponent } from '../../components/job-detail/job-detail.component';
 
 @Component({
   selector: 'app-matches-list',
@@ -23,6 +25,8 @@ import { AdminService } from '../../services/admin.service'; // Import AdminServ
     MatFormFieldModule,
     MatSortModule,
     FormsModule,
+    MatProgressSpinnerModule,
+    JobDetailComponent
   ],
 })
 export class MatchesListComponent implements OnInit, AfterViewInit {
@@ -33,13 +37,18 @@ export class MatchesListComponent implements OnInit, AfterViewInit {
     clientName: string;
     consultantName: string;
     bid: number;
-  }>; // Explicitly define the type
+    job_id: number;
+  }>;
+  expandedElement: any = null;
+  jobDetails: any = null;
+  loadingDetails = false;
 
   displayedColumns: string[] = [
     'id',
     'clientName',
     'consultantName',
-    'bid'
+    'bid',
+    'actions'
   ];
 
   constructor(private adminService: AdminService) {
@@ -48,7 +57,8 @@ export class MatchesListComponent implements OnInit, AfterViewInit {
       clientName: string;
       consultantName: string;
       bid: number;
-    }>([]); // Explicitly define the type
+      job_id: number;
+    }>([]);
   }
 
   ngOnInit() {
@@ -63,12 +73,13 @@ export class MatchesListComponent implements OnInit, AfterViewInit {
     this.adminService.getBids().subscribe(
       (data) => {
         this.dataSource.data = data
-          .filter((bid: any) => bid.bid_status === 'accepted') // Filter bids with status 'accepted'
+          .filter((bid: any) => bid.bid_status === 'accepted')
           .map((bid: any) => ({
             id: bid.bid_id,
-            clientName: `Client ${bid.client_user_id}`, // Replace with actual client name if available
-            consultantName: `Consultant ${bid.consultant_user_id}`, // Replace with actual consultant name if available
+            clientName: `Client ${bid.client_user_id}`,
+            consultantName: `Consultant ${bid.consultant_user_id}`,
             bid: bid.bid_amount,
+            job_id: bid.job_id
           }));
       },
       (error) => {
@@ -80,5 +91,34 @@ export class MatchesListComponent implements OnInit, AfterViewInit {
   onSearch(event: Event) {
     const filterValue = (event.target as HTMLInputElement).value;
     this.dataSource.filter = filterValue.trim().toLowerCase();
+  }
+
+  toggleRow(match: any) {
+    if (this.expandedElement === match) {
+      this.expandedElement = null;
+      this.jobDetails = null;
+      this.loadingDetails = false;
+    } else {
+      this.expandedElement = match;
+      this.loadingDetails = true;
+      
+      // Fetch job details
+      this.adminService.getJobDetails(match.job_id).subscribe(
+        (data) => {
+          this.jobDetails = data;
+          this.loadingDetails = false;
+        },
+        (error) => {
+          console.error('Error fetching job details:', error);
+          this.loadingDetails = false;
+        }
+      );
+    }
+  }
+
+  closeDetail(): void {
+    this.expandedElement = null;
+    this.jobDetails = null;
+    this.loadingDetails = false;
   }
 }

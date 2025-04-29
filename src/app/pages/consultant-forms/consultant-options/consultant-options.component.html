@@ -1,0 +1,102 @@
+<div
+  class="min-h-screen flex items-center justify-center pt-12"
+  style="background-color: #faf7f0">
+  <div
+    class="w-full max-w-3xl bg-white p-8 rounded-2xl shadow-lg"
+    *ngIf="formStructure">
+    <h1 class="text-3xl font-bold text-center mb-8" style="color: #b17457">
+      EHS Consulting Network – Consultant Options
+    </h1>
+
+    <form [formGroup]="optionsForm" (ngSubmit)="onSubmit()" class="space-y-1">
+      <!-- categories -->
+      <ng-container *ngFor="let cat of formStructure.categories">
+        <h3 class="text-2xl font-semibold mb-2 border-b pb-2 text-gray-800">
+          {{ cat.category_name }}
+        </h3>
+
+        <!-- questions -->
+        <ng-container *ngFor="let q of cat.questions">
+          <label class="block font-medium text-gray-700">{{
+            q.question
+          }}</label>
+
+          <ng-container [ngSwitch]="q.answer_type">
+            <!-- Text -->
+            <input
+              *ngSwitchCase="'text'"
+              type="text"
+              class="w-full p-3 border rounded-md"
+              [formControlName]="q.question_id" />
+
+            <!-- Date -->
+            <input
+              *ngSwitchCase="'date'"
+              type="date"
+              class="w-full p-3 border rounded-md"
+              [formControlName]="q.question_id" />
+
+            <!-- Radio -->
+            <div *ngSwitchCase="'radio'" class="space-y-2">
+              <ng-container *ngIf="getOptions(q.question_id) | async as opts">
+                <label
+                  *ngFor="let opt of opts"
+                  class="flex items-center space-x-2">
+                  <input
+                    type="radio"
+                    [value]="opt"
+                    [formControlName]="q.question_id" />
+                  <span>{{ opt }}</span>
+                </label>
+              </ng-container>
+            </div>
+
+            <!-- Checkbox -->
+            <div *ngSwitchCase="'CHECKBOX_GROUP'" class="space-y-2">
+              <ng-container *ngIf="getOptions(q.question_id) | async as opts">
+                <label
+                  *ngFor="let opt of opts"
+                  class="flex items-center space-x-2">
+                  <input
+                    type="checkbox"
+                    [value]="opt"
+                    #ck
+                    (change)="toggleCheckbox(q.question_id, opt, ck.checked)" />
+                  <span>{{ opt }}</span>
+                </label>
+              </ng-container>
+            </div>
+
+            <!-- Fallback -->
+            <input
+              *ngSwitchDefault
+              type="text"
+              class="w-full p-3 border rounded-md"
+              [formControlName]="q.question_id" />
+          </ng-container>
+        </ng-container>
+      </ng-container>
+
+      <div class="flex justify-between mt-6">
+        <button
+          type="submit"
+          (click)="navigateToPreviousForm()"
+          class="py-3 mt-4 text-white rounded-full font-semibold transition w-[80px] h-[80px] cursor-pointer hover:bg-opacity-80">
+          <img
+            src="/back_button.png"
+            alt="Back"
+            class="w-full h-full object-contain" />
+        </button>
+        <button
+          type="submit"
+          (click)="navigateToNextForm()"
+          class="py-3 mt-4 text-white rounded-full font-semibold transition w-[80px] h-[80px] cursor-pointer hover:bg-opacity-80">
+          <img
+            src="/next_button.png"
+            alt="Next"
+            class="w-full h-full object-contain" />
+        </button>
+      </div>
+    </form>
+  </div>
+</div>

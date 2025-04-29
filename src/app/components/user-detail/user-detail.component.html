@@ -1,0 +1,106 @@
+<div class="bg-white p-6 rounded-lg shadow-md mt-4">
+  <div class="flex justify-between items-center mb-4">
+    <h2 class="text-2xl font-bold">User Details</h2>
+    <button class="px-3 py-1 bg-gray-200 rounded-full hover:bg-gray-300" (click)="closeDetail()">
+      Close
+    </button>
+  </div>
+
+  <div *ngIf="userDetails" class="space-y-4">
+    <!-- For Consultant Users -->
+    <div *ngIf="userDetails.type === 'Consultant'" class="grid grid-cols-2 gap-4">
+      <div class="col-span-2">
+        <h3 class="text-lg font-semibold mb-2">Personal Information</h3>
+        <div class="grid grid-cols-2 gap-4">
+          <div>
+            <p class="text-gray-600">Name</p>
+            <p class="font-medium">{{ userDetails.name }}</p>
+          </div>
+          <div>
+            <p class="text-gray-600">Email</p>
+            <p class="font-medium">{{ userDetails.email_id || userDetails.email }}</p>
+          </div>
+          <div>
+            <p class="text-gray-600">Phone</p>
+            <p class="font-medium">{{ userDetails.contact || userDetails.phone }}</p>
+          </div>
+          <div>
+            <p class="text-gray-600">User Type</p>
+            <p class="font-medium">{{ userDetails.type }}</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="col-span-2">
+        <h3 class="text-lg font-semibold mb-2">Professional Information</h3>
+        <div class="grid grid-cols-2 gap-4">
+          <div>
+            <p class="text-gray-600">Job Title</p>
+            <p class="font-medium">{{ userDetails.job_title || 'Not provided' }}</p>
+          </div>
+          <div>
+            <p class="text-gray-600">Company</p>
+            <p class="font-medium">{{ userDetails.company_name || 'Not provided' }}</p>
+          </div>
+          <div *ngIf="userDetails.experience">
+            <p class="text-gray-600">Experience</p>
+            <p class="font-medium">{{ userDetails.experience }} years</p>
+          </div>
+          <div *ngIf="userDetails.specialization">
+            <p class="text-gray-600">Specialization</p>
+            <p class="font-medium">{{ userDetails.specialization }}</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Additional Consultant Details -->
+      <div class="col-span-2" *ngIf="userDetails.education || userDetails.certifications">
+        <h3 class="text-lg font-semibold mb-2">Additional Information</h3>
+        <div class="grid grid-cols-2 gap-4">
+          <div *ngIf="userDetails.education">
+            <p class="text-gray-600">Education</p>
+            <p class="font-medium">{{ userDetails.education }}</p>
+          </div>
+          <div *ngIf="userDetails.certifications">
+            <p class="text-gray-600">Certifications</p>
+            <p class="font-medium">{{ userDetails.certifications }}</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- For Client Users -->
+    <div *ngIf="userDetails.type === 'Client'" class="grid grid-cols-2 gap-4">
+      <div class="col-span-2">
+        <h3 class="text-lg font-semibold mb-2">Personal Information</h3>
+        <div class="grid grid-cols-2 gap-4">
+          <div>
+            <p class="text-gray-600">Name</p>
+            <p class="font-medium">{{ userDetails.name }}</p>
+          </div>
+          <div>
+            <p class="text-gray-600">Email</p>
+            <p class="font-medium">{{ userDetails.email }}</p>
+          </div>
+          <div>
+            <p class="text-gray-600">Phone</p>
+            <p class="font-medium">{{ userDetails.phone }}</p>
+          </div>
+          <div>
+            <p class="text-gray-600">User Type</p>
+            <p class="font-medium">{{ userDetails.type }}</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="col-span-2">
+        <h3 class="text-lg font-semibold mb-2">Client Information</h3>
+        <p class="text-gray-600">Client details will be implemented in the next phase.</p>
+      </div>
+    </div>
+  </div>
+
+  <div *ngIf="!userDetails" class="flex justify-center items-center h-40">
+    <p class="text-gray-500">Loading user details...</p>
+  </div>
+</div> 
