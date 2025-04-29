@@ -107,6 +107,7 @@ export class BidsListComponent implements OnInit, AfterViewInit {
       // Fetch job details
       this.adminService.getJobDetails(bid.job_id).subscribe(
         (data) => {
+          console.log("Job details:", data);
           this.jobDetails = data;
           this.loadingDetails = false;
         },

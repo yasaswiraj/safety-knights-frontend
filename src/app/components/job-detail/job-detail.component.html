@@ -108,9 +108,11 @@
         <div *ngFor="let file of jobDetails.job_details.files" class="flex items-center p-2 border rounded">
           <i class="fa-solid fa-file-pdf text-red-500 mr-2"></i>
           <span class="font-medium">{{ file.name || 'Document' }}</span>
-          <a *ngIf="file.url" [href]="file.url" target="_blank" class="ml-auto text-blue-500 hover:underline">
-            View
-          </a>
+          <div class="ml-auto flex gap-2">
+            <button *ngIf="file.file_location" (click)="downloadFile(file)" class="cursor-pointer text-green-500 hover:underline">
+              Download
+            </button>
+          </div>
         </div>
       </div>
     </div>

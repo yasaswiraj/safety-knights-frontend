@@ -65,6 +65,7 @@ export class VettingComponent implements OnInit, AfterViewInit {
     this.adminService.getVettedUsers().subscribe(
       (data) => {
         this.dataSource.data = data;
+        console.log("Vetted users:", this.dataSource.data);
       },
       (error) => {
         console.error('Error fetching vetted users:', error);

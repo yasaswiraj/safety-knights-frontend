@@ -46,12 +46,27 @@ export class AdminService {
     return this.http.get<string[]>(`${environment.apiUrl}/admin/questions/${questionId}/options`, { withCredentials: true });
   }
 
+  getUserFiles(userId: number): Observable<any> {
+    return this.http.get(`${environment.apiUrl}/user/${userId}/files`, { withCredentials: true });
+  }
+
+  getFileById(fileId: number): Observable<any> {
+    return this.http.get(`${environment.apiUrl}/file/${fileId}`, { 
+      withCredentials: true,
+      responseType: 'blob'  // Important for file downloads
+    });
+  }
+
   editQuestion(questionId: number, questionData: any): Observable<any> {
     return this.http.put(`${environment.apiUrl}/admin/questions/${questionId}`, questionData, { withCredentials: true });
   }
 
   banUser(user_id: number, banData: any): Observable<any> {
     return this.http.post(`${environment.apiUrl}/admin/ban/${user_id}`, banData, { withCredentials: true });
+  }
+
+  unbanUser(user_id: number): Observable<any> {
+    return this.http.post(`${environment.apiUrl}/admin/unban/${user_id}`, {}, { withCredentials: true });
   }
 
   rejectUser(user_id: number, rejectData: any): Observable<any> {

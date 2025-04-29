@@ -10,6 +10,7 @@ import { FormsModule } from '@angular/forms';
 import { MatDialog, MatDialogModule } from '@angular/material/dialog';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { BanUserComponent } from '../../components/ban-user/ban-user.component';
+import { UnbanUserComponent } from '../../components/unban-user/unban-user.component';
 import { ConsultantDetailComponent } from '../../components/consultant-detail/consultant-detail.component';
 import { ClientDetailComponent } from '../../components/client-detail/client-detail.component';
 import { AdminService } from '../../services/admin.service';
@@ -24,6 +25,7 @@ interface User {
   type: string;
   job_title?: string;
   company_name?: string;
+  user_status?: string;
 }
 
 @Component({
@@ -62,6 +64,7 @@ export class UsersListComponent implements AfterViewInit, OnInit {
     'email',
     'phone',
     'type',
+    'user_status',
     'actions'
   ];
 
@@ -123,13 +126,14 @@ export class UsersListComponent implements AfterViewInit, OnInit {
       
       if (response && response.users) {
         this.users = response.users.map((user: any, index: number) => ({
-          id: index + 1,
+          id: user.user_id,
           name: user.name || '',
           email: user.email_id || '',
           phone: user.contact || '',
           type: user.user_type ? user.user_type.charAt(0).toUpperCase() + user.user_type.slice(1) : '',
           job_title: user.job_title || '',
           company_name: user.company_name || '',
+          user_status: user.user_status || ''
         }));
         
         // Set the data source
@@ -266,14 +270,31 @@ export class UsersListComponent implements AfterViewInit, OnInit {
   openBanDialog(user: User): void {
     const dialogRef = this.dialog.open(BanUserComponent, {
       width: '400px',
-      data: { userName: user.name },
+      data: { userName: user.name, userId: user.id },
     });
 
     dialogRef.afterClosed().subscribe(result => {
       if (result?.confirmed) {
         console.log(`Banning user ${user.name} for reason: ${result.reason}`);
-        // Add your API call here to ban the user
-        // You might want to refresh the users list after successful ban
+        this.fetchUsers(); // Refresh the users list after banning
+      }
+    });
+  }
+
+  unbanUser(user: User): void {
+    const dialogRef = this.dialog.open(UnbanUserComponent, {
+      width: '400px',
+      data: { 
+        userName: user.name,
+        userId: user.id,
+        userType: user.type
+      },
+    });
+
+    dialogRef.afterClosed().subscribe(result => {
+      if (result?.confirmed) {
+        console.log(`User ${user.name} has been unbanned`);
+        this.fetchUsers(); // Refresh the users list
       }
     });
   }
