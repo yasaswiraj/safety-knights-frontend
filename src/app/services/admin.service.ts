@@ -54,6 +54,10 @@ export class AdminService {
     return this.http.post(`${environment.apiUrl}/admin/ban/${user_id}`, banData, { withCredentials: true });
   }
 
+  unbanUser(user_id: number): Observable<any> {
+    return this.http.post(`${environment.apiUrl}/admin/unban/${user_id}`, {}, { withCredentials: true });
+  }
+
   rejectUser(user_id: number, rejectData: any): Observable<any> {
     return this.http.post(`${environment.apiUrl}/admin/reject/${user_id}`, rejectData, { withCredentials: true });
   }
