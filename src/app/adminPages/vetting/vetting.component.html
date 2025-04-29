@@ -1,9 +1,6 @@
 <div>
   <div class="flex justify-between items-center">
     <div class="text-3xl font-bold text-(--text-color)">Vetting</div>
-    <button *ngIf="expandedElement" class="ml-2 px-2 py-1 bg-gray-200 rounded-full hover:bg-gray-300" (click)="closeDetail()">
-      Close
-    </button>
   </div>
   <app-vetting-user 
     [ngClass]="{'hidden': !expandedElement}" 
@@ -47,29 +44,46 @@
         <th mat-header-cell *matHeaderCellDef mat-sort-header class="p-3">Contact</th>
         <td mat-cell *matCellDef="let consultant" class="p-3">{{ consultant.contact }}</td>
       </ng-container>
+      <!-- Status Column -->
+      <ng-container matColumnDef="status">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header class="p-3">Status</th>
+        <td mat-cell *matCellDef="let consultant" class="p-3">
+          <span [ngClass]="{
+            'px-2 py-1 rounded-full text-sm': true,
+            'bg-green-100 text-green-800': consultant.status === 'Approved',
+            'bg-red-100 text-red-800': consultant.status === 'Rejected',
+            'bg-yellow-100 text-yellow-800': consultant.status === 'Pending',
+            'bg-blue-100 text-blue-800': consultant.status === 'Changes Requested'
+          }">
+            {{ consultant.status || 'Pending' }}
+          </span>
+        </td>
+      </ng-container>
       <!-- Actions Column -->
       <ng-container matColumnDef="actions">
         <th mat-header-cell *matHeaderCellDef class="p-3 w-20">Actions</th>
-        <td mat-cell *matCellDef="let consultant" class="p-3 flex justify-center items-center">
-          <button mat-icon-button color="primary" (click)="approve(consultant)">
-            <i class="fa-solid fa-check text-green-500"></i>
-          </button>
-          <button mat-icon-button color="warn" (click)="showDeclinePopUp(consultant)">
-            <i class="fa-solid fa-times text-red-500"></i>
-          </button>
-          <button mat-icon-button color="accent" (click)="requestChanges(consultant)">
-            <i class="fa-regular fa-paper-plane"></i>
-          </button>
-          <!-- Expand Button added to actions -->
-          <button mat-icon-button (click)="toggleRow(consultant); $event.stopPropagation()">
-            <i class="fa-solid fa-up-right-and-down-left-from-center"></i>
-          </button>
+        <td mat-cell *matCellDef="let consultant" class="p-3">
+          <div class="flex">
+            <button mat-icon-button color="primary" (click)="approve(consultant)">
+              <i class="fa-solid fa-check text-green-500"></i>
+            </button>
+            <button mat-icon-button color="warn" (click)="showDeclinePopUp(consultant)">
+              <i class="fa-solid fa-times text-red-500"></i>
+            </button>
+            <button mat-icon-button color="accent" (click)="requestChanges(consultant)">
+              <i class="fa-regular fa-paper-plane"></i>
+            </button>
+            <!-- Expand Button added to actions -->
+            <button mat-icon-button (click)="toggleRow(consultant); $event.stopPropagation()">
+              <i class="fa-solid fa-up-right-and-down-left-from-center"></i>
+            </button>
+          </div>
         </td>
       </ng-container>
       <!-- Header Row -->
-      <tr mat-header-row *matHeaderRowDef="['name', 'email_id', 'job_title', 'company_name', 'contact', 'actions']" sticky></tr>
+      <tr mat-header-row *matHeaderRowDef="['name', 'email_id', 'job_title', 'company_name', 'contact', 'status', 'actions']" sticky></tr>
       <!-- Main Data Row -->
-      <tr mat-row *matRowDef="let consultant; columns: ['name', 'email_id', 'job_title', 'company_name', 'contact', 'actions'];"></tr>
+      <tr mat-row *matRowDef="let consultant; columns: ['name', 'email_id', 'job_title', 'company_name', 'contact', 'status', 'actions'];"></tr>
     </table>
   </div>
   </div>

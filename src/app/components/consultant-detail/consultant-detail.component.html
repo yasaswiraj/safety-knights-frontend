@@ -1,0 +1,131 @@
+<div class="bg-white p-6 rounded-lg shadow-md mt-4">
+  <div class="flex justify-between items-center mb-4">
+    <h2 class="text-2xl font-bold">Consultant Details</h2>
+    <button class="px-3 py-1 bg-gray-200 rounded-full hover:bg-gray-300" (click)="closeDetail()">
+      Close
+    </button>
+  </div>
+
+  <!-- Loading Spinner -->
+  <div *ngIf="!consultantDetails" class="flex justify-center items-center h-40">
+    <mat-spinner diameter="40"></mat-spinner>
+    <span class="ml-3 text-gray-500">Loading consultant details...</span>
+  </div>
+
+  <div *ngIf="consultantDetails" class="space-y-4">
+    <!-- Basic Details -->
+    <div class="col-span-2">
+      <h3 class="text-lg font-semibold mb-2">Basic Information</h3>
+      <div class="grid grid-cols-2 gap-4">
+        <div>
+          <p class="text-gray-600">Name</p>
+          <p class="font-medium">{{ consultantDetails.name }}</p>
+        </div>
+        <div>
+          <p class="text-gray-600">Email</p>
+          <p class="font-medium">{{ consultantDetails.email }}</p>
+        </div>
+        <div>
+          <p class="text-gray-600">Job Title</p>
+          <p class="font-medium">{{ consultantDetails.job_title || 'Not provided' }}</p>
+        </div>
+        <div>
+          <p class="text-gray-600">Company Name</p>
+          <p class="font-medium">{{ consultantDetails.company_name || 'Not provided' }}</p>
+        </div>
+        <div>
+          <p class="text-gray-600">Company Address</p>
+          <p class="font-medium">{{ consultantDetails.company_address || 'Not provided' }}</p>
+        </div>
+        <div>
+          <p class="text-gray-600">Phone Number</p>
+          <p class="font-medium">{{ consultantDetails.phone_number || 'Not provided' }}</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Service Selections -->
+    <div class="col-span-2" *ngIf="consultantDetails.environmental_services || consultantDetails.property_transactions || 
+                                  consultantDetails.field_activities || consultantDetails.hazardous_materials || 
+                                  consultantDetails.safety_facility_compliance || consultantDetails.industrial_hygiene || 
+                                  consultantDetails.construction_safety">
+      <h3 class="text-lg font-semibold mb-2">Services Selected</h3>
+      <div class="grid grid-cols-2 gap-4">
+        <div *ngIf="consultantDetails.environmental_services && consultantDetails.environmental_services.length > 0">
+          <p class="text-gray-600">Environmental Services</p>
+          <ul class="list-disc pl-5">
+            <li *ngFor="let service of consultantDetails.environmental_services" class="font-medium">{{ service }}</li>
+          </ul>
+        </div>
+        <div *ngIf="consultantDetails.property_transactions && consultantDetails.property_transactions.length > 0">
+          <p class="text-gray-600">Property Transactions</p>
+          <ul class="list-disc pl-5">
+            <li *ngFor="let service of consultantDetails.property_transactions" class="font-medium">{{ service }}</li>
+          </ul>
+        </div>
+        <div *ngIf="consultantDetails.field_activities && consultantDetails.field_activities.length > 0">
+          <p class="text-gray-600">Field Activities</p>
+          <ul class="list-disc pl-5">
+            <li *ngFor="let service of consultantDetails.field_activities" class="font-medium">{{ service }}</li>
+          </ul>
+        </div>
+        <div *ngIf="consultantDetails.hazardous_materials && consultantDetails.hazardous_materials.length > 0">
+          <p class="text-gray-600">Hazardous Materials</p>
+          <ul class="list-disc pl-5">
+            <li *ngFor="let service of consultantDetails.hazardous_materials" class="font-medium">{{ service }}</li>
+          </ul>
+        </div>
+        <div *ngIf="consultantDetails.safety_facility_compliance && consultantDetails.safety_facility_compliance.length > 0">
+          <p class="text-gray-600">Safety Facility Compliance</p>
+          <ul class="list-disc pl-5">
+            <li *ngFor="let service of consultantDetails.safety_facility_compliance" class="font-medium">{{ service }}</li>
+          </ul>
+        </div>
+        <div *ngIf="consultantDetails.industrial_hygiene && consultantDetails.industrial_hygiene.length > 0">
+          <p class="text-gray-600">Industrial Hygiene</p>
+          <ul class="list-disc pl-5">
+            <li *ngFor="let service of consultantDetails.industrial_hygiene" class="font-medium">{{ service }}</li>
+          </ul>
+        </div>
+        <div *ngIf="consultantDetails.construction_safety && consultantDetails.construction_safety.length > 0">
+          <p class="text-gray-600">Construction Safety</p>
+          <ul class="list-disc pl-5">
+            <li *ngFor="let service of consultantDetails.construction_safety" class="font-medium">{{ service }}</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <!-- Written Responses -->
+    <div class="col-span-2" *ngIf="consultantDetails.written_responses">
+      <h3 class="text-lg font-semibold mb-2">Written Responses</h3>
+      <div class="grid grid-cols-1 gap-4">
+        <div *ngFor="let key of consultantDetails.written_responses | keyvalue" class="p-3 border rounded">
+          <p class="text-gray-600 font-medium">{{ key.key }}</p>
+          <p class="mt-1">{{ key.value }}</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Documents Section -->
+    <div class="col-span-2" *ngIf="consultantDetails.file_locations && consultantDetails.file_locations.length > 0">
+      <h3 class="text-lg font-semibold mb-2">Documents</h3>
+      <div class="grid grid-cols-1 gap-2">
+        <div *ngFor="let doc of consultantDetails.file_locations" class="flex items-center p-2 border rounded">
+          <i class="fa-solid fa-file-pdf text-red-500 mr-2"></i>
+          <span class="font-medium">{{ doc.name || 'Document' }}</span>
+          <a *ngIf="doc.url" [href]="doc.url" target="_blank" class="ml-auto text-blue-500 hover:underline">
+            View
+          </a>
+        </div>
+      </div>
+    </div>
+
+    <!-- No Documents Message -->
+    <div class="col-span-2" *ngIf="!consultantDetails.file_locations || consultantDetails.file_locations.length === 0">
+      <div class="p-4 border rounded bg-gray-50">
+        <p class="text-gray-500 text-center">No documents available for this consultant.</p>
+      </div>
+    </div>
+  </div>
+</div> 

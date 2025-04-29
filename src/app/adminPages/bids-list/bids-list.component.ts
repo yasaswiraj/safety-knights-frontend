@@ -7,7 +7,9 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatSortModule, MatSort } from '@angular/material/sort';
 import { FormsModule } from '@angular/forms';
-import { AdminService } from '../../services/admin.service'; // Import AdminService
+import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
+import { AdminService } from '../../services/admin.service';
+import { JobDetailComponent } from '../../components/job-detail/job-detail.component';
 
 @Component({
   selector: 'app-bids-list',
@@ -23,6 +25,8 @@ import { AdminService } from '../../services/admin.service'; // Import AdminServ
     MatFormFieldModule,
     MatSortModule,
     FormsModule,
+    MatProgressSpinnerModule,
+    JobDetailComponent
   ],
 })
 export class BidsListComponent implements OnInit, AfterViewInit {
@@ -34,14 +38,19 @@ export class BidsListComponent implements OnInit, AfterViewInit {
     consultantName: string;
     bid: number;
     status: string;
-  }>; // Explicitly define the type
+    job_id: number;
+  }>;
+  expandedElement: any = null;
+  jobDetails: any = null;
+  loadingDetails = false;
 
   displayedColumns: string[] = [
     'id',
     'clientName',
     'consultantName',
     'bid',
-    'status'
+    'status',
+    'actions'
   ];
 
   constructor(private adminService: AdminService) {
@@ -51,7 +60,8 @@ export class BidsListComponent implements OnInit, AfterViewInit {
       consultantName: string;
       bid: number;
       status: string;
-    }>([]); // Explicitly define the type
+      job_id: number;
+    }>([]);
   }
 
   ngOnInit() {
@@ -67,10 +77,11 @@ export class BidsListComponent implements OnInit, AfterViewInit {
       (data) => {
         this.dataSource.data = data.map((bid: any) => ({
           id: bid.bid_id,
-          clientName: `Client ${bid.client_user_id}`, // Replace with actual client name if available
-          consultantName: `Consultant ${bid.consultant_user_id}`, // Replace with actual consultant name if available
+          clientName: `Client ${bid.client_user_id}`,
+          consultantName: `Consultant ${bid.consultant_user_id}`,
           bid: bid.bid_amount,
           status: bid.bid_status,
+          job_id: bid.job_id
         }));
       },
       (error) => {
@@ -82,5 +93,34 @@ export class BidsListComponent implements OnInit, AfterViewInit {
   onSearch(event: Event) {
     const filterValue = (event.target as HTMLInputElement).value;
     this.dataSource.filter = filterValue.trim().toLowerCase();
+  }
+
+  toggleRow(bid: any) {
+    if (this.expandedElement === bid) {
+      this.expandedElement = null;
+      this.jobDetails = null;
+      this.loadingDetails = false;
+    } else {
+      this.expandedElement = bid;
+      this.loadingDetails = true;
+      
+      // Fetch job details
+      this.adminService.getJobDetails(bid.job_id).subscribe(
+        (data) => {
+          this.jobDetails = data;
+          this.loadingDetails = false;
+        },
+        (error) => {
+          console.error('Error fetching job details:', error);
+          this.loadingDetails = false;
+        }
+      );
+    }
+  }
+
+  closeDetail(): void {
+    this.expandedElement = null;
+    this.jobDetails = null;
+    this.loadingDetails = false;
   }
 }

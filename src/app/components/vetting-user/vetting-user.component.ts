@@ -1,11 +1,12 @@
 import { Component, Input, OnInit, OnChanges, SimpleChanges, Output, EventEmitter } from '@angular/core';
 import { CommonModule } from '@angular/common'; // Import CommonModule
 import { AdminService } from '../../services/admin.service'; // Import AdminService
+import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 
 @Component({
   selector: 'app-vetting-user',
   standalone: true,
-  imports: [CommonModule], // Add CommonModule to imports
+  imports: [CommonModule, MatProgressSpinnerModule], // Add CommonModule and MatProgressSpinnerModule to imports
   templateUrl: './vetting-user.component.html',
   styleUrls: ['./vetting-user.component.css']
 })

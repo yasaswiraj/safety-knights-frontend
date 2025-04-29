@@ -1,0 +1,103 @@
+<div class="bg-white p-6 rounded-lg shadow-md mt-4">
+  <div class="flex justify-between items-center mb-4">
+    <h2 class="text-2xl font-bold">Client Details</h2>
+    <button class="px-3 py-1 bg-gray-200 rounded-full hover:bg-gray-300" (click)="closeDetail()">
+      Close
+    </button>
+  </div>
+
+  <!-- Loading Spinner -->
+  <div *ngIf="!clientDetails" class="flex justify-center items-center h-40">
+    <mat-spinner diameter="40"></mat-spinner>
+    <span class="ml-3 text-gray-500">Loading client details...</span>
+  </div>
+
+  <div *ngIf="clientDetails" class="space-y-4">
+    <!-- Basic Details -->
+    <div class="col-span-2">
+      <h3 class="text-lg font-semibold mb-2">Basic Information</h3>
+      <div class="grid grid-cols-2 gap-4">
+        <div>
+          <p class="text-gray-600">Name</p>
+          <p class="font-medium">{{ clientDetails.client_details?.name }}</p>
+        </div>
+        <div>
+          <p class="text-gray-600">Email</p>
+          <p class="font-medium">{{ clientDetails.client_details?.email }}</p>
+        </div>
+        <div>
+          <p class="text-gray-600">Job Title</p>
+          <p class="font-medium">{{ clientDetails.client_details?.job_title || 'Not provided' }}</p>
+        </div>
+        <div>
+          <p class="text-gray-600">Company Name</p>
+          <p class="font-medium">{{ clientDetails.client_details?.company_name || 'Not provided' }}</p>
+        </div>
+        <div>
+          <p class="text-gray-600">Company Address</p>
+          <p class="font-medium">{{ clientDetails.client_details?.company_address || 'Not provided' }}</p>
+        </div>
+        <div>
+          <p class="text-gray-600">Phone Number</p>
+          <p class="font-medium">{{ clientDetails.client_details?.contact || 'Not provided' }}</p>
+        </div>
+        <div>
+          <p class="text-gray-600">User Status</p>
+          <p class="font-medium">
+            <span [ngClass]="{
+              'px-2 py-1 rounded-full text-sm': true,
+              'bg-green-100 text-green-800': clientDetails.client_details?.user_status === 'active',
+              'bg-red-100 text-red-800': clientDetails.client_details?.user_status === 'inactive',
+              'bg-yellow-100 text-yellow-800': clientDetails.client_details?.user_status === 'pending'
+            }">
+              {{ clientDetails.client_details?.user_status || 'Unknown' }}
+            </span>
+          </p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Reviews Section -->
+    <div class="col-span-2" *ngIf="clientDetails.reviews && clientDetails.reviews.length > 0">
+      <h3 class="text-lg font-semibold mb-2">Reviews</h3>
+      <div class="grid grid-cols-1 gap-4">
+        <div *ngFor="let review of clientDetails.reviews" class="p-4 border rounded">
+          <div class="flex justify-between items-center mb-2">
+            <p class="font-medium">{{ review.consultant_name || 'Anonymous' }}</p>
+            <div class="flex items-center">
+              <i class="fas fa-star text-yellow-400 mr-1"></i>
+              <span>{{ review.rating }}/5</span>
+            </div>
+          </div>
+          <p class="text-gray-700">{{ review.comment }}</p>
+          <p class="text-sm text-gray-500 mt-2">{{ review.date | date:'mediumDate' }}</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Review Summary -->
+    <div class="col-span-2" *ngIf="clientDetails.review_count > 0">
+      <h3 class="text-lg font-semibold mb-2">Review Summary</h3>
+      <div class="grid grid-cols-2 gap-4">
+        <div>
+          <p class="text-gray-600">Total Reviews</p>
+          <p class="font-medium">{{ clientDetails.review_count }}</p>
+        </div>
+        <div>
+          <p class="text-gray-600">Average Rating</p>
+          <p class="font-medium">
+            <i class="fas fa-star text-yellow-400 mr-1"></i>
+            {{ clientDetails.average_rating.toFixed(1) }}/5
+          </p>
+        </div>
+      </div>
+    </div>
+
+    <!-- No Reviews Message -->
+    <div class="col-span-2" *ngIf="clientDetails.review_count === 0">
+      <div class="p-4 border rounded bg-gray-50">
+        <p class="text-gray-500 text-center">No reviews available for this client.</p>
+      </div>
+    </div>
+  </div>
+</div> 
