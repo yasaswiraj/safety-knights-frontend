@@ -1,6 +1,8 @@
 import { Component, EventEmitter, Input, Output, signal } from '@angular/core';
 import { RouterModule } from '@angular/router';
 import { CommonModule } from '@angular/common';
+import { Router } from '@angular/router';  
+
 
 interface MenuItem {
   label: string;
@@ -17,13 +19,17 @@ interface MenuItem {
 export class SideBarComponent {
   @Input() isSidebarOpen = true;
   activeLabel = signal<string>('Dashboard');
-
+  constructor(private router: Router) {}
   isActive(label: string): boolean {
     return this.activeLabel() === label;
   }
 
   setActiveLabel(label: string) {
     this.activeLabel.set(label);
+  }
+
+  goToLandingPage() {
+    this.router.navigate(['/']); 
   }
 
   @Input() menuItems: MenuItem[] = [];

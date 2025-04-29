@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { MatDialogRef, MAT_DIALOG_DATA, MatDialogModule } from '@angular/material/dialog';
 import { FormsModule } from '@angular/forms';
 import { AdminService } from '../../services/admin.service';
+import { NotificationService } from '../../services/notification.service';
 
 @Component({
   selector: 'app-ban-user',
@@ -18,7 +19,8 @@ export class BanUserComponent {
   constructor(
     public dialogRef: MatDialogRef<BanUserComponent>,
     @Inject(MAT_DIALOG_DATA) public data: { userName: string, userId: number },
-    private adminService: AdminService
+    private adminService: AdminService,
+    private notificationService: NotificationService
   ) {}
 
   onCancel(): void {
@@ -27,13 +29,15 @@ export class BanUserComponent {
 
   onConfirm(): void {
     if (this.banReason.trim()) {
-      this.adminService.banUser(this.data.userId, this.banReason).subscribe({
+      this.adminService.banUser(this.data.userId, {ban_reason: this.banReason}).subscribe({
         next: (response) => {
           console.log('User banned successfully:', response);
+          this.notificationService.showSuccess(`User ${this.data.userName} has been banned successfully.`);
           this.dialogRef.close({ confirmed: true, reason: this.banReason });
         },
         error: (error) => {
           console.error('Error banning user:', error);
+          this.notificationService.showError('Failed to ban user. Please try again.');
         },
       });
     }
