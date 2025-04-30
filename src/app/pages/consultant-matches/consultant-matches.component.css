@@ -1,3 +1,5 @@
+@import '@angular/material/prebuilt-themes/indigo-pink.css';
+
 .mat-mdc-header-row {
     position: sticky;
     top: 0;
