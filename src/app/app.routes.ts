@@ -42,6 +42,7 @@ import { CreateJobComponent } from './clientPages/create-job/create-job.componen
 import { UpdateJobComponent } from './clientPages/update-job/update-job.component';
 import { ForgotPasswordComponent } from './clientPages/forgot-password/forgot-password.component';
 import { ConsultantOptionsComponent } from './pages/consultant-forms/consultant-options/consultant-options.component';
+import { ConsultantProfileComponent } from './pages/consultant-profile/consultant-profile.component';
 
 export const routes: Routes = [
   {
@@ -151,6 +152,7 @@ export const routes: Routes = [
       {path: 'update-profile-consultant',component: ClientProfileComponent  },
       { path: 'consultant-inbox', component: ChatComponent },
       { path: 'update-profile', component: UpdateProfileConsultantComponent, data: { editMode: true } },
+      { path: 'consultant-profile', component: ConsultantProfileComponent },
     ],
   },
   { path: 'consultant-form1', component: ConsultantForm1Component },
@@ -166,6 +168,5 @@ export const routes: Routes = [
     path: 'consultant-forms-submission',
     component: ConsultantFormsSubmissionComponent,
   },
-
   { path: '**', component: PageNotFoundComponent },
 ];

@@ -1,0 +1,140 @@
+<div class="profile-container">
+  <div class="profile-header">
+    <h1>Consultant Profile</h1>
+    <button class="edit-button" (click)="toggleEdit()" *ngIf="!isEditing">
+      Edit Profile
+    </button>
+  </div>
+
+  <div class="loading-spinner" *ngIf="loading">
+    <div class="spinner"></div>
+  </div>
+
+  <div class="error-message" *ngIf="error">
+    {{ error }}
+  </div>
+
+  <div class="profile-content" *ngIf="!loading && !error && profileData">
+    <!-- Basic Information Section -->
+    <div class="profile-section">
+      <h2>Basic Information</h2>
+      <div class="profile-field">
+        <label>Name:</label>
+        <span *ngIf="!isEditing">{{ profileData.response.name }}</span>
+        <input *ngIf="isEditing" [(ngModel)]="profileData.response.name" type="text">
+      </div>
+      <div class="profile-field">
+        <label>Email:</label>
+        <span *ngIf="!isEditing">{{ profileData.response.email }}</span>
+        <input *ngIf="isEditing" [(ngModel)]="profileData.response.email" type="email">
+      </div>
+      <div class="profile-field">
+        <label>Job Title:</label>
+        <span *ngIf="!isEditing">{{ profileData.response.job_title }}</span>
+        <input *ngIf="isEditing" [(ngModel)]="profileData.response.job_title" type="text">
+      </div>
+      <div class="profile-field">
+        <label>Company Name:</label>
+        <span *ngIf="!isEditing">{{ profileData.response.company_name }}</span>
+        <input *ngIf="isEditing" [(ngModel)]="profileData.response.company_name" type="text">
+      </div>
+      <div class="profile-field">
+        <label>Company Address:</label>
+        <span *ngIf="!isEditing">{{ profileData.response.company_address }}</span>
+        <input *ngIf="isEditing" [(ngModel)]="profileData.response.company_address" type="text">
+      </div>
+      <div class="profile-field">
+        <label>Phone Number:</label>
+        <span *ngIf="!isEditing">{{ profileData.response.phone_number }}</span>
+        <input *ngIf="isEditing" [(ngModel)]="profileData.response.phone_number" type="tel">
+      </div>
+    </div>
+
+    <!-- Environmental Services Section -->
+    <div class="profile-section" *ngIf="profileData.response.environmental_services.length > 0">
+      <h2>Environmental Services</h2>
+      <div class="expertise-list">
+        <div class="expertise-item" *ngFor="let service of profileData.response.environmental_services">
+          {{ service }}
+        </div>
+      </div>
+    </div>
+
+    <!-- Property Transactions Section -->
+    <div class="profile-section" *ngIf="profileData.response.property_transactions.length > 0">
+      <h2>Property Transactions</h2>
+      <div class="expertise-list">
+        <div class="expertise-item" *ngFor="let transaction of profileData.response.property_transactions">
+          {{ transaction }}
+        </div>
+      </div>
+    </div>
+
+    <!-- Field Activities Section -->
+    <div class="profile-section" *ngIf="profileData.response.field_activities.length > 0">
+      <h2>Field Activities</h2>
+      <div class="expertise-list">
+        <div class="expertise-item" *ngFor="let activity of profileData.response.field_activities">
+          {{ activity }}
+        </div>
+      </div>
+    </div>
+
+    <!-- Hazardous Materials Section -->
+    <div class="profile-section" *ngIf="profileData.response.hazardous_materials.length > 0">
+      <h2>Hazardous Materials</h2>
+      <div class="expertise-list">
+        <div class="expertise-item" *ngFor="let material of profileData.response.hazardous_materials">
+          {{ material }}
+        </div>
+      </div>
+    </div>
+
+    <!-- Safety Facility Compliance Section -->
+    <div class="profile-section" *ngIf="profileData.response.safety_facility_compliance.length > 0">
+      <h2>Safety Facility Compliance</h2>
+      <div class="expertise-list">
+        <div class="expertise-item" *ngFor="let compliance of profileData.response.safety_facility_compliance">
+          {{ compliance }}
+        </div>
+      </div>
+    </div>
+
+    <!-- Industrial Hygiene Section -->
+    <div class="profile-section" *ngIf="profileData.response.industrial_hygiene.length > 0">
+      <h2>Industrial Hygiene</h2>
+      <div class="expertise-list">
+        <div class="expertise-item" *ngFor="let hygiene of profileData.response.industrial_hygiene">
+          {{ hygiene }}
+        </div>
+      </div>
+    </div>
+
+    <!-- Construction Safety Section -->
+    <div class="profile-section" *ngIf="profileData.response.construction_safety.length > 0">
+      <h2>Construction Safety</h2>
+      <div class="expertise-list">
+        <div class="expertise-item" *ngFor="let safety of profileData.response.construction_safety">
+          {{ safety }}
+        </div>
+      </div>
+    </div>
+
+    <!-- Written Responses Section -->
+    <div class="profile-section" *ngIf="hasWrittenResponses()">
+      <h2>Additional Information</h2>
+      <div class="written-responses">
+        <div class="response-item" *ngFor="let key of getCategoryKeys(profileData.response.written_responses)">
+          <label>{{ formatCategoryName(key) }}:</label>
+          <span *ngIf="!isEditing">{{ profileData.response.written_responses[key] }}</span>
+          <input *ngIf="isEditing" [(ngModel)]="profileData.response.written_responses[key]" type="text">
+        </div>
+      </div>
+    </div>
+
+    <div class="profile-actions" *ngIf="isEditing">
+      <button class="save-button" (click)="saveProfile()">Save Changes</button>
+      <button class="cancel-button" (click)="toggleEdit()">Cancel</button>
+    </div>
+  </div>
+</div>
