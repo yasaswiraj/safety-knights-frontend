@@ -34,8 +34,8 @@ export class AdminService {
     return this.http.post(`${environment.apiUrl}/admin/user_approve/${user_id}`, {}, { withCredentials: true });
   }
 
-  getBids(): Observable<any[]> {
-    return this.http.get<any[]>(`${environment.apiUrl}/admin/bids`, { withCredentials: true });
+  getBids(page: number = 1, size: number = 10): Observable<any> {
+    return this.http.get<any>(`${environment.apiUrl}/admin/bids?page=${page}&size=${size}`, { withCredentials: true });
   }
 
   getQuestions(): Observable<any> {

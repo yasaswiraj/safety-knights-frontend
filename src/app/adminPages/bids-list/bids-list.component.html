@@ -23,7 +23,14 @@
   <div
     *ngIf="!expandedElement"
     class="bg-white h-[calc(100vh-17rem)] overflow-auto mt-4 rounded-3xl border border-gray-300">
+    
+    <!-- Loading Spinner for Table -->
+    <div *ngIf="isLoading" class="flex justify-center items-center h-full">
+      <mat-spinner></mat-spinner>
+    </div>
+    
     <table
+      *ngIf="!isLoading"
       mat-table
       [dataSource]="dataSource"
       matSort
@@ -101,6 +108,42 @@
         </td>
       </ng-container>
 
+      <!-- Job Title Column -->
+      <ng-container matColumnDef="job_title">
+        <th
+          mat-header-cell
+          *matHeaderCellDef
+          mat-sort-header
+          class="p-3 text-left">
+          Job Title
+        </th>
+        <td mat-cell *matCellDef="let bid" class="p-3">
+          {{ bid.job_title }}
+        </td>
+      </ng-container>
+
+      <!-- Job Status Column -->
+      <ng-container matColumnDef="job_status">
+        <th
+          mat-header-cell
+          *matHeaderCellDef
+          mat-sort-header
+          class="p-3 text-left">
+          Job Status
+        </th>
+        <td mat-cell *matCellDef="let bid" class="p-3">
+          <span [ngClass]="{
+            'px-2 py-1 rounded-full text-sm': true,
+            'bg-blue-100 text-blue-800': bid.job_status === 'open',
+            'bg-green-100 text-green-800': bid.job_status === 'completed',
+            'bg-yellow-100 text-yellow-800': bid.job_status === 'in_progress',
+            'bg-purple-100 text-purple-800': bid.job_status === 'active'
+          }">
+            {{ bid.job_status | titlecase }}
+          </span>
+        </td>
+      </ng-container>
+
       <!-- Actions Column -->
       <ng-container matColumnDef="actions">
         <th mat-header-cell *matHeaderCellDef class="p-3 text-left">Actions</th>
@@ -117,10 +160,50 @@
       <tr mat-header-row *matHeaderRowDef="displayedColumns" sticky></tr>
       <tr mat-row *matRowDef="let row; columns: displayedColumns"></tr>
     </table>
+
+    <!-- Custom Pagination -->
+    <div class="flex justify-center items-center p-4">
+      <div class="flex items-center space-x-2">
+        <!-- Previous Page Button -->
+        <button 
+          mat-icon-button 
+          [disabled]="currentPage === 1 || isLoading"
+          (click)="goToPage(currentPage - 1)">
+          <i class="fas fa-chevron-left"></i>
+        </button>
+        
+        <!-- Page Numbers -->
+        <div class="flex items-center space-x-1">
+          <ng-container *ngFor="let page of getPageNumbers()">
+            <button 
+              *ngIf="page !== -1"
+              mat-button 
+              [class.bg-accent]="page === currentPage"
+              [class.text-white]="page === currentPage"
+              [class.rounded-none]="page === currentPage"
+              [class.px-3]="page === currentPage"
+              [class.py-1]="page === currentPage"
+              [disabled]="isLoading"
+              (click)="goToPage(page)">
+              {{ page }}
+            </button>
+            <span *ngIf="page === -1" class="px-2">...</span>
+          </ng-container>
+        </div>
+        
+        <!-- Next Page Button -->
+        <button 
+          mat-icon-button 
+          [disabled]="currentPage === totalPages || isLoading"
+          (click)="goToPage(currentPage + 1)">
+          <i class="fas fa-chevron-right"></i>
+        </button>
+      </div>
+    </div>
   </div>
 
   <!-- Loading Spinner for Table -->
-  <div *ngIf="!dataSource.data.length" class="flex justify-center items-center h-[calc(100vh-17rem)]">
+  <div *ngIf="!dataSource.data.length && !isLoading" class="flex justify-center items-center h-[calc(100vh-17rem)]">
     <mat-spinner></mat-spinner>
   </div>
 </div>

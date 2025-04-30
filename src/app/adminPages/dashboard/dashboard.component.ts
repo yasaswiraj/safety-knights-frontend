@@ -31,10 +31,10 @@ export class AdminDashboardComponent implements OnInit {
     );
 
     // Fetch total bids and accepted bids
-    this.adminService.getBids().subscribe(
-      (bids) => {
-        this.totalBids = bids.length;
-        this.currentMatches = bids.filter((bid: any) => bid.bid_status === 'accepted').length;
+    this.adminService.getBids(1, 1000).subscribe(
+      (response) => {
+        this.totalBids = response.total;
+        this.currentMatches = response.items.filter((bid: any) => bid.bid_status === 'accepted').length;
       },
       (error) => {
         console.error('Error fetching bids:', error);
