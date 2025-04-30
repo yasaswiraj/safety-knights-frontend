@@ -77,9 +77,10 @@
       <form #bidForm="ngForm" (ngSubmit)="onSubmit()" class="bid-form" novalidate>
 
         <mat-form-field appearance="fill" class="w-full custom-field">
-          <mat-label>Enter Bid Amount</mat-label>
+          <mat-label>Enter Bid Amount($$)</mat-label>
+          <!-- <span matPrefix>$&nbsp;</span> -->
           <input matInput type="number" min="0" [(ngModel)]="bidAmount" name="amount" required #amount="ngModel"
-          [placeholder]="data.budget ? ('$' + data.budget) : 'Enter bid amount'">
+          >
           <mat-error *ngIf="amount.invalid && amount.touched">Amount is required and must be a number.</mat-error>
         </mat-form-field>
       

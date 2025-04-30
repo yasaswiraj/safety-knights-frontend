@@ -4,6 +4,15 @@
     border-radius: 15px;
     box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
     font-family: 'Arial', sans-serif;
+    max-height: 90vh; /* Viewport Height - prevents overspilling screen */
+    overflow-y: auto; /* Enables vertical scrolling if needed */
+    padding: 1.5rem;
+    position: relative;
+  }
+
+  /* Optional: make sure inner sections don't have big margins if space is tight */
+  .description, .client-info, .bid-form {
+    margin-bottom: 2rem;
   }
   
   .dialog-container h2 {
