@@ -6,10 +6,12 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatSortModule, MatSort } from '@angular/material/sort';
-import { MatDialog } from '@angular/material/dialog';
+import { MatDialog, MatDialogModule } from '@angular/material/dialog';
 import { FormsModule } from '@angular/forms';
 import { JobDetailDialogComponent } from '../job-detail-dialog/job-detail-dialog.component';
 import { ConsultantMatchesService } from '../../services/consultant-match.service';
+import { MatDatepickerModule } from '@angular/material/datepicker';
+import { MatNativeDateModule } from '@angular/material/core';
 
 @Component({
   selector: 'app-consultant-matches',
@@ -25,6 +27,9 @@ import { ConsultantMatchesService } from '../../services/consultant-match.servic
     MatFormFieldModule,
     MatSortModule,
     FormsModule,
+    MatDialogModule, // for dialogs
+    MatDatepickerModule,
+    MatNativeDateModule,
   ],
 })
 export class ConsultantMatchesComponent implements AfterViewInit {

@@ -37,7 +37,7 @@ interface User {
     MatIconModule
   ],
   providers: [
-    
+    MatNativeDateModule // <-- Add this lin
   ],
   styleUrls: ['./job-detail-dialog.component.css']
 })
