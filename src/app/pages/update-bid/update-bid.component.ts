@@ -15,6 +15,7 @@ import { MatNativeDateModule } from '@angular/material/core';
 import { MatIconModule } from '@angular/material/icon';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { Router } from '@angular/router';
+import { ConsultantMatchesService } from '../../services/consultant-match.service';
 
 
 // Define an interface for user data
@@ -36,7 +37,7 @@ interface User {
     MatInputModule,
     MatNativeDateModule,
     MatIconModule,
-     
+    
   ],
   providers: [
     MatNativeDateModule, // ✅ Correctly provides DateAdapter
@@ -54,11 +55,38 @@ users: User[] = []; // Explicitly type the users array
     @Inject(MAT_DIALOG_DATA) public data: any,
     private http: HttpClient,
     private snackBar: MatSnackBar,
-    private router: Router
+    private router: Router,
+    private consultantMatchesService: ConsultantMatchesService
   ) {}
+
+  jobDetails: any;
+  loading = true;
+  errorMessage: string | undefined;
+  objectKeys = Object.keys;
+
 
   onClose(): void {
     this.dialogRef.close();
+  }
+
+  ngOnInit() {
+    this.fetchJobDetails(this.data.jobid);
+    this.bidAmount = this.data.bid_amount; // Initialize bidAmount with the existing bid amount
+  }
+
+  fetchJobDetails(jobId: string) {
+    this.consultantMatchesService.getJobDetail(jobId).subscribe({
+      next: (response) => {
+        console.log('Fetched job details:', response);
+        this.jobDetails = response;
+        this.loading = false;
+      },
+      error: (error) => {
+        console.error('Error fetching job details:', error);
+        this.errorMessage = 'Failed to load job details.';
+        this.loading = false;
+      }
+    });
   }
 
   getUserDetailsByJobId(jobId: number): void {

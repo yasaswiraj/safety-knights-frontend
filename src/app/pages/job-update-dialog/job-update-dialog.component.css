@@ -15,16 +15,24 @@
     max-width: 1000px; /* Increased width */
     width: 100%;
     box-sizing: border-box;
+    
+  max-height: 80vh;         /* Limit height */
+  overflow-y: auto;
   }
   
+  .dialog-content h2 {
+    color: #b8860b;
+    font-size: 24px;
+    font-weight: bold;
+  }
   /* Flex container for job and client info */
   .details-wrapper {
     display: flex;
-    justify-content: space-between;
+    flex-direction: column; /* Stack vertically */
     gap: 20px;
-    flex-wrap: wrap;
     padding: 20px;
   }
+  
   
   /* Common card style for both sections */
   .description,
