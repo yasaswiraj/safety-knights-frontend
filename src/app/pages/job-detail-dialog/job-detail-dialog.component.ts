@@ -71,6 +71,9 @@ users: User[] = []; // Explicitly type the users array
 
   ngOnInit() {
     this.fetchJobDetails(this.data.jobid);
+    if (this.data.budget && !this.bidAmount) {
+      this.bidAmount = this.data.budget; // pre-fill from data
+    }
   }
 
   fetchJobDetails(jobId: string) {

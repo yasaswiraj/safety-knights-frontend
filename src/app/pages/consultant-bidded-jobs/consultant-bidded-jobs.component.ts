@@ -129,6 +129,10 @@ deleteBid(job: any): void {
       },
       error: (error) => {
         console.error('Error deleting bid', error);
+        this.snackBar.open('Failed to delete bid. Please try again.', 'Close', {
+          duration: 5000,
+          panelClass: ['snackbar-error'] // Make sure this class is styled in your styles.css
+        });
       }
     });
     

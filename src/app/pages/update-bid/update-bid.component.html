@@ -8,16 +8,49 @@
   </button>
     
     <!-- Job Description Section -->
+    <!-- Job Description Section -->
     <div class="description">
-      <h3>Description:</h3> <p>{{ data.work_in_detail }}</p> 
+      <p><strong> Job description</strong> {{ data.work_in_detail }}</p> 
       <p><strong>Scope of Service:</strong> {{ data.scope_of_service }}</p>
-      <p><strong>Created on:</strong> {{ data.expected_start_date }}</p>
+      <p><strong> Expected Start Date:</strong> {{ jobDetails.expected_start_date }}</p>
       <p><strong>Deadline:</strong> {{ data.deadline }}</p>  
       <p><strong>Location:</strong> {{ data.location }}</p>
       <p><strong>Budget:</strong>{{ data.budget }} </p>
- 
+      <!-- <p><strong>Access type  :</strong> {{ jobDetails.access_type }}</p> -->
+      
+      <div *ngIf="jobDetails.form_responses && (objectKeys(jobDetails.form_responses).length > 0); else noForms">
+        <ul>
+          <li *ngFor="let key of objectKeys(jobDetails.form_responses)">
+            <strong>{{ key }}:</strong> {{ jobDetails.form_responses[key] }}
+          </li>
+        </ul>
+      </div>
+      <ng-template #noForms>No form responses provided.</ng-template>
         
+    
+
+    <p><strong>Insurance Values</strong></p>
+    <div *ngIf="jobDetails.insurance_values.length > 0; else noInsurance">
+      <ul>
+        <li *ngFor="let insurance of jobDetails.insurance_values">
+          {{ insurance }}
+        </li>
+      </ul>
     </div>
+    <ng-template #noInsurance>No insurance values provided.</ng-template>
+
+    <p><strong>File Attachments</strong></p>
+
+    <li *ngFor="let file of jobDetails.file_attachments">
+      <a [href]="file.file_location" target="_blank" rel="noopener noreferrer">
+        {{ file.file_location.split('/').pop() }}
+      </a>
+    </li>
+    
+
+<ng-template #noFiles>
+  <p>No file attachments available.</p>
+</ng-template>
   
     <!-- Client Contact Information Section -->
     <div class="client-info">
@@ -40,7 +73,7 @@
 
     
         <mat-form-field appearance="fill" class="w-full custom-field">
-          <mat-label>Update Bid Amount</mat-label>
+          <mat-label>Update Bid Amount($$)</mat-label>
           <input
             matInput
             type="number"
@@ -48,7 +81,7 @@
             [(ngModel)]="bidAmount"
             name="amount"
             #amount="ngModel"
-            [placeholder]="data.bid_amount ? ('$' + data.bid_amount) : 'Enter bid amount'" />
+             />
         </mat-form-field>
      
         <button  class="mt-5 bg-gradient-to-r from-[#b68d5f] to-[#a4784c] text-white font-semibold text-sm py-2 px-6 rounded-full shadow-md hover:from-[#a4784c] hover:to-[#8d6640] transition" type="submit" >Submit Request</button>

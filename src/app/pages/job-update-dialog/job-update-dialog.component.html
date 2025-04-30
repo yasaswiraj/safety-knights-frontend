@@ -1,6 +1,6 @@
 <h2 class="dialog-title">Update Status</h2>
 <div class="dialog-content">
-
+  <h2>Job {{ data.job_id }}</h2>
       <!-- Close Icon Button -->
       <button mat-icon-button class="absolute top-2 right-2" (click)="closeDialog()">
         <mat-icon>close</mat-icon>
@@ -8,16 +8,50 @@
         
       <div class="details-wrapper">
         <!-- Job Description Section -->
-        <div class="description">
-          <h1><strong>Job Details</strong></h1>
-          <p><strong>Description: </strong> {{ data.work_in_detail }}</p> 
-          <p><strong>Scope of Service:</strong> {{ data.scope_of_service }}</p>
-          <p><strong>Created on:</strong> {{ data.expected_start_date }}</p>
-          <p><strong>Deadline:</strong> {{ data.deadline }}</p>  
-          <p><strong>Location:</strong> {{ data.location }}</p>
-          <p><strong>Budget:</strong> {{ data.budget }} </p>  
-        </div>
+         <!-- Job Description Section -->
+    <div class="description">
+      <p><strong> Job description</strong> {{ data.work_in_detail }}</p> 
+      <p><strong>Scope of Service:</strong> {{ data.scope_of_service }}</p>
+      <p><strong> Expected Start Date:</strong> {{ jobDetails.expected_start_date }}</p>
+      <p><strong>Deadline:</strong> {{ data.deadline }}</p>  
+      <p><strong>Location:</strong> {{ data.location }}</p>
+      <p><strong>Budget:</strong>{{ data.budget }} </p>
+      <!-- <p><strong>Access type  :</strong> {{ jobDetails.access_type }}</p> -->
       
+      <div *ngIf="jobDetails.form_responses && (objectKeys(jobDetails.form_responses).length > 0); else noForms">
+        <ul>
+          <li *ngFor="let key of objectKeys(jobDetails.form_responses)">
+            <strong>{{ key }}:</strong> {{ jobDetails.form_responses[key] }}
+          </li>
+        </ul>
+      </div>
+      <ng-template #noForms>No form responses provided.</ng-template>
+        
+    
+
+    <p><strong>Insurance Values</strong></p>
+    <div *ngIf="jobDetails.insurance_values.length > 0; else noInsurance">
+      <ul>
+        <li *ngFor="let insurance of jobDetails.insurance_values">
+          {{ insurance }}
+        </li>
+      </ul>
+    </div>
+    <ng-template #noInsurance>No insurance values provided.</ng-template>
+
+    <p><strong>File Attachments</strong></p>
+
+    <li *ngFor="let file of jobDetails.file_attachments">
+      <a [href]="file.file_location" target="_blank" rel="noopener noreferrer">
+        {{ file.file_location.split('/').pop() }}
+      </a>
+    </li>
+    
+
+<ng-template #noFiles>
+  <p>No file attachments available.</p>
+</ng-template></div>
+  
         <!-- Client Contact Information Section -->
         <div class="client-info">
           <h1><strong>Client Information:</strong></h1>
@@ -32,13 +66,33 @@
             Message Client
           </button>
         </div>
+
+
       </div>
       
       
     
       <div>
-        <br>
-        <textarea placeholder="Add Comments" [(ngModel)]="comment"  class="w-full h-32 p-2 border border-black rounded-md resize-none"></textarea>
+        <!-- <br>
+        <textarea placeholder="Add Comments" [(ngModel)]="comment"  class="w-full h-32 p-2 border border-black rounded-md resize-none"></textarea> -->
+
+        <div *ngIf="regularComments?.length && regularComments.length > 0">
+          <h4 class="mb-2 font-semibold">Previous Comments:</h4>
+          <ul class="mb-4 list-disc list-inside text-sm text-gray-700">
+            <li *ngFor="let comment of regularComments">
+              <strong>{{ comment.user_name }}:</strong> {{ comment.comment }} 
+              <small class="text-gray-500">({{ comment.created_at | date:'short' }})</small>
+            </li>
+          </ul>
+        </div>
+        
+        <textarea 
+          placeholder="Add Comments" 
+          [(ngModel)]="comment"  
+          class="w-full h-32 p-2 border border-black rounded-md resize-none"
+        ></textarea>
+        
+
 
         <h4>Update Job Status:</h4>
         <label>
