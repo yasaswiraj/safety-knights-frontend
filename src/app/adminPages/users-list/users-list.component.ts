@@ -57,6 +57,10 @@ export class UsersListComponent implements AfterViewInit, OnInit {
   expandedElement: User | null = null;
   userDetails: any = null;
   loadingDetails = false;
+  totalItems = 0;
+  pageSize = 15;
+  currentPage = 1;
+  totalPages = 1;
 
   displayedColumns: string[] = [
     'id',
@@ -120,77 +124,97 @@ export class UsersListComponent implements AfterViewInit, OnInit {
 
   fetchUsers() {
     this.isLoading = true;
-    this.adminService.getAllUsers().subscribe((response: any) => {
-      // Make sure we're getting the expected data structure
-      console.log('Users data:', response);
-      
-      if (response && response.users) {
-        this.users = response.users.map((user: any, index: number) => ({
-          id: user.user_id,
-          name: user.name || '',
-          email: user.email_id || '',
-          phone: user.contact || '',
-          type: user.user_type ? user.user_type.charAt(0).toUpperCase() + user.user_type.slice(1) : '',
-          job_title: user.job_title || '',
-          company_name: user.company_name || '',
-          user_status: user.user_status || ''
-        }));
-        
-        // Set the data source
-        this.dataSource = new MatTableDataSource<User>(this.users);
-        
-        // Re-apply the sort and filter
-        this.dataSource.sort = this.sort;
-        this.dataSource.sortingDataAccessor = (item: User, property: string) => {
-          switch(property) {
-            case 'id':
-              return item.id ?? 0;
-            case 'name':
-              return item.name;
-            case 'email':
-              return item.email;
-            case 'phone':
-              return item.phone;
-            case 'type':
-              return item.type;
-            default:
-              return '';
+    
+    this.adminService.getAllUsers(this.currentPage, this.pageSize).subscribe(
+      (response: any) => {
+        if (response && response.items) {
+          this.users = response.items.map((user: any) => ({
+            id: user.user_id,
+            name: user.name || '',
+            email: user.email_id || '',
+            phone: user.contact || '',
+            type: user.user_type ? user.user_type.charAt(0).toUpperCase() + user.user_type.slice(1) : '',
+            job_title: user.job_title || '',
+            company_name: user.company_name || '',
+            user_status: user.user_status || ''
+          }));
+          
+          // Set the data source
+          this.dataSource = new MatTableDataSource<User>(this.users);
+          
+          // Re-apply the sort and filter
+          this.dataSource.sort = this.sort;
+          this.dataSource.sortingDataAccessor = (item: User, property: string) => {
+            switch(property) {
+              case 'id':
+                return item.id ?? 0;
+              case 'name':
+                return item.name;
+              case 'email':
+                return item.email;
+              case 'phone':
+                return item.phone;
+              case 'type':
+                return item.type;
+              default:
+                return '';
+            }
+          };
+          
+          // Re-apply the filter predicate
+          this.dataSource.filterPredicate = (data: User, filter: string) => {
+            const searchStr = filter.toLowerCase();
+            return (
+              data.name.toLowerCase().includes(searchStr) ||
+              data.email.toLowerCase().includes(searchStr) ||
+              data.phone.toLowerCase().includes(searchStr) ||
+              data.type.toLowerCase().includes(searchStr) ||
+              (data.job_title ? data.job_title.toLowerCase().includes(searchStr) : false) ||
+              (data.company_name ? data.company_name.toLowerCase().includes(searchStr) : false)
+            );
+          };
+          
+          // Set pagination data
+          this.totalItems = response.total;
+          this.totalPages = response.pages;
+        } else if (response && response.users) {
+          this.users = response.users.map((user: any) => ({
+            id: user.user_id,
+            name: user.name || '',
+            email: user.email_id || '',
+            phone: user.contact || '',
+            type: user.user_type ? user.user_type.charAt(0).toUpperCase() + user.user_type.slice(1) : '',
+            job_title: user.job_title || '',
+            company_name: user.company_name || '',
+            user_status: user.user_status || ''
+          }));
+          
+          this.dataSource = new MatTableDataSource<User>(this.users);
+          
+          if (response.total !== undefined) {
+            this.totalItems = response.total;
+            this.totalPages = Math.ceil(this.totalItems / this.pageSize);
+          } else {
+            this.totalItems = this.users.length;
+            this.totalPages = 1;
           }
-        };
+        } else {
+          this.users = [];
+          this.dataSource.data = [];
+        }
         
-        // Re-apply the filter predicate
-        this.dataSource.filterPredicate = (data: User, filter: string) => {
-          const searchStr = filter.toLowerCase();
-          return (
-            data.name.toLowerCase().includes(searchStr) ||
-            data.email.toLowerCase().includes(searchStr) ||
-            data.phone.toLowerCase().includes(searchStr) ||
-            data.type.toLowerCase().includes(searchStr) ||
-            (data.job_title ? data.job_title.toLowerCase().includes(searchStr) : false) ||
-            (data.company_name ? data.company_name.toLowerCase().includes(searchStr) : false)
-          );
-        };
-      } else {
-        console.error('Unexpected data structure:', response);
-        this.users = [];
-        this.dataSource.data = [];
+        this.isLoading = false;
+      },
+      error => {
+        console.error('Error fetching users:', error);
+        this.isLoading = false;
       }
-      
-      this.isLoading = false;
-    }, error => {
-      console.error('Error fetching users:', error);
-      this.isLoading = false;
-    });
+    );
   }
 
   onSearch(event: Event) {
     const filterValue = (event.target as HTMLInputElement).value;
     this.dataSource.filter = filterValue.trim().toLowerCase();
-    
-    // If the filter is empty, reset to show all data
-    if (filterValue === '') {
-      this.dataSource.filter = '';
-    }
   }
 
   toggleRow(user: User) {
@@ -202,7 +226,6 @@ export class UsersListComponent implements AfterViewInit, OnInit {
       this.expandedElement = user;
       this.loadingDetails = true;
       
-      // If the user is a consultant, fetch detailed information
       if (user.type === 'Consultant') {
         this.adminService.getConsultantDetail(user.id!).subscribe(
           (data) => {
@@ -211,13 +234,11 @@ export class UsersListComponent implements AfterViewInit, OnInit {
           },
           (error) => {
             console.error('Error fetching consultant details:', error);
-            // Fallback to basic user data if API call fails
             this.userDetails = user;
             this.loadingDetails = false;
           }
         );
       } else if (user.type === 'Client') {
-        // For client users, fetch detailed information
         this.adminService.getClientDetail(user.id!).subscribe(
           (data) => {
             this.userDetails = data;
@@ -225,13 +246,11 @@ export class UsersListComponent implements AfterViewInit, OnInit {
           },
           (error) => {
             console.error('Error fetching client details:', error);
-            // Fallback to basic user data if API call fails
             this.userDetails = user;
             this.loadingDetails = false;
           }
         );
       } else {
-        // For other user types, just use the basic user data
         this.userDetails = user;
         this.loadingDetails = false;
       }
@@ -275,8 +294,7 @@ export class UsersListComponent implements AfterViewInit, OnInit {
 
     dialogRef.afterClosed().subscribe(result => {
       if (result?.confirmed) {
-        console.log(`Banning user ${user.name} for reason: ${result.reason}`);
-        this.fetchUsers(); // Refresh the users list after banning
+        this.fetchUsers();
       }
     });
   }
@@ -293,9 +311,55 @@ export class UsersListComponent implements AfterViewInit, OnInit {
 
     dialogRef.afterClosed().subscribe(result => {
       if (result?.confirmed) {
-        console.log(`User ${user.name} has been unbanned`);
-        this.fetchUsers(); // Refresh the users list
+        this.fetchUsers();
       }
     });
+  }
+  
+  goToPage(page: number): void {
+    if (page < 1 || page > this.totalPages || page === this.currentPage) {
+      return;
+    }
+    
+    this.currentPage = page;
+    this.fetchUsers();
+  }
+
+  getPageNumbers(): number[] {
+    const pages: number[] = [];
+    const maxVisiblePages = 5;
+    
+    if (this.totalPages <= maxVisiblePages) {
+      for (let i = 1; i <= this.totalPages; i++) {
+        pages.push(i);
+      }
+    } else {
+      pages.push(1);
+      
+      let start = Math.max(2, this.currentPage - 1);
+      let end = Math.min(this.totalPages - 1, this.currentPage + 1);
+      
+      if (this.currentPage <= 2) {
+        end = 4;
+      } else if (this.currentPage >= this.totalPages - 1) {
+        start = this.totalPages - 3;
+      }
+      
+      if (start > 2) {
+        pages.push(-1);
+      }
+      
+      for (let i = start; i <= end; i++) {
+        pages.push(i);
+      }
+      
+      if (end < this.totalPages - 1) {
+        pages.push(-1);
+      }
+      
+      pages.push(this.totalPages);
+    }
+    
+    return pages;
   }
 }

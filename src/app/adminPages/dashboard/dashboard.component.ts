@@ -23,7 +23,7 @@ export class AdminDashboardComponent implements OnInit {
     // Fetch total users
     this.adminService.getAllUsers().subscribe(
       (users) => {
-        this.totalUsers = users.users.length;
+        this.totalUsers = users.total;
         console.log('Total users:', this.totalUsers, users);
       },
       (error) => {

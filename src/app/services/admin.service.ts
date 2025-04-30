@@ -10,8 +10,8 @@ export class AdminService {
 
   constructor(private http: HttpClient) {}
 
-  getAllUsers(): Observable<any> {
-    return this.http.get(`${environment.apiUrl}/admin/users`, { withCredentials: true });
+  getAllUsers(page: number = 1, size: number = 50): Observable<any> {
+    return this.http.get(`${environment.apiUrl}/admin/users?page=${page}&size=${size}`, { withCredentials: true });
   }
 
   getVettedUsers(): Observable<any> {
