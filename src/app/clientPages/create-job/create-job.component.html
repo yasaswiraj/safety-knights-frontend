@@ -22,7 +22,8 @@
               class="w-full p-3 border rounded-md focus:outline-none focus:ring focus:ring-blue-300" [ngClass]="{
     'border-gray-300': !jobForm.get(q.question_id.toString())?.invalid || !jobForm.get(q.question_id.toString())?.touched,
     'border-red-500': jobForm.get(q.question_id.toString())?.invalid && jobForm.get(q.question_id.toString())?.touched
-  }" [formControlName]="q.question_id" />
+  }" [formControlName]="q.question_id" (input)="sanitizeBudgetInput(q.question_id)" />
+
 
 
             <!-- Date -->
@@ -107,7 +108,15 @@
                 <label class="block font-medium text-gray-700">
                   {{ 'Minimum Insurance Coverage for ' + getInsuranceControlValue(i) }}
                 </label>
-                <input type="text" class="w-full p-2 mb-2 border border-gray-300 rounded-md" [formControlName]="i" />
+                <input type="text" class="w-full p-2 mb-2 border rounded-md" [ngClass]="{
+                  'border-gray-300': !ctrl.invalid || !ctrl.touched,
+                  'border-red-500': ctrl.invalid && ctrl.touched
+                }" [formControlName]="i" (blur)="ctrl.markAsTouched()" (input)="onTextGroupInput(q.question_id, i)" />
+                <p class="text-red-600 text-sm mt-1"
+                *ngIf="ctrl.hasError('invalidDecimal') && ctrl.touched">
+                Please enter a valid number (e.g., 1000 or 1000.50)
+             </p>
+             
               </ng-container>
             </div>
 
@@ -133,17 +142,15 @@
               </label>
 
               <!-- Selected File Display -->
-              <div *ngIf="uploadedFile" class="flex items-center justify-between bg-white p-2 mt-2 rounded-md shadow-sm text-sm text-gray-800">
+              <div *ngIf="uploadedFile"
+                class="flex items-center justify-between bg-white p-2 mt-2 rounded-md shadow-sm text-sm text-gray-800">
                 <span>{{ uploadedFile.name }}</span>
-                <button
-                  type="button"
-                  (click)="removeSelectedFile()"
-                  class="text-[#b17457] hover:text-red-500 transition text-xs font-semibold"
-                >
+                <button type="button" (click)="removeSelectedFile()"
+                  class="text-[#b17457] hover:text-red-500 transition text-xs font-semibold">
                   Remove
                 </button>
               </div>
-              
+
             </div>
           </div>
 

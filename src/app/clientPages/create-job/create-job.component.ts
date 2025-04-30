@@ -27,6 +27,7 @@ export class CreateJobComponent implements OnInit {
   isOtherSelected: { [questionId: number]: boolean } = {};
   otherInputControls: { [questionId: number]: FormControl } = {};
   isSubmitting = false;
+  insuranceFormArray: any;
 
 
 
@@ -50,7 +51,7 @@ export class CreateJobComponent implements OnInit {
       return (formArray as FormArray).length > 0 ? null : { required: true };
     };
   }
-  
+
 
   private buildJobForm(structure: any) {
     const group: { [controlName: string]: FormControl | FormArray<any> } = {};
@@ -62,19 +63,22 @@ export class CreateJobComponent implements OnInit {
         if (q.answer_type === 'CHECKBOX_GROUP') {
           const checkboxArray = this.fb.array<FormControl<string>>([]);
           if (this.isRequiredField(q.question_id)) {
-            checkboxArray.setValidators(this.checkboxRequired()); 
+            checkboxArray.setValidators(this.checkboxRequired());
           }
           group[q.question_id] = checkboxArray;
-        } 
+        }
         else if (q.answer_type === 'TEXT_GROUP') {
           this.textGroupId = q.question_id;
-          group[q.question_id] = this.fb.array<FormControl<string>>([]);
+          group[q.question_id] = this.fb.array(
+            (q.values || []).map((v: string) => this.fb.control(v, [this.onlyDigitsValidator()])
+            )
+          );
         }
         else if (q.answer_type === 'radio') {
           if (this.isRequiredField(q.question_id)) {
             validators.push(Validators.required);
           }
-          group[q.question_id] = this.fb.control('', validators); 
+          group[q.question_id] = this.fb.control('', validators);
         }
         else {
           if (q.question_id === 4 || q.question_id === 5) {
@@ -83,9 +87,12 @@ export class CreateJobComponent implements OnInit {
           if (this.isRequiredField(q.question_id)) {
             validators.push(Validators.required);
           }
+          if (q.question_id === 6) {
+            validators.push(Validators.pattern(/^\d+(\.\d{1,2})?$/));
+          }
           group[q.question_id] = this.fb.control('', validators);
         }
-        
+
       });
     });
 
@@ -93,6 +100,15 @@ export class CreateJobComponent implements OnInit {
       validators: this.dateOrderValidator()
     });
   }
+
+  sanitizeBudgetInput(questionId: number): void {
+    const control = this.jobForm.get(questionId.toString()) as FormControl;
+    if (control && typeof control.value === 'string') {
+      const sanitized = control.value.replace(/,/g, '');
+      control.setValue(sanitized, { emitEvent: false });
+    }
+  }
+  
 
 
   getOptions(questionId: number): Observable<string[]> {
@@ -113,24 +129,24 @@ export class CreateJobComponent implements OnInit {
 
   handleRadioChange(questionId: number, selectedValue: string) {
     const isOther = selectedValue.toLowerCase().includes('other');
-  
+
     if (isOther) {
       this.isOtherSelected[questionId] = true;
-  
+
       if (!this.otherInputControls[questionId]) {
         // Add required validator here
         this.otherInputControls[questionId] = new FormControl('', Validators.required);
       }
     } else {
       this.isOtherSelected[questionId] = false;
-  
+
       // Optional: Reset or clear the otherInputControl when not in use
       if (this.otherInputControls[questionId]) {
         this.otherInputControls[questionId].setValue('');
       }
     }
   }
-  
+
 
 
 
@@ -194,26 +210,26 @@ export class CreateJobComponent implements OnInit {
   onSubmit() {
     // Mark all main form controls as touched
     this.jobForm.markAllAsTouched();
-  
+
     // Mark all 'Other...' controls as touched (safely)
     Object.values(this.otherInputControls).forEach(ctrl => {
       if (ctrl && typeof ctrl.markAsTouched === 'function') {
         ctrl.markAsTouched();
       }
     });
-  
+
     // Block submission if main form or any 'Other...' field is invalid
     const otherFieldsInvalid = Object.values(this.otherInputControls).some(ctrl => {
       return ctrl && typeof ctrl.invalid === 'boolean' && ctrl.invalid;
     });
-  
+
     if (this.jobForm.invalid || this.isSubmitting || otherFieldsInvalid) {
       alert('Please fill in all mandatory fields before submitting.');
       return;
     }
-  
+
     this.isSubmitting = true;
-  
+
     // Inject latest 'Other...' values into form
     Object.entries(this.otherInputControls).forEach(([qIdStr, ctrl]) => {
       const qId = +qIdStr;
@@ -225,58 +241,78 @@ export class CreateJobComponent implements OnInit {
             // Replace 'Other...' value in the array
             const idx = control.controls.findIndex(c => c.value === 'Other...');
             if (idx !== -1) {
-              control.at(idx).setValue(ctrl.value); 
+              control.at(idx).setValue(ctrl.value);
             } else {
               control.push(this.fb.control(ctrl.value)); // just in case it's not added
             }
           }
-           else {
+          else {
             // For regular FormControl
             control.setValue(ctrl.value);
           }
         }
       }
     });
-  
+
+    // Fix for budget field (example questionId: 6 — adjust as needed)
+    const budgetControl = this.jobForm.get('6'); // or whatever question ID is for budget
+    if (budgetControl) {
+      const value = budgetControl.value;
+      if (typeof value === 'string') {
+        // Remove commas or spaces
+        const sanitized = value.replace(/,/g, '').trim();
+        budgetControl.setValue(sanitized);
+      }
+    }
+
+
+    const invalidNumericFields = this.getTextGroupControls(this.textGroupId)
+      .controls.some(ctrl => ctrl.hasError('nonNumeric'));
+
+    if (invalidNumericFields) {
+      alert('Please enter only numeric values without commas or special characters in the insurance coverage fields.');
+      return;
+    }
+
     // Extract and clean responses from form
     const responses = Object.entries(this.jobForm.value)
-    .filter(([_, v]) => v !== null && v !== '' && !(Array.isArray(v) && v.length === 0))
-    .map(([qId, rawValue]) => {
-      const questionId = +qId;
-      let value = rawValue;
-  
-      // Replace 'Other...' in radio
-      if (value === 'Other...' && this.otherInputControls[questionId]) {
-        value = this.otherInputControls[questionId].value;
-      }
-  
-      // Replace 'Other...' in checkbox group
-      if (Array.isArray(value)) {
-        if (value.includes('Other...') && this.otherInputControls[questionId]) {
-          value = value.map((v: string) =>
-            v === 'Other...' ? this.otherInputControls[questionId].value : v
-          );
+      .filter(([_, v]) => v !== null && v !== '' && !(Array.isArray(v) && v.length === 0))
+      .map(([qId, rawValue]) => {
+        const questionId = +qId;
+        let value = rawValue;
+
+        // Replace 'Other...' in radio
+        if (value === 'Other...' && this.otherInputControls[questionId]) {
+          value = this.otherInputControls[questionId].value;
         }
-      }
-  
-      return {
-        question_id: questionId,
-        response_value: Array.isArray(value) ? value.join(', ') : value
-      };
-    });
-  
-  
+
+        // Replace 'Other...' in checkbox group
+        if (Array.isArray(value)) {
+          if (value.includes('Other...') && this.otherInputControls[questionId]) {
+            value = value.map((v: string) =>
+              v === 'Other...' ? this.otherInputControls[questionId].value : v
+            );
+          }
+        }
+
+        return {
+          question_id: questionId,
+          response_value: Array.isArray(value) ? value.join(', ') : value
+        };
+      });
+
+
     // Prepare FormData
     const formDataToSend = new FormData();
     formDataToSend.append('job_data_str', JSON.stringify({
       form_id: this.formStructure.form_id,
       responses
     }));
-  
+
     if (this.uploadedFile) {
       formDataToSend.append('files', this.uploadedFile);
     }
-  
+
     // Call backend
     this.clientService.createJobWithResponses(formDataToSend).subscribe({
       next: (response) => {
@@ -291,11 +327,58 @@ export class CreateJobComponent implements OnInit {
       }
     });
   }
-  
+
   removeSelectedFile(): void {
     this.uploadedFile = null;
   }
+
+  onlyDigitsValidator(): ValidatorFn {
+    return (control: AbstractControl): { [key: string]: any } | null => {
+      const value = control.value;
+      if (!value) return null;
+
+      // Allow only digits, nothing else
+      const stringValue = value.toString().trim();
+      const isValid = /^\d+(\.\d{1,2})?$/.test(stringValue);
+      return isValid ? null : { onlyDigits: true };
+    };
+  }
+  stripNonDigits(control: AbstractControl): void {
+    const ctrl = control as FormControl;
+    const value = ctrl.value;
+    if (value) {
+      const sanitized = value.replace(/\D/g, '');
+      if (value !== sanitized) {
+        ctrl.setValue(sanitized, { emitEvent: false });
+      }
+    }
+  }
+
+  onTextGroupInput(questionId: number, index: number): void {
+    const formArray = this.getTextGroupControls(questionId);
+    const control = formArray.at(index) as FormControl;
   
+    let value = control.value;
+    if (typeof value === 'string') {
+      // Allow only digits and a single dot
+      value = value.replace(/[^0-9.]/g, '');
+  
+      // Ensure only one decimal point exists
+      const parts = value.split('.');
+      if (parts.length > 2) {
+        value = parts[0] + '.' + parts.slice(1).join('');
+      }
+  
+      control.setValue(value, { emitEvent: true });
+    }
+  
+    control.markAsTouched();
+    control.updateValueAndValidity();
+  }
+  
+
+
+
 
 
 
