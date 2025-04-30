@@ -10,7 +10,8 @@ import { AdminService } from '../../services/admin.service'; // Import AdminServ
 export class AdminDashboardComponent implements OnInit {
   totalUsers = 0;
   totalBids = 0;
-  currentMatches = 0;
+  totalMatchedJobs = 0;
+  totalJobs = 0;
 
   constructor(private adminService: AdminService) {}
 
@@ -30,14 +31,39 @@ export class AdminDashboardComponent implements OnInit {
       }
     );
 
-    // Fetch total bids and accepted bids
-    this.adminService.getBids(1, 1000).subscribe(
+    // Fetch total bids using the new endpoint
+    this.adminService.getTotalBids().subscribe(
       (response) => {
-        this.totalBids = response.total;
-        this.currentMatches = response.items.filter((bid: any) => bid.bid_status === 'accepted').length;
+        this.totalBids = response.total_bids;
+        console.log('Total bids:', this.totalBids);
       },
       (error) => {
-        console.error('Error fetching bids:', error);
+        console.error('Error fetching total bids:', error);
+        this.totalBids = 0;
+      }
+    );
+
+    // Fetch total matched jobs using the new endpoint
+    this.adminService.getTotalMatchedJobs().subscribe(
+      (response) => {
+        this.totalMatchedJobs = response.total_matched_jobs;
+        console.log('Total matched jobs:', this.totalMatchedJobs);
+      },
+      (error) => {
+        console.error('Error fetching total matched jobs:', error);
+        this.totalMatchedJobs = 0;
+      }
+    );
+
+    // Fetch total jobs using the new endpoint
+    this.adminService.getTotalJobs().subscribe(
+      (response) => {
+        this.totalJobs = response.total_jobs;
+        console.log('Total jobs:', this.totalJobs);
+      },
+      (error) => {
+        console.error('Error fetching total jobs:', error);
+        this.totalJobs = 0;
       }
     );
   }

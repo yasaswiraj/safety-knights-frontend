@@ -38,6 +38,18 @@ export class AdminService {
     return this.http.get<any>(`${environment.apiUrl}/admin/bids?page=${page}&size=${size}`, { withCredentials: true });
   }
 
+  getTotalBids(): Observable<any> {
+    return this.http.get<any>(`${environment.apiUrl}/admin/total_bids`, { withCredentials: true });
+  }
+
+  getTotalMatchedJobs(): Observable<any> {
+    return this.http.get<any>(`${environment.apiUrl}/admin/total_matched_jobs`, { withCredentials: true });
+  }
+
+  getTotalJobs(): Observable<any> {
+    return this.http.get<any>(`${environment.apiUrl}/admin/total_jobs`, { withCredentials: true });
+  }
+
   getQuestions(): Observable<any> {
     return this.http.get(`${environment.apiUrl}/admin/questions`, { withCredentials: true });
   }
