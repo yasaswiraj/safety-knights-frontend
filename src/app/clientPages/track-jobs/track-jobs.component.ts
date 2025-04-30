@@ -5,6 +5,7 @@ import { ClientJobsService, JobInProgress, ConsultantProfile } from '../../servi
 import { ActivatedRoute } from '@angular/router';
 import { MatDialog, MatDialogModule } from '@angular/material/dialog';
 import { ConsultantProfileComponent } from '../consultant-profile/consultant-profile.component'; 
+import { combineLatest } from 'rxjs';
 
 // Add this interface before your component class
 interface User {
@@ -26,6 +27,7 @@ export class TrackJobsComponent implements OnInit {
     jobTitle: string;
     daysSinceStart: number;
     budget: number;
+    acceptedBid: number | null; 
     startDate: string;
   }[] = [];
 
@@ -43,6 +45,7 @@ export class TrackJobsComponent implements OnInit {
   
     this.clientJobsService.getJobsInProgress().subscribe({
       next: (response) => {
+        console.log('Jobs in progress:', response.jobs);
         const filteredJobs = response.jobs.filter((job: any) => job.client_job_id === jobId);
   
         const jobPromises = filteredJobs.map(async (job: any) => {
@@ -64,8 +67,9 @@ export class TrackJobsComponent implements OnInit {
             consultantId: job.consultant_user_id,
             consultantName,
             jobTitle: job.scope_of_service,
-            daysSinceStart,   // use this
+            daysSinceStart,   
             budget: job.budget,
+            acceptedBid: job.accepted_bid_value,
             startDate: startDate.toLocaleDateString('en-US', {
               year: 'numeric',
               month: 'long',

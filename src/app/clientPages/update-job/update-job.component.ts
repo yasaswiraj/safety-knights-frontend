@@ -37,7 +37,7 @@ export class UpdateJobComponent implements OnInit {
   otherInputControls: { [questionId: number]: FormControl } = {};
   isSubmitting = false;
   uploadedFiles: { filename: string, download_url: string }[] = [];
-
+  private originalFormValues: any;
 
 
   constructor(
@@ -63,6 +63,8 @@ export class UpdateJobComponent implements OnInit {
         this.clientResponses = responses;
         this.uploadedFiles = files?.files_by_category?.["Job Files"] || [];
         this.buildJobForm(structure);
+        this.originalFormValues = JSON.parse(JSON.stringify(this.jobForm.getRawValue()));
+
       });
     }
   }
@@ -156,6 +158,34 @@ export class UpdateJobComponent implements OnInit {
 
   removeSelectedFile(): void {
     this.uploadedFile = null;
+  }
+
+  onCancelEdit(): void {
+    if (!this.originalFormValues) {
+      // If no original values, just navigate
+      this.router.navigate(['/client/pending-bids']);
+      return;
+    }
+
+    // Reset form and other controls
+    this.jobForm.reset(this.originalFormValues);
+    
+    Object.keys(this.otherInputControls).forEach(qId => {
+      const originalValue = this.originalFormValues[qId];
+      if (this.isOtherSelected[+qId] && originalValue) {
+        this.otherInputControls[+qId].setValue(originalValue);
+      }
+    });
+
+    this.jobForm.markAsPristine();
+    this.jobForm.markAsUntouched();
+
+    // Use setTimeout to ensure navigation happens after form operations
+    setTimeout(() => {
+      this.router.navigate(['/client/pending-bids'])
+        .then(() => console.log('Navigation successful'))
+        .catch(err => console.error('Navigation failed:', err));
+    });
   }
   
 

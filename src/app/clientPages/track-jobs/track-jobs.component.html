@@ -1,9 +1,7 @@
 <!-- Page Content -->
 <div class="flex flex-col items-center px-6 w-full mt-24 space-y-12">
-  <div
-    *ngFor="let job of ongoingJobs"
-    class="w-full max-w-6xl bg-white border border-gray-200 rounded-2xl p-6 shadow-md"
-  >
+  <div *ngFor="let job of ongoingJobs"
+    class="w-full max-w-6xl bg-white border border-gray-200 rounded-2xl p-6 shadow-md">
     <!-- Job Header -->
     <div class="mb-6 border-b pb-4">
       <h2 class="text-2xl font-extrabold text-gray-800 tracking-tight">
@@ -16,18 +14,15 @@
 
     <!-- Consultant Info Card -->
     <div
-      class="bg-gray-50 border border-gray-300 rounded-xl p-5 shadow-sm hover:shadow-lg transition duration-300 max-w-sm"
-    >
+      class="bg-gray-50 border border-gray-300 rounded-xl p-5 shadow-sm hover:shadow-lg transition duration-300 max-w-sm">
       <div class="flex items-center gap-4 mb-4">
         <img src="/user.png" alt="Consultant" class="w-12 h-12 rounded-full shadow-sm" />
         <div>
-          <h3
-          class="text-lg font-semibold text-gray-800 hover:underline cursor-pointer"
-          (click)="openConsultantProfile(job.consultantId)"
-        >
-          {{ job.consultantName }}
-        </h3>
-                </div>
+          <h3 class="text-lg font-semibold text-gray-800 hover:underline cursor-pointer"
+            (click)="openConsultantProfile(job.consultantId)">
+            {{ job.consultantName }}
+          </h3>
+        </div>
       </div>
 
       <!-- Job Summary Info -->
@@ -37,11 +32,15 @@
       <p class="text-sm text-gray-600 mb-1">Budget</p>
       <p class="text-lg font-bold text-gray-900 mb-4">${{ job.budget }}</p>
 
+      <!-- Accepted Bid (only if available) -->
+      <p *ngIf="job.acceptedBid !== null" class="text-sm text-gray-600 mt-3">Accepted Bid</p>
+      <p *ngIf="job.acceptedBid !== null" class="text-lg font-bold text-gray-900 mb-4">
+        ${{ job.acceptedBid }}
+      </p>
+
       <!-- Action Button -->
-      <button
-        (click)="messageConsultant(job.consultantId, job.consultantName)"
-        class="w-full py-2 rounded-full text-white bg-gradient-to-r from-[#b68d5f] to-[#a4784c] hover:from-[#a4784c] hover:to-[#8d6640] shadow-md text-sm font-semibold uppercase tracking-wide"
-      >
+      <button (click)="messageConsultant(job.consultantId, job.consultantName)"
+        class="w-full py-2 rounded-full text-white bg-gradient-to-r from-[#b68d5f] to-[#a4784c] hover:from-[#a4784c] hover:to-[#8d6640] shadow-md text-sm font-semibold uppercase tracking-wide">
         Message
       </button>
     </div>
