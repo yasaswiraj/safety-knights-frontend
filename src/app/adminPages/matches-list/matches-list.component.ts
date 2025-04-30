@@ -10,6 +10,7 @@ import { FormsModule } from '@angular/forms';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { AdminService } from '../../services/admin.service';
 import { JobDetailComponent } from '../../components/job-detail/job-detail.component';
+import { LoadingComponent } from '../../components/loading/loading.component';
 
 @Component({
   selector: 'app-matches-list',
@@ -26,7 +27,8 @@ import { JobDetailComponent } from '../../components/job-detail/job-detail.compo
     MatSortModule,
     FormsModule,
     MatProgressSpinnerModule,
-    JobDetailComponent
+    JobDetailComponent,
+    LoadingComponent
   ],
 })
 export class MatchesListComponent implements OnInit, AfterViewInit {
@@ -90,23 +92,21 @@ export class MatchesListComponent implements OnInit, AfterViewInit {
     if (this.isLoading) return;
     
     this.isLoading = true;
-    this.adminService.getBids(this.currentPage, this.pageSize).subscribe(
+    this.adminService.getMatches(this.currentPage, this.pageSize).subscribe(
       (response) => {
-        this.dataSource.data = response.items
-          .filter((bid: any) => bid.bid_status === 'accepted')
-          .map((bid: any) => ({
-            id: bid.bid_id,
-            clientName: `Client ${bid.client_user_id}`,
-            consultantName: `Consultant ${bid.consultant_user_id}`,
-            bid: bid.bid_amount,
-            job_id: bid.job_id,
-            client_user_id: bid.client_user_id,
-            job_title: bid.job_title || 'N/A',
-            job_description: bid.job_description || 'N/A',
-            project_location: bid.project_location || 'N/A',
-            budget: bid.budget || 0,
-            job_status: bid.job_status || 'N/A'
-          }));
+        this.dataSource.data = response.items.map((match: any) => ({
+          id: match.job_id,
+          clientName: match.client_name || `Client ${match.client_id}`,
+          consultantName: match.consultant_name || `Consultant ${match.consultant_id}`,
+          bid: match.bid_value || 0,
+          job_id: match.job_id,
+          client_user_id: match.client_id,
+          job_title: match.job_title || 'N/A',
+          job_description: match.job_description || 'N/A',
+          project_location: match.project_location || 'N/A',
+          budget: match.budget || 0,
+          job_status: match.job_status || 'N/A'
+        }));
         this.totalItems = response.total;
         this.totalPages = response.pages;
         this.isLoading = false;

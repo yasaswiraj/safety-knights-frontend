@@ -10,6 +10,7 @@ import { FormsModule } from '@angular/forms';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { AdminService } from '../../services/admin.service';
 import { JobDetailComponent } from '../../components/job-detail/job-detail.component';
+import { LoadingComponent } from '../../components/loading/loading.component';
 
 @Component({
   selector: 'app-bids-list',
@@ -26,7 +27,8 @@ import { JobDetailComponent } from '../../components/job-detail/job-detail.compo
     MatSortModule,
     FormsModule,
     MatProgressSpinnerModule,
-    JobDetailComponent
+    JobDetailComponent,
+    LoadingComponent
   ],
 })
 export class BidsListComponent implements OnInit, AfterViewInit {

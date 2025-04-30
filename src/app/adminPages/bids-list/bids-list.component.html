@@ -19,15 +19,16 @@
     (closeExpansion)="closeDetail()">
   </app-job-detail>
 
+  <!-- Loading Component for Job Details -->
+  <app-loading *ngIf="expandedElement && loadingDetails" message="Loading job details"></app-loading>
+
   <!-- Table Wrapper with Scrolling - Hidden when details are shown -->
   <div
     *ngIf="!expandedElement"
     class="bg-white h-[calc(100vh-17rem)] overflow-auto mt-4 rounded-3xl border border-gray-300">
     
-    <!-- Loading Spinner for Table -->
-    <div *ngIf="isLoading" class="flex justify-center items-center h-full">
-      <mat-spinner></mat-spinner>
-    </div>
+    <!-- Loading Component for Table -->
+    <app-loading *ngIf="isLoading" message="Loading bids"></app-loading>
     
     <table
       *ngIf="!isLoading"
@@ -202,8 +203,6 @@
     </div>
   </div>
 
-  <!-- Loading Spinner for Table -->
-  <div *ngIf="!dataSource.data.length && !isLoading" class="flex justify-center items-center h-[calc(100vh-17rem)]">
-    <mat-spinner></mat-spinner>
-  </div>
+  <!-- Loading Component for Empty State -->
+  <app-loading *ngIf="!dataSource.data.length && !isLoading" message="No bids found"></app-loading>
 </div>
