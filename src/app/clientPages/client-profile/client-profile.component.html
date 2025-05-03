@@ -16,7 +16,7 @@
 
     <!-- View Mode -->
     <div *ngIf="!editMode" class="grid grid-cols-1 md:grid-cols-2 gap-10 text-gray-700 text-base">
-      
+
       <!-- Personal Info -->
       <div>
         <h2 class="text-xl font-semibold mb-4 flex items-center gap-2">
@@ -70,16 +70,33 @@
           <input class="input" [(ngModel)]="profile.name" name="name" required />
         </label>
 
-        <label>Email:
-          <input class="input" [value]="profile.email" disabled />
-        </label>
+        <!-- Email (Initial View) -->
+        <div *ngIf="!isEditingEmail">
+          <label>Email:
+            <input class="input" [value]="profile.email" disabled />
+          </label>
+          <button type="button" (click)="isEditingEmail = true" class="text-sm text-blue-600 hover:underline ml-2">
+            Change Email
+          </button>
+        </div>
+
+        <!-- Email (Edit View) -->
+        <div *ngIf="isEditingEmail">
+          <label>New Email:
+            <input class="input" [(ngModel)]="newEmail" name="new_email" type="email" required />
+          </label>
+          <label>Current Password:
+            <input class="input" [(ngModel)]="currentPassword" name="current_password" type="password" required />
+          </label>
+        </div>
+
+
+
 
         <label>
           Contact:
-          <input class="input w-full p-2 border rounded-lg outline-none transition-all"
-            [(ngModel)]="profile.contact" name="contact" required #contactInput="ngModel"
-            pattern="^[0-9]{10}$"
-            [ngClass]="{
+          <input class="input w-full p-2 border rounded-lg outline-none transition-all" [(ngModel)]="profile.contact"
+            name="contact" required #contactInput="ngModel" pattern="^[0-9]{10}$" [ngClass]="{
               'border-red-500': contactInput.invalid && contactInput.touched,
               'border-gray-300': contactInput.valid || !contactInput.touched
             }" />

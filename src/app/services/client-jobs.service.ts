@@ -167,6 +167,16 @@ export class ClientJobsService {
     });
   }
 
+  updateEmail(newEmail: string, currentPassword: string): Observable<any> {
+    return this.http.post(`${environment.apiUrl}/update-email`, {
+      new_email: newEmail,
+      current_password: currentPassword
+    }, {
+      withCredentials: true
+    });
+  }
+  
+
   getJobsInProgress(): Observable<{ jobs: JobInProgress[] }> {
     return this.http.get<{ jobs: JobInProgress[] }>(
       `${environment.apiUrl}/client/jobs-in-progress`,

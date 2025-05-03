@@ -18,6 +18,11 @@ export class ClientProfileComponent implements OnInit {
   originalProfile: any = null;
   editMode = false;
   reviews: any[] = [];
+  newEmail: string = '';
+  currentPassword: string = '';
+  isEditingEmail = false;
+
+
 
 
   constructor(
@@ -69,27 +74,59 @@ export class ClientProfileComponent implements OnInit {
   cancelEdit(): void {
     this.profile = JSON.parse(JSON.stringify(this.originalProfile));
     this.editMode = false;
+    this.isEditingEmail = false;
+    this.newEmail = '';
+    this.currentPassword = '';
   }
-
+  
   saveProfile(): void {
-    const payload = {
+    const profilePayload = {
       name: this.profile.name,
       job_title: this.profile.job_title,
       company_name: this.profile.company_name,
       company_address: this.profile.company_address,
       phone_number: this.profile.contact
     };
-
-    this.clientJobsService.updateClientProfile(payload).subscribe({
-      next: () => {
-        alert('Profile updated successfully!');
-        this.editMode = false;
-        this.loadProfile();
-      },
-      error: (err) => {
-        console.error('Error updating profile:', err);
-        alert('Failed to update profile.');
+  
+    const updateMainProfile = () => {
+      this.clientJobsService.updateClientProfile(profilePayload).subscribe({
+        next: () => {
+          alert('Profile updated successfully!');
+          this.editMode = false;
+          this.isEditingEmail = false;
+          this.loadProfile();
+        },
+        error: (err) => {
+          console.error('Error updating profile:', err);
+          alert('Failed to update profile.');
+        }
+      });
+    };
+  
+    // Update email first if user changed it
+    if (this.isEditingEmail && this.newEmail !== this.profile.email) {
+      if (!this.currentPassword) {
+        alert("Please enter your current password to change email.");
+        return;
       }
-    });
+      this.clientJobsService.updateEmail(this.newEmail, this.currentPassword).subscribe({
+        next: (res) => {
+          if (res?.access_token) {
+            localStorage.setItem('access_token', res.access_token);
+          }
+          alert('Email updated successfully!');
+          this.profile.email = this.newEmail;  // update UI immediately
+          updateMainProfile();
+        },
+        error: (err) => {
+          console.error('Failed to update email:', err);
+          alert(err?.error?.detail || 'Failed to update email.');
+        }
+      });
+    } else {
+      updateMainProfile();
+    }
   }
+  
+  
 }
