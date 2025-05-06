@@ -37,6 +37,7 @@ export class LoginComponent {
           // Set loggedIn flag and userType in localStorage
           localStorage.setItem('loggedIn', 'true');
           localStorage.setItem('userType', response.user_type);
+          localStorage.setItem('userStatus', response.user_status);
   
           // Store access_token in localStorage instead of sessionStorage
           if(response.access_token) {
@@ -47,7 +48,8 @@ export class LoginComponent {
           if (response.user_type === 'client')
             this.router.navigate(['/client/bids-in-progress']);
           else if (response.user_type === 'consultant')
-            this.router.navigate(['/consultant/']);
+            if(response.user_status === 'approved') this.router.navigate(['/consultant']);
+            else this.router.navigate(['/consultant/consultant-inbox']);
           else 
             this.router.navigate(['/admin']);
           this.isLoading = false; // Reset loading state

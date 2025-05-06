@@ -11,18 +11,30 @@ import { RouterOutlet } from '@angular/router';
   styleUrl: './consultant-dashboard.component.css',
 })
 export class ConsultantDashboardComponent {
-  menuItems = [
-    
-    { label: 'Current Matches', route: '/consultant', icon: 'fas fa-users' },
-    { label: 'Bidded Jobs', route: '/consultant/consultant-bidded', icon: 'fas fa-gavel' },
-    { label: 'Active Jobs', route: '/consultant/consultant-active', icon: 'fas fa-check' },   
-    { label: 'Completed', route: '/consultant/consultant-completed', icon: 'fas fa-envelope' },
-    { label: 'Inbox', route: '/consultant/consultant-inbox', icon: 'fas fa-message' },
-    { label: 'Update Profile', route: '/consultant/update-profile', icon: 'fas fa-edit' },
-  
-  ];
+  menuItems: { label: string; route: string; icon: string }[] = [];
 
   isSidebarOpen = true;
+
+  constructor() {
+    const userStatus = localStorage.getItem('userStatus');
+    const userType = localStorage.getItem('userType');
+
+    if (userStatus === 'vetting' && userType === 'consultant') {
+      this.menuItems = [
+        { label: 'Inbox', route: '/consultant/consultant-inbox', icon: 'fas fa-message' },
+        { label: 'Update Profile', route: '/consultant/update-profile', icon: 'fas fa-edit' },
+      ];
+    } else {
+      this.menuItems = [
+        { label: 'Current Matches', route: '/consultant', icon: 'fas fa-users' },
+        { label: 'Bidded Jobs', route: '/consultant/consultant-bidded', icon: 'fas fa-gavel' },
+        { label: 'Active Jobs', route: '/consultant/consultant-active', icon: 'fas fa-check' },
+        { label: 'Completed', route: '/consultant/consultant-completed', icon: 'fas fa-envelope' },
+        { label: 'Inbox', route: '/consultant/consultant-inbox', icon: 'fas fa-message' },
+        { label: 'Update Profile', route: '/consultant/update-profile', icon: 'fas fa-edit' },
+      ];
+    }
+  }
 
   toggleSidebar() {
     this.isSidebarOpen = !this.isSidebarOpen;

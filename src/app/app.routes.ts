@@ -52,8 +52,10 @@ export const routes: Routes = [
       const router = inject(Router);
       if (localStorage.getItem('loggedIn')) {
         const userType = localStorage.getItem('userType');
+        const userStatus = localStorage.getItem('userStatus');
         if (userType === 'client') return router.parseUrl('/client/bids-in-progress');
-        if (userType === 'consultant') return router.parseUrl('/consultant/consultant-matches');
+        if (userType === 'consultant' && userStatus === 'approved') return router.parseUrl('/consultant/consultant-matches');
+        if (userType === 'consultant') return router.parseUrl('/consultant/consultant-inbox');
         if (userType === 'admin') return router.parseUrl('/admin');
       }
       return true; // Allow access to landing page if not logged in
@@ -139,21 +141,27 @@ export const routes: Routes = [
       }
       return true;
     }],
-    children: [
-      {
-        path: '',
-        component: ConsultantMatchesComponent,
-      },
-
-      { path: 'consultant-matches', component: ConsultantMatchesComponent },
-      { path: 'consultant-bidded', component: ConsultantBiddedJobsComponent },
-      { path: 'consultant-active', component: ConsultantActiveJobsComponent },
-      {path: 'consultant-completed',component: ConsultantCompletedJobsComponent },
-      {path: 'update-profile-consultant',component: ClientProfileComponent  },
-      { path: 'consultant-inbox', component: ChatComponent },
-      { path: 'update-profile', component: UpdateProfileConsultantComponent, data: { editMode: true } },
-      { path: 'consultant-profile', component: ConsultantProfileComponent },
-    ],
+    children: (() => {
+      const userStatus = localStorage.getItem('userStatus');
+      if (userStatus !== 'vetting') {
+        return [
+          { path: '', component: ConsultantMatchesComponent },
+          { path: 'consultant-matches', component: ConsultantMatchesComponent },
+          { path: 'consultant-bidded', component: ConsultantBiddedJobsComponent },
+          { path: 'consultant-active', component: ConsultantActiveJobsComponent },
+          { path: 'consultant-completed', component: ConsultantCompletedJobsComponent },
+          { path: 'update-profile-consultant', component: ClientProfileComponent },
+          { path: 'consultant-inbox', component: ChatComponent },
+          { path: 'update-profile', component: UpdateProfileConsultantComponent, data: { editMode: true } },
+          { path: 'consultant-profile', component: ConsultantProfileComponent },
+        ];
+      } else {
+        return [
+          { path: 'consultant-inbox', component: ChatComponent },
+          { path: 'update-profile', component: UpdateProfileConsultantComponent, data: { editMode: true } },
+        ];
+      }
+    })(),
   },
   { path: 'consultant-form1', component: ConsultantForm1Component },
   {
