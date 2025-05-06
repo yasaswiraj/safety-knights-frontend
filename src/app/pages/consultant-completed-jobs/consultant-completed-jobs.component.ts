@@ -9,6 +9,7 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatDialog } from '@angular/material/dialog';
 import { ClientFeedbackComponent } from '../client-feedback/client-feedback.component';
 import { ConsultantMatchesService } from '../../services/consultant-match.service';
+import { MatSnackBar } from '@angular/material/snack-bar';
 
 @Component({
   selector: 'app-consultant-matches',
@@ -31,9 +32,9 @@ export class ConsultantCompletedJobsComponent implements AfterViewInit {
   dataSource: MatTableDataSource<any> = new MatTableDataSource();
 
   displayedColumns: string[] = [
-    'job_id',
+    
     'client_name',
-    'client_id',
+    
     'scope_of_service', // Ensure this matches your data structure
     'project_location',        // Adjust based on your actual data keys
     'completed_date', // Adjust based on your actual data keys, e.g., 'completed_date'
@@ -44,7 +45,8 @@ export class ConsultantCompletedJobsComponent implements AfterViewInit {
   
 
   constructor(private consultantMatchesService: ConsultantMatchesService,
-      private dialog: MatDialog) {
+      private dialog: MatDialog,
+      private snackBar: MatSnackBar) {
     
   }
 
@@ -84,8 +86,15 @@ export class ConsultantCompletedJobsComponent implements AfterViewInit {
     dialogRef.afterClosed().subscribe(result => {
       if (result) {
         console.log('Feedback submitted successfully');
+        this.snackBar.open('Feedback submitted successfully!', 'Close', {
+          duration: 3000, // milliseconds
+          horizontalPosition: 'center',
+          verticalPosition: 'bottom',
+        });
       }
     });
   }
+
+
 }
 

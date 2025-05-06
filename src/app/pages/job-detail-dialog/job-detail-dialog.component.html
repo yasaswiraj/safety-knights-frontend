@@ -1,5 +1,5 @@
 <div class="dialog-container">
-    <h2>Job {{ data.jobid }}</h2>
+    <h2> {{ data.scope_of_service }}</h2>
 
      <!-- Close Icon Button -->
   <button mat-icon-button class="absolute top-2 right-2" (click)="onClose()">
@@ -10,7 +10,7 @@
     <div class="description">
       <p><strong> Job description</strong> {{ data.work_in_detail }}</p> 
       <p><strong>Scope of Service:</strong> {{ data.scope_of_service }}</p>
-      <p><strong> Expected Start Date:</strong> {{ jobDetails.expected_start_date }}</p>
+      <p><strong> Expected Start Date:</strong> {{ data.expected_start_date }}</p>
       <p><strong>Deadline:</strong> {{ data.deadline }}</p>  
       <p><strong>Location:</strong> {{ data.location }}</p>
       <p><strong>Budget:</strong>{{ data.budget }} </p>
