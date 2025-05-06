@@ -46,7 +46,7 @@ export class ConsultantActiveJobsComponent implements AfterViewInit {
   
 
   displayedColumns: string[] = [
-    'job_id',
+ 
     'scope_of_service',
     'project_location',
     'expected_start_date',

@@ -12,6 +12,7 @@ import { MatDialog } from '@angular/material/dialog';
 import { JobDetailDialogComponent } from '../job-detail-dialog/job-detail-dialog.component';
 import { UpdateBidComponent } from '../update-bid/update-bid.component';
 import { MatSnackBar } from '@angular/material/snack-bar';
+// import { ConfirmBidDeleteComponent } from './confirm-bid-delete/confirm-bid-delete.component';
 
 @Component({
   selector: 'app-consultant-bidded-jobs',
